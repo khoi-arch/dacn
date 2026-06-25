@@ -1,0 +1,2003 @@
+<repomix><file_summary>This file is a merged representation of a subset of the codebase, containing specifically included files and files not matching ignore patterns, combined into a single document by Repomix.
+The content has been processed where content has been formatted for parsing in xml style.<purpose>This file contains a packed representation of a subset of the repository&apos;s contents that is considered the most important context.
+It is designed to be easily consumable by AI systems for analysis, code review,
+or other automated processes.</purpose><file_format>The content is organized as follows:
+1. This summary section
+2. Repository information
+3. Directory structure
+4. Repository files (if enabled)
+5. Repository files, each consisting of:
+  - File path as an attribute
+  - Full contents of the file</file_format><usage_guidelines>- This file should be treated as read-only. Any changes should be made to the
+  original repository files, not this packed version.
+- When processing this file, use the file path to distinguish
+  between different files in the repository.
+- Be aware that this file may contain sensitive information. Handle it with
+  the same level of security as you would the original repository.</usage_guidelines><notes>- Some files may have been excluded based on .gitignore rules and Repomix&apos;s configuration
+- Binary files are not included in this packed representation. Please refer to the Repository Structure section for a complete list of file paths, including binary files
+- Only files matching these patterns are included: 02_src/config.py, 02_src/02_build_token.py, 02_src/03_embedding.py, 02_src/04_model.py, 02_src/05_train.py, 03_outputs/build_token/K1000/token_metadata_K1000.json, 03_outputs/train_runs/K1000/L2_K1000_kaggle_full/diagnosis_summary.json
+- Files matching these patterns are excluded: **/__pycache__/**, .venv/**, venv/**
+- Files matching patterns in .gitignore are excluded
+- Files matching default ignore patterns are excluded
+- Content has been formatted for parsing in xml style
+- Files are sorted by Git change count (files with more changes are at the bottom)</notes></file_summary><directory_structure>02_src/
+  02_build_token.py
+  03_embedding.py
+  04_model.py
+  05_train.py
+  config.py
+03_outputs/
+  build_token/
+    K1000/
+      token_metadata_K1000.json</directory_structure><files>This section contains the contents of the repository&apos;s files.<file path="02_src/02_build_token.py">#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+&quot;&quot;&quot;
+final_pipeline/build_token.py
+
+Build model-ready token dataset from preprocessed train/val CSVs.
+
+Input:
+    - train_preprocessed_K{K}.csv
+    - val_preprocessed_K{K}.csv
+    - preprocess_policy_K{K}.json for feature order
+
+Output:
+    - token_dataset_K{K}.npz
+    - token_metadata_K{K}.json
+
+This file does only:
+    z in [0,1] -&gt; token = round(K*z)
+
+No preprocessing fit.
+No embedding.
+No model.
+No test split.
+&quot;&quot;&quot;
+
+from __future__ import annotations
+
+import argparse
+import json
+from pathlib import Path
+from typing import Dict, List, Sequence, Tuple
+
+import numpy as np
+import pandas as pd
+
+import config as CFG
+
+
+def csv_list(value: str | None) -&gt; List[str]:
+    if value is None:
+        return []
+    return [x.strip() for x in str(value).split(&quot;,&quot;) if x.strip()]
+
+
+def parse_args() -&gt; argparse.Namespace:
+    p = argparse.ArgumentParser(description=&quot;Build token dataset from preprocessed train/val CSVs.&quot;)
+    p.add_argument(&quot;--K&quot;, type=int, default=int(CFG.TOKEN_K))
+    p.add_argument(&quot;--train-preprocessed&quot;, default=&quot;&quot;)
+    p.add_argument(&quot;--val-preprocessed&quot;, default=&quot;&quot;)
+    p.add_argument(&quot;--policy-json&quot;, default=&quot;&quot;)
+    p.add_argument(&quot;--out-root&quot;, default=str(CFG.BUILD_TOKEN_DIR))
+    p.add_argument(&quot;--label-col&quot;, default=str(CFG.DEFAULT_LABEL_COL))
+    p.add_argument(&quot;--target-cols&quot;, default=&quot;,&quot;.join(CFG.TARGET_COLS))
+    p.add_argument(&quot;--drop-cols&quot;, default=&quot;,&quot;.join(CFG.DROP_COLS))
+    return p.parse_args()
+
+
+def load_feature_order(policy_path: Path) -&gt; List[str]:
+    if not policy_path.exists():
+        raise FileNotFoundError(f&quot;preprocess policy not found: {policy_path}&quot;)
+
+    obj = json.loads(policy_path.read_text(encoding=&quot;utf-8&quot;))
+
+    meta_features = obj.get(&quot;metadata&quot;, {}).get(&quot;feature_order&quot;)
+    if meta_features:
+        return [str(x) for x in meta_features]
+
+    policies = obj.get(&quot;policies&quot;, [])
+    if not policies:
+        raise ValueError(f&quot;No policies found in: {policy_path}&quot;)
+
+    return [str(p[&quot;feature&quot;]) for p in policies]
+
+
+def validate_preprocessed_split(split_name: str, df: pd.DataFrame, features: Sequence[str], label_col: str) -&gt; None:
+    missing = [f for f in features if f not in df.columns]
+    if missing:
+        raise ValueError(f&quot;{split_name} missing {len(missing)} features; first: {missing[:10]}&quot;)
+
+    if label_col not in df.columns:
+        raise ValueError(f&quot;{split_name} missing label column: {label_col}&quot;)
+
+    arr = df.loc[:, list(features)].to_numpy(dtype=float)
+    nan_count = int(np.isnan(arr).sum())
+    inf_count = int(np.isinf(arr).sum())
+    if nan_count or inf_count:
+        raise ValueError(f&quot;{split_name} contains non-finite feature values: nan={nan_count}, inf={inf_count}&quot;)
+
+    mn = float(np.min(arr)) if arr.size else 0.0
+    mx = float(np.max(arr)) if arr.size else 0.0
+    if mn &lt; -1e-6 or mx &gt; 1.0 + 1e-6:
+        raise ValueError(
+            f&quot;{split_name} preprocessed features should be in [0,1], got min={mn}, max={mx}&quot;
+        )
+
+
+def z_to_tokens(df: pd.DataFrame, features: Sequence[str], K: int) -&gt; Tuple[np.ndarray, np.ndarray]:
+    X_z = df.loc[:, list(features)].to_numpy(dtype=np.float32)
+    X_z = np.clip(X_z, 0.0, 1.0)
+    X_tokens = np.clip(np.rint(float(K) * X_z), 0, int(K)).astype(np.int64)
+    return X_tokens, X_z
+
+
+def build_label_mapping(train_labels: pd.Series) -&gt; Dict[str, int]:
+    labels = sorted([str(x) for x in train_labels.dropna().unique().tolist()])
+    return {label: idx for idx, label in enumerate(labels)}
+
+
+def encode_labels(labels: pd.Series, mapping: Dict[str, int], split_name: str, label_col: str) -&gt; np.ndarray:
+    encoded = []
+    unknown = []
+    for x in labels.tolist():
+        key = str(x)
+        if key not in mapping:
+            unknown.append(key)
+            encoded.append(-1)
+        else:
+            encoded.append(mapping[key])
+
+    if unknown:
+        raise ValueError(
+            f&quot;{split_name}.{label_col} contains labels not seen in train mapping: &quot;
+            f&quot;{sorted(set(unknown))[:10]}&quot;
+        )
+
+    return np.asarray(encoded, dtype=np.int64)
+
+
+def main() -&gt; None:
+    args = parse_args()
+    K = int(args.K)
+
+    if K &lt;= 0:
+        raise ValueError(&quot;K must be positive.&quot;)
+
+    train_pre = Path(args.train_preprocessed) if args.train_preprocessed else CFG.preprocess_train_csv_path(K)
+    val_pre = Path(args.val_preprocessed) if args.val_preprocessed else CFG.preprocess_val_csv_path(K)
+    policy_path = Path(args.policy_json) if args.policy_json else CFG.preprocess_policy_json_path(K)
+
+    if not train_pre.exists():
+        raise FileNotFoundError(f&quot;train preprocessed csv not found: {train_pre}&quot;)
+    if not val_pre.exists():
+        raise FileNotFoundError(f&quot;val preprocessed csv not found: {val_pre}&quot;)
+
+    feature_names = load_feature_order(policy_path)
+
+    train = pd.read_csv(train_pre)
+    val = pd.read_csv(val_pre)
+
+    label_col = str(args.label_col)
+
+    validate_preprocessed_split(&quot;train&quot;, train, feature_names, label_col)
+    validate_preprocessed_split(&quot;val&quot;, val, feature_names, label_col)
+
+    X_train_tokens, X_train_z = z_to_tokens(train, feature_names, K)
+    X_val_tokens, X_val_z = z_to_tokens(val, feature_names, K)
+
+    label_mapping = build_label_mapping(train[label_col])
+    y_train = encode_labels(train[label_col], label_mapping, &quot;train&quot;, label_col)
+    y_val = encode_labels(val[label_col], label_mapping, &quot;val&quot;, label_col)
+
+    out_dir = Path(args.out_root) / f&quot;K{K}&quot;
+    out_dir.mkdir(parents=True, exist_ok=True)
+
+    out_npz = out_dir / f&quot;token_dataset_K{K}.npz&quot;
+    out_meta = out_dir / f&quot;token_metadata_K{K}.json&quot;
+
+    np.savez_compressed(
+        out_npz,
+        X_train_tokens=X_train_tokens,
+        X_train_z=X_train_z,
+        y_train=y_train,
+        X_val_tokens=X_val_tokens,
+        X_val_z=X_val_z,
+        y_val=y_val,
+        feature_names=np.asarray(feature_names, dtype=object),
+        label_names=np.asarray([k for k, _ in sorted(label_mapping.items(), key=lambda kv: kv[1])], dtype=object),
+        K=np.asarray([K], dtype=np.int64),
+    )
+
+    metadata = {
+        &quot;stage&quot;: &quot;build_token&quot;,
+        &quot;K&quot;: int(K),
+        &quot;input&quot;: {
+            &quot;train_preprocessed_csv&quot;: str(train_pre),
+            &quot;val_preprocessed_csv&quot;: str(val_pre),
+            &quot;preprocess_policy_json&quot;: str(policy_path),
+        },
+        &quot;label_col&quot;: label_col,
+        &quot;label_mapping&quot;: label_mapping,
+        &quot;n_features&quot;: int(len(feature_names)),
+        &quot;feature_names&quot;: feature_names,
+        &quot;splits&quot;: {
+            &quot;train&quot;: {
+                &quot;n_rows&quot;: int(len(train)),
+                &quot;X_tokens_shape&quot;: list(X_train_tokens.shape),
+                &quot;X_z_shape&quot;: list(X_train_z.shape),
+                &quot;y_shape&quot;: list(y_train.shape),
+                &quot;token_min&quot;: int(X_train_tokens.min()) if X_train_tokens.size else None,
+                &quot;token_max&quot;: int(X_train_tokens.max()) if X_train_tokens.size else None,
+            },
+            &quot;val&quot;: {
+                &quot;n_rows&quot;: int(len(val)),
+                &quot;X_tokens_shape&quot;: list(X_val_tokens.shape),
+                &quot;X_z_shape&quot;: list(X_val_z.shape),
+                &quot;y_shape&quot;: list(y_val.shape),
+                &quot;token_min&quot;: int(X_val_tokens.min()) if X_val_tokens.size else None,
+                &quot;token_max&quot;: int(X_val_tokens.max()) if X_val_tokens.size else None,
+            },
+        },
+        &quot;outputs&quot;: {
+            &quot;token_dataset_npz&quot;: str(out_npz),
+            &quot;token_metadata_json&quot;: str(out_meta),
+        },
+        &quot;note&quot;: &quot;This file only converts preprocessed z values to integer token IDs. Embedding/model are separate files.&quot;,
+    }
+
+    out_meta.write_text(json.dumps(metadata, ensure_ascii=False, indent=2), encoding=&quot;utf-8&quot;)
+
+    print(&quot;===== build_token done =====&quot;)
+    print(f&quot;K: {K}&quot;)
+    print(f&quot;features: {len(feature_names)}&quot;)
+    print(f&quot;train: {X_train_tokens.shape}&quot;)
+    print(f&quot;val:   {X_val_tokens.shape}&quot;)
+    print(f&quot;dataset:  {out_npz}&quot;)
+    print(f&quot;metadata: {out_meta}&quot;)
+
+
+if __name__ == &quot;__main__&quot;:
+    main()</file><file path="02_src/03_embedding.py">#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+&quot;&quot;&quot;
+final_pipeline/embedding.py
+
+Embedding layer only.
+
+Inputs:
+    tokens: LongTensor [B, F], values in [0, K]
+    z_values: optional FloatTensor [B, F], continuous preprocessed z in [0,1]
+
+Output:
+    cell_embeddings: FloatTensor [B, F, value_dim + feature_dim]
+
+Design:
+    V(cell) = V(value) || V(feature)
+
+    V(value) = [z_continuous] || learnable_value_bin_embedding
+        - first coordinate preserves continuous numeric signal when z_values
+          is provided by build_token.py as X_*_z
+        - if z_values is not provided, falls back to token / K
+        - remaining coordinates are learnable but looked up through coarse bins
+          so K does not force one rare embedding vector per token
+
+    V(feature) = learnable feature identity embedding
+&quot;&quot;&quot;
+
+from __future__ import annotations
+
+from typing import Optional
+
+import torch
+import torch.nn as nn
+
+try:
+    import config as CFG
+except Exception:
+    CFG = None
+
+
+class ValueFeatureConcatEmbedding(nn.Module):
+    &quot;&quot;&quot;
+    Token + feature embedding with an explicit numeric value coordinate.
+
+    tokens: [B, F]
+    z_values: optional [B, F]
+    output: [B, F, cell_dim]
+    &quot;&quot;&quot;
+
+    def __init__(
+        self,
+        *,
+        K: Optional[int] = None,
+        n_features: int,
+        value_dim: Optional[int] = None,
+        feature_dim: Optional[int] = None,
+        value_random_std: Optional[float] = None,
+        value_num_bins: Optional[int] = None,
+    ) -&gt; None:
+        super().__init__()
+
+        if K is None:
+            K = int(getattr(CFG, &quot;TOKEN_K&quot;, 20000))
+        if value_dim is None:
+            value_dim = int(getattr(CFG, &quot;VALUE_EMBED_DIM&quot;, 32))
+        if feature_dim is None:
+            feature_dim = int(getattr(CFG, &quot;FEATURE_EMBED_DIM&quot;, 32))
+        if value_random_std is None:
+            value_random_std = float(getattr(CFG, &quot;VALUE_RANDOM_STD&quot;, 0.02))
+        if value_num_bins is None:
+            value_num_bins = int(getattr(CFG, &quot;VALUE_NUM_BINS&quot;, 128))
+
+        if K &lt;= 0:
+            raise ValueError(&quot;K must be positive.&quot;)
+        if n_features &lt;= 0:
+            raise ValueError(&quot;n_features must be positive.&quot;)
+        if value_dim &lt; 1:
+            raise ValueError(&quot;value_dim must be &gt;= 1 because the first coordinate is numeric z.&quot;)
+        if feature_dim &lt; 1:
+            raise ValueError(&quot;feature_dim must be &gt;= 1.&quot;)
+        if value_num_bins is None or int(value_num_bins) &lt;= 0:
+            value_num_bins = int(K) + 1
+
+        self.K = int(K)
+        self.n_features = int(n_features)
+        self.value_dim = int(value_dim)
+        self.feature_dim = int(feature_dim)
+        self.value_random_dim = int(value_dim - 1)
+        self.cell_dim = int(value_dim + feature_dim)
+        self.value_num_bins = int(min(max(int(value_num_bins), 1), self.K + 1))
+
+        if self.value_random_dim &gt; 0:
+            self.value_random_embedding = nn.Embedding(self.value_num_bins, self.value_random_dim)
+            nn.init.normal_(self.value_random_embedding.weight, mean=0.0, std=value_random_std)
+        else:
+            self.value_random_embedding = None
+
+        self.feature_embedding = nn.Embedding(self.n_features, self.feature_dim)
+        nn.init.normal_(self.feature_embedding.weight, mean=0.0, std=value_random_std)
+
+        self.register_buffer(
+            &quot;default_feature_ids&quot;,
+            torch.arange(self.n_features, dtype=torch.long),
+            persistent=False,
+        )
+
+    def _numeric_z(self, tok: torch.Tensor, z_values: Optional[torch.Tensor]) -&gt; torch.Tensor:
+        if z_values is None:
+            z = tok.float() / float(self.K)
+        else:
+            if z_values.ndim != 2:
+                raise ValueError(f&quot;z_values must have shape [B, F], got {tuple(z_values.shape)}&quot;)
+            if tuple(z_values.shape) != tuple(tok.shape):
+                raise ValueError(f&quot;z_values shape must match tokens, got {tuple(z_values.shape)} vs {tuple(tok.shape)}&quot;)
+            z = z_values.to(device=tok.device, dtype=torch.float32)
+        return z.clamp(0.0, 1.0)
+
+    def forward(
+        self,
+        tokens: torch.Tensor,
+        z_values: Optional[torch.Tensor] = None,
+        feature_ids: Optional[torch.Tensor] = None,
+    ) -&gt; torch.Tensor:
+        &quot;&quot;&quot;
+        tokens:
+            LongTensor [B, F]
+
+        z_values:
+            optional FloatTensor [B, F]. If provided, this is used as the
+            first monotonic coordinate and as the source for coarse bin lookup.
+            This preserves pre-rounding numeric detail from X_*_z.
+
+        feature_ids:
+            optional LongTensor [F] or [B, F]. If None, use [0, 1, ..., F-1].
+        &quot;&quot;&quot;
+        if tokens.ndim != 2:
+            raise ValueError(f&quot;tokens must have shape [B, F], got {tuple(tokens.shape)}&quot;)
+
+        B, F = tokens.shape
+        if F != self.n_features:
+            raise ValueError(f&quot;Expected F={self.n_features}, got F={F}&quot;)
+
+        tok = tokens.long().clamp(0, self.K)
+        z_scalar = self._numeric_z(tok, z_values)  # [B, F]
+        z = z_scalar.unsqueeze(-1)  # [B, F, 1]
+
+        if self.value_random_embedding is None:
+            value_emb = z
+        else:
+            # If z_values is None and bins == K+1, this exactly matches the old
+            # token-id lookup. Otherwise, multiple numeric positions share a
+            # learnable bin while z still preserves continuous magnitude.
+            if z_values is None and self.value_num_bins == self.K + 1:
+                value_bin = tok
+            else:
+                value_bin = torch.round(z_scalar * float(self.value_num_bins - 1)).long()
+                value_bin = value_bin.clamp(0, self.value_num_bins - 1)
+            value_random = self.value_random_embedding(value_bin)
+            value_emb = torch.cat([z, value_random], dim=-1)
+
+        if feature_ids is None:
+            fid = self.default_feature_ids.unsqueeze(0).expand(B, F)
+        else:
+            fid = feature_ids.long()
+            if fid.ndim == 1:
+                if fid.numel() != F:
+                    raise ValueError(f&quot;feature_ids length must be {F}, got {fid.numel()}&quot;)
+                fid = fid.unsqueeze(0).expand(B, F)
+            elif fid.ndim == 2:
+                if tuple(fid.shape) != (B, F):
+                    raise ValueError(f&quot;feature_ids shape must be [B,F]={B,F}, got {tuple(fid.shape)}&quot;)
+            else:
+                raise ValueError(&quot;feature_ids must be None, [F], or [B,F].&quot;)
+            fid = fid.clamp(0, self.n_features - 1).to(tok.device)
+
+        feature_emb = self.feature_embedding(fid)
+        return torch.cat([value_emb, feature_emb], dim=-1)
+
+    def extra_repr(self) -&gt; str:
+        return (
+            f&quot;K={self.K}, n_features={self.n_features}, &quot;
+            f&quot;value_dim={self.value_dim}, feature_dim={self.feature_dim}, &quot;
+            f&quot;value_num_bins={self.value_num_bins}, cell_dim={self.cell_dim}&quot;
+        )
+
+
+def smoke_test() -&gt; None:
+    emb = ValueFeatureConcatEmbedding(K=500, n_features=4, value_dim=8, feature_dim=8, value_num_bins=128)
+    x = torch.tensor([[0, 62, 250, 500], [5, 62, 251, 499]], dtype=torch.long)
+    z_cont = torch.tensor([[0.0, 0.12341, 0.5001, 1.0], [0.01, 0.12395, 0.5022, 0.998]], dtype=torch.float32)
+    y_tok = emb(x)
+    y_z = emb(x, z_values=z_cont)
+    print(&quot;input tokens:&quot;, tuple(x.shape))
+    print(&quot;output token-only:&quot;, tuple(y_tok.shape))
+    print(&quot;output with z:&quot;, tuple(y_z.shape))
+    print(&quot;cell_dim:&quot;, emb.cell_dim)
+    print(&quot;value_num_bins:&quot;, emb.value_num_bins)
+    print(&quot;token-only numeric coords sample0:&quot;, y_tok[0, :, 0].detach().cpu().tolist())
+    print(&quot;continuous numeric coords sample0:&quot;, y_z[0, :, 0].detach().cpu().tolist())
+
+
+if __name__ == &quot;__main__&quot;:
+    smoke_test()</file><file path="02_src/04_model.py">#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+&quot;&quot;&quot;
+final_pipeline/model.py
+
+Tabular attention classifier.
+
+Design:
+    tokens [B, F] + optional z_values [B, F]
+      -&gt; embedding.py: ValueFeatureConcatEmbedding
+      -&gt; cell_emb [B, F, cell_dim]
+      -&gt; input projection cell_dim -&gt; hidden_dim
+      -&gt; add learnable CLS token
+      -&gt; PyTorch TransformerEncoder across feature tokens
+      -&gt; take CLS output
+      -&gt; classifier head
+      -&gt; logits [B, num_classes]
+
+Notes:
+    - Attention is across features inside each sample, not across samples.
+    - Uses PyTorch nn.TransformerEncoderLayer / nn.TransformerEncoder.
+    - Does not apply softmax in forward. Training should use CrossEntropyLoss on logits.
+&quot;&quot;&quot;
+
+from __future__ import annotations
+
+from typing import Dict, Optional
+
+import torch
+import torch.nn as nn
+
+try:
+    import config as CFG
+except Exception:
+    CFG = None
+
+import importlib.util as _importlib_util
+from pathlib import Path as _Path
+
+_embedding_path = _Path(__file__).resolve().with_name(&quot;03_embedding.py&quot;)
+_embedding_spec = _importlib_util.spec_from_file_location(&quot;_dacn_03_embedding&quot;, _embedding_path)
+_embedding_mod = _importlib_util.module_from_spec(_embedding_spec)
+assert _embedding_spec is not None and _embedding_spec.loader is not None
+_embedding_spec.loader.exec_module(_embedding_mod)
+ValueFeatureConcatEmbedding = _embedding_mod.ValueFeatureConcatEmbedding
+
+
+def _cfg(name: str, default):
+    if CFG is None:
+        return default
+    return getattr(CFG, name, default)
+
+
+class TabularTransformerClassifier(nn.Module):
+    &quot;&quot;&quot;
+    Tabular Transformer with feature-level self-attention and CLS pooling.
+
+    Input:
+        tokens: LongTensor [B, F]
+        z_values: optional FloatTensor [B, F]
+
+    Output:
+        logits: FloatTensor [B, num_classes]
+
+    Optional:
+        return_info=True returns debug info with embeddings/CLS representation shapes.
+    &quot;&quot;&quot;
+
+    def __init__(
+        self,
+        *,
+        K: Optional[int] = None,
+        n_features: int,
+        num_classes: int,
+        value_dim: Optional[int] = None,
+        feature_dim: Optional[int] = None,
+        value_num_bins: Optional[int] = None,
+        hidden_dim: Optional[int] = None,
+        num_layers: Optional[int] = None,
+        num_heads: Optional[int] = None,
+        dropout: Optional[float] = None,
+        classifier_hidden_dim: Optional[int] = None,
+        classifier_dropout: Optional[float] = None,
+        norm_first: Optional[bool] = None,
+        activation: Optional[str] = None,
+    ) -&gt; None:
+        super().__init__()
+
+        if K is None:
+            K = int(_cfg(&quot;TOKEN_K&quot;, 20000))
+        if value_dim is None:
+            value_dim = int(_cfg(&quot;VALUE_EMBED_DIM&quot;, 32))
+        if feature_dim is None:
+            feature_dim = int(_cfg(&quot;FEATURE_EMBED_DIM&quot;, 32))
+        if value_num_bins is None:
+            value_num_bins = int(_cfg(&quot;VALUE_NUM_BINS&quot;, 512))
+        if hidden_dim is None:
+            hidden_dim = int(_cfg(&quot;MODEL_HIDDEN_DIM&quot;, 128))
+        if num_layers is None:
+            num_layers = int(_cfg(&quot;MODEL_NUM_LAYERS&quot;, 3))
+        if num_heads is None:
+            num_heads = int(_cfg(&quot;MODEL_NUM_HEADS&quot;, 4))
+        if dropout is None:
+            dropout = float(_cfg(&quot;MODEL_DROPOUT&quot;, 0.1))
+        if classifier_hidden_dim is None:
+            classifier_hidden_dim = int(_cfg(&quot;CLASSIFIER_HIDDEN_DIM&quot;, hidden_dim))
+        if classifier_dropout is None:
+            classifier_dropout = float(_cfg(&quot;CLASSIFIER_DROPOUT&quot;, dropout))
+        if norm_first is None:
+            norm_first = bool(_cfg(&quot;TRANSFORMER_NORM_FIRST&quot;, True))
+        if activation is None:
+            activation = str(_cfg(&quot;MODEL_ACTIVATION&quot;, &quot;gelu&quot;))
+
+        if n_features &lt;= 0:
+            raise ValueError(&quot;n_features must be positive.&quot;)
+        if num_classes &lt;= 1:
+            raise ValueError(&quot;num_classes must be &gt; 1.&quot;)
+        if hidden_dim &lt;= 0:
+            raise ValueError(&quot;hidden_dim must be positive.&quot;)
+        if num_heads &lt;= 0:
+            raise ValueError(&quot;num_heads must be positive.&quot;)
+        if hidden_dim % num_heads != 0:
+            raise ValueError(
+                f&quot;hidden_dim must be divisible by num_heads, got &quot;
+                f&quot;hidden_dim={hidden_dim}, num_heads={num_heads}&quot;
+            )
+        if num_layers &lt;= 0:
+            raise ValueError(&quot;num_layers must be positive.&quot;)
+
+        self.K = int(K)
+        self.n_features = int(n_features)
+        self.num_classes = int(num_classes)
+        self.value_dim = int(value_dim)
+        self.feature_dim = int(feature_dim)
+        if value_num_bins is None or int(value_num_bins) &lt;= 0:
+            value_num_bins = int(K) + 1
+        self.value_num_bins = int(min(max(int(value_num_bins), 1), int(K) + 1))
+        self.cell_dim = int(value_dim + feature_dim)
+        self.hidden_dim = int(hidden_dim)
+        self.num_layers = int(num_layers)
+        self.num_heads = int(num_heads)
+        self.dropout_p = float(dropout)
+        self.classifier_hidden_dim = int(classifier_hidden_dim)
+        self.norm_first = bool(norm_first)
+        self.activation = activation
+
+        self.embedding = ValueFeatureConcatEmbedding(
+            K=self.K,
+            n_features=self.n_features,
+            value_dim=self.value_dim,
+            feature_dim=self.feature_dim,
+            value_num_bins=self.value_num_bins,
+        )
+
+        self.input_proj = nn.Sequential(
+            nn.LayerNorm(self.cell_dim),
+            nn.Linear(self.cell_dim, self.hidden_dim),
+        )
+
+        # Learnable CLS token in hidden space.
+        self.cls_token = nn.Parameter(torch.zeros(1, 1, self.hidden_dim))
+        nn.init.normal_(self.cls_token, mean=0.0, std=0.02)
+
+        encoder_layer = nn.TransformerEncoderLayer(
+            d_model=self.hidden_dim,
+            nhead=self.num_heads,
+            dim_feedforward=self.hidden_dim * 4,
+            dropout=self.dropout_p,
+            activation=self.activation,
+            batch_first=True,
+            norm_first=self.norm_first,
+        )
+
+        self.encoder = nn.TransformerEncoder(
+            encoder_layer=encoder_layer,
+            num_layers=self.num_layers,
+            norm=nn.LayerNorm(self.hidden_dim),
+        )
+
+        self.classifier = nn.Sequential(
+            nn.LayerNorm(self.hidden_dim),
+            nn.Linear(self.hidden_dim, self.classifier_hidden_dim),
+            nn.GELU(),
+            nn.Dropout(float(classifier_dropout)),
+            nn.Linear(self.classifier_hidden_dim, self.num_classes),
+        )
+
+    def forward(
+        self,
+        tokens: torch.Tensor,
+        z_values: Optional[torch.Tensor] = None,
+        *,
+        return_info: bool = False,
+    ):
+        &quot;&quot;&quot;
+        tokens:
+            LongTensor [B, F]
+
+        z_values:
+            optional FloatTensor [B, F] containing continuous preprocessed z.
+            If provided, embedding uses this instead of token/K for the numeric
+            coordinate and coarse value-bin lookup.
+
+        return:
+            logits [B, C]
+            or (logits, info) if return_info=True
+        &quot;&quot;&quot;
+        if tokens.ndim != 2:
+            raise ValueError(f&quot;tokens must have shape [B, F], got {tuple(tokens.shape)}&quot;)
+
+        B, F = tokens.shape
+        if F != self.n_features:
+            raise ValueError(f&quot;Expected F={self.n_features}, got F={F}&quot;)
+
+        # [B, F, cell_dim]
+        cell_emb = self.embedding(tokens, z_values=z_values)
+
+        # [B, F, hidden_dim]
+        x = self.input_proj(cell_emb)
+
+        # [B, 1, hidden_dim]
+        cls = self.cls_token.expand(B, 1, self.hidden_dim)
+
+        # [B, F+1, hidden_dim]
+        x = torch.cat([cls, x], dim=1)
+
+        # Self-attention across CLS + feature tokens.
+        encoded = self.encoder(x)
+
+        # [B, hidden_dim]
+        cls_out = encoded[:, 0, :]
+
+        # [B, num_classes]
+        logits = self.classifier(cls_out)
+
+        if return_info:
+            info: Dict[str, object] = {
+                &quot;cell_emb_shape&quot;: tuple(cell_emb.shape),
+                &quot;encoded_shape&quot;: tuple(encoded.shape),
+                &quot;cls_out_shape&quot;: tuple(cls_out.shape),
+                &quot;cell_dim&quot;: self.cell_dim,
+                &quot;value_num_bins&quot;: self.value_num_bins,
+                &quot;uses_continuous_z&quot;: bool(z_values is not None),
+                &quot;hidden_dim&quot;: self.hidden_dim,
+                &quot;num_layers&quot;: self.num_layers,
+                &quot;num_heads&quot;: self.num_heads,
+                &quot;norm_first&quot;: self.norm_first,
+            }
+            return logits, info
+
+        return logits
+
+    def extra_repr(self) -&gt; str:
+        return (
+            f&quot;K={self.K}, n_features={self.n_features}, num_classes={self.num_classes}, &quot;
+            f&quot;cell_dim={self.cell_dim}, value_num_bins={self.value_num_bins}, hidden_dim={self.hidden_dim}, &quot;
+            f&quot;layers={self.num_layers}, heads={self.num_heads}, norm_first={self.norm_first}&quot;
+        )
+
+
+def build_model_from_metadata(
+    *,
+    metadata: Dict[str, object],
+    K: Optional[int] = None,
+    **overrides,
+) -&gt; TabularTransformerClassifier:
+    &quot;&quot;&quot;
+    Helper for train.py.
+
+    metadata should be loaded from token_metadata_K{K}.json.
+    It must contain:
+        - n_features
+        - label_mapping
+    &quot;&quot;&quot;
+    n_features = int(metadata[&quot;n_features&quot;])
+    label_mapping = metadata[&quot;label_mapping&quot;]
+    num_classes = int(len(label_mapping))
+
+    return TabularTransformerClassifier(
+        K=K if K is not None else int(metadata.get(&quot;K&quot;, _cfg(&quot;TOKEN_K&quot;, 20000))),
+        n_features=n_features,
+        num_classes=num_classes,
+        **overrides,
+    )
+
+
+def smoke_test() -&gt; None:
+    torch.manual_seed(7)
+
+    B = 8
+    F = 55
+    K = 20000
+    C = 16
+
+    model = TabularTransformerClassifier(
+        K=K,
+        n_features=F,
+        num_classes=C,
+        value_dim=32,
+        feature_dim=32,
+        value_num_bins=512,
+        hidden_dim=128,
+        num_layers=3,
+        num_heads=4,
+        dropout=0.1,
+        norm_first=True,
+    )
+
+    x = torch.randint(low=0, high=K + 1, size=(B, F), dtype=torch.long)
+    z = torch.clamp(x.float() / float(K) + 0.0001 * torch.randn(B, F), 0.0, 1.0)
+    logits, info = model(x, z_values=z, return_info=True)
+
+    print(&quot;input tokens:&quot;, tuple(x.shape))
+    print(&quot;input z:&quot;, tuple(z.shape))
+    print(&quot;logits:&quot;, tuple(logits.shape))
+    print(&quot;info:&quot;, info)
+    print(&quot;model:&quot;, model)
+
+
+if __name__ == &quot;__main__&quot;:
+    smoke_test()</file><file path="02_src/05_train.py">#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+&quot;&quot;&quot;
+final_pipeline/train.py
+
+Train TabularTransformerClassifier with detailed diagnostic logging.
+
+Inputs:
+    final_pipeline/outputs/build_token/K{K}/token_dataset_K{K}.npz
+    final_pipeline/outputs/build_token/K{K}/token_metadata_K{K}.json
+
+Outputs under:
+    final_pipeline/outputs/train_runs/K{K}/{run_name}/
+
+Logs:
+    - config.json
+    - history.csv
+    - best_model.pt
+    - last_model.pt
+    - val_classification_report_best.json
+    - train_classification_report_best.json
+    - val_confusion_matrix_best.csv/json
+    - train_confusion_matrix_best.csv/json
+    - val_predictions_best.csv
+    - diagnosis_summary.json
+
+Purpose:
+    Make failures diagnosable:
+    - train vs val gap
+    - underfit vs overfit hints
+    - per-class weak points
+    - class distribution / prediction distribution
+    - exact config, seed, dataset paths
+&quot;&quot;&quot;
+
+from __future__ import annotations
+
+import argparse
+import csv
+import json
+import math
+import os
+import random
+import time
+from datetime import datetime
+from pathlib import Path
+from typing import Dict, List, Tuple
+
+import numpy as np
+import torch
+import torch.nn as nn
+from torch.utils.data import DataLoader, Dataset
+
+import config as CFG
+import importlib.util as _importlib_util
+
+_model_path = Path(__file__).resolve().with_name(&quot;04_model.py&quot;)
+_model_spec = _importlib_util.spec_from_file_location(&quot;_dacn_04_model&quot;, _model_path)
+_model_mod = _importlib_util.module_from_spec(_model_spec)
+assert _model_spec is not None and _model_spec.loader is not None
+_model_spec.loader.exec_module(_model_mod)
+TabularTransformerClassifier = _model_mod.TabularTransformerClassifier
+
+
+def cfg(name: str, default):
+    return getattr(CFG, name, default)
+
+
+def parse_args() -&gt; argparse.Namespace:
+    p = argparse.ArgumentParser(description=&quot;Train tabular transformer on token dataset.&quot;)
+
+    p.add_argument(&quot;--K&quot;, type=int, default=int(cfg(&quot;TOKEN_K&quot;, 20000)))
+    p.add_argument(&quot;--dataset-npz&quot;, default=&quot;&quot;)
+    p.add_argument(&quot;--metadata-json&quot;, default=&quot;&quot;)
+    p.add_argument(&quot;--out-root&quot;, default=str(cfg(&quot;TRAIN_RUN_DIR&quot;, cfg(&quot;OUTPUT_ROOT&quot;, Path(&quot;outputs&quot;)) / &quot;train_runs&quot;)))
+    p.add_argument(&quot;--run-name&quot;, default=&quot;&quot;)
+
+    p.add_argument(&quot;--seed&quot;, type=int, default=int(cfg(&quot;TRAIN_SEED&quot;, 42)))
+    p.add_argument(&quot;--device&quot;, default=str(cfg(&quot;TRAIN_DEVICE&quot;, &quot;auto&quot;)))
+
+    p.add_argument(&quot;--epochs&quot;, type=int, default=int(cfg(&quot;TRAIN_EPOCHS&quot;, 80)))
+    p.add_argument(&quot;--batch-size&quot;, type=int, default=int(cfg(&quot;TRAIN_BATCH_SIZE&quot;, 256)))
+    p.add_argument(&quot;--lr&quot;, type=float, default=float(cfg(&quot;TRAIN_LR&quot;, 1e-3)))
+    p.add_argument(&quot;--weight-decay&quot;, type=float, default=float(cfg(&quot;TRAIN_WEIGHT_DECAY&quot;, 1e-4)))
+    p.add_argument(&quot;--scheduler&quot;, choices=[&quot;none&quot;, &quot;warmup_cosine&quot;], default=str(cfg(&quot;TRAIN_SCHEDULER&quot;, &quot;warmup_cosine&quot;)))
+    p.add_argument(&quot;--warmup-epochs&quot;, type=int, default=int(cfg(&quot;TRAIN_WARMUP_EPOCHS&quot;, 8)))
+    p.add_argument(&quot;--min-lr-ratio&quot;, type=float, default=float(cfg(&quot;TRAIN_MIN_LR_RATIO&quot;, 0.05)))
+    p.add_argument(&quot;--patience&quot;, type=int, default=int(cfg(&quot;TRAIN_PATIENCE&quot;, 12)))
+    p.add_argument(&quot;--min-delta&quot;, type=float, default=float(cfg(&quot;TRAIN_MIN_DELTA&quot;, 1e-4)))
+    p.add_argument(&quot;--num-workers&quot;, type=int, default=int(cfg(&quot;TRAIN_NUM_WORKERS&quot;, 0)))
+    p.add_argument(&quot;--grad-clip-norm&quot;, type=float, default=float(cfg(&quot;TRAIN_GRAD_CLIP_NORM&quot;, 1.0)))
+    p.add_argument(&quot;--use-class-weights&quot;, action=argparse.BooleanOptionalAction, default=bool(cfg(&quot;USE_CLASS_WEIGHTS&quot;, True)))
+
+    p.add_argument(&quot;--value-dim&quot;, type=int, default=int(cfg(&quot;VALUE_EMBED_DIM&quot;, 32)))
+    p.add_argument(&quot;--feature-dim&quot;, type=int, default=int(cfg(&quot;FEATURE_EMBED_DIM&quot;, 32)))
+    p.add_argument(&quot;--value-num-bins&quot;, type=int, default=int(cfg(&quot;VALUE_NUM_BINS&quot;, 512)))
+    p.add_argument(&quot;--hidden-dim&quot;, type=int, default=int(cfg(&quot;MODEL_HIDDEN_DIM&quot;, 128)))
+    p.add_argument(&quot;--num-layers&quot;, type=int, default=int(cfg(&quot;MODEL_NUM_LAYERS&quot;, 3)))
+    p.add_argument(&quot;--num-heads&quot;, type=int, default=int(cfg(&quot;MODEL_NUM_HEADS&quot;, 4)))
+    p.add_argument(&quot;--dropout&quot;, type=float, default=float(cfg(&quot;MODEL_DROPOUT&quot;, 0.1)))
+    p.add_argument(&quot;--classifier-hidden-dim&quot;, type=int, default=int(cfg(&quot;CLASSIFIER_HIDDEN_DIM&quot;, 128)))
+    p.add_argument(&quot;--classifier-dropout&quot;, type=float, default=float(cfg(&quot;CLASSIFIER_DROPOUT&quot;, 0.1)))
+    p.add_argument(&quot;--norm-first&quot;, action=argparse.BooleanOptionalAction, default=bool(cfg(&quot;TRANSFORMER_NORM_FIRST&quot;, True)))
+
+    return p.parse_args()
+
+
+def default_dataset_path(K: int) -&gt; Path:
+    if hasattr(CFG, &quot;token_dataset_npz_path&quot;):
+        return CFG.token_dataset_npz_path(K)
+    return cfg(&quot;BUILD_TOKEN_DIR&quot;, cfg(&quot;OUTPUT_ROOT&quot;, Path(&quot;outputs&quot;)) / &quot;build_token&quot;) / f&quot;K{K}&quot; / f&quot;token_dataset_K{K}.npz&quot;
+
+
+def default_metadata_path(K: int) -&gt; Path:
+    if hasattr(CFG, &quot;token_metadata_json_path&quot;):
+        return CFG.token_metadata_json_path(K)
+    return cfg(&quot;BUILD_TOKEN_DIR&quot;, cfg(&quot;OUTPUT_ROOT&quot;, Path(&quot;outputs&quot;)) / &quot;build_token&quot;) / f&quot;K{K}&quot; / f&quot;token_metadata_K{K}.json&quot;
+
+
+def set_seed(seed: int) -&gt; None:
+    random.seed(seed)
+    np.random.seed(seed)
+    torch.manual_seed(seed)
+    torch.cuda.manual_seed_all(seed)
+
+    # Reproducible enough for debugging.
+    torch.backends.cudnn.benchmark = False
+    torch.backends.cudnn.deterministic = True
+
+
+def pick_device(device_arg: str) -&gt; torch.device:
+    if device_arg == &quot;auto&quot;:
+        return torch.device(&quot;cuda&quot; if torch.cuda.is_available() else &quot;cpu&quot;)
+    return torch.device(device_arg)
+
+
+class TokenDataset(Dataset):
+    def __init__(self, X_tokens: np.ndarray, X_z: np.ndarray, y: np.ndarray) -&gt; None:
+        if X_tokens.ndim != 2:
+            raise ValueError(f&quot;X_tokens must be [N,F], got {X_tokens.shape}&quot;)
+        if X_z.ndim != 2:
+            raise ValueError(f&quot;X_z must be [N,F], got {X_z.shape}&quot;)
+        if y.ndim != 1:
+            raise ValueError(f&quot;y must be [N], got {y.shape}&quot;)
+        if X_tokens.shape != X_z.shape:
+            raise ValueError(f&quot;X_tokens/X_z shape mismatch: {X_tokens.shape} vs {X_z.shape}&quot;)
+        if X_tokens.shape[0] != y.shape[0]:
+            raise ValueError(f&quot;X/y row mismatch: {X_tokens.shape[0]} vs {y.shape[0]}&quot;)
+        self.X = torch.as_tensor(X_tokens, dtype=torch.long)
+        self.Z = torch.as_tensor(X_z, dtype=torch.float32)
+        self.y = torch.as_tensor(y, dtype=torch.long)
+
+    def __len__(self) -&gt; int:
+        return int(self.X.shape[0])
+
+    def __getitem__(self, idx: int):
+        return self.X[idx], self.Z[idx], self.y[idx]
+
+def load_token_dataset(dataset_path: Path, metadata_path: Path) -&gt; Tuple[Dict[str, np.ndarray], Dict[str, object]]:
+    if not dataset_path.exists():
+        raise FileNotFoundError(
+            f&quot;token dataset not found: {dataset_path}\n&quot;
+            f&quot;Run: python -u final_pipeline/build_token.py&quot;
+        )
+    if not metadata_path.exists():
+        raise FileNotFoundError(f&quot;token metadata not found: {metadata_path}&quot;)
+
+    data = dict(np.load(dataset_path, allow_pickle=True))
+    meta = json.loads(metadata_path.read_text(encoding=&quot;utf-8&quot;))
+
+    required = [&quot;X_train_tokens&quot;, &quot;y_train&quot;, &quot;X_val_tokens&quot;, &quot;y_val&quot;]
+    missing = [k for k in required if k not in data]
+    if missing:
+        raise ValueError(f&quot;dataset npz missing arrays: {missing}&quot;)
+
+    return data, meta
+
+
+def compute_class_weights(y_train: np.ndarray, num_classes: int) -&gt; torch.Tensor:
+    counts = np.bincount(y_train.astype(int), minlength=num_classes).astype(np.float64)
+    total = float(counts.sum())
+    weights = np.zeros(num_classes, dtype=np.float32)
+    for i, c in enumerate(counts):
+        if c &lt;= 0:
+            weights[i] = 0.0
+        else:
+            weights[i] = total / (num_classes * c)
+    return torch.as_tensor(weights, dtype=torch.float32)
+
+
+def confusion_matrix_np(y_true: np.ndarray, y_pred: np.ndarray, num_classes: int) -&gt; np.ndarray:
+    cm = np.zeros((num_classes, num_classes), dtype=np.int64)
+    for t, p in zip(y_true.astype(int), y_pred.astype(int)):
+        if 0 &lt;= t &lt; num_classes and 0 &lt;= p &lt; num_classes:
+            cm[t, p] += 1
+    return cm
+
+
+def metrics_from_predictions(
+    y_true: np.ndarray,
+    y_pred: np.ndarray,
+    num_classes: int,
+    label_names: List[str],
+) -&gt; Dict[str, object]:
+    cm = confusion_matrix_np(y_true, y_pred, num_classes)
+    total = int(cm.sum())
+    correct = int(np.trace(cm))
+    acc = float(correct / total) if total else 0.0
+
+    per_class: Dict[str, Dict[str, float]] = {}
+    f1s = []
+    weights = []
+
+    for i in range(num_classes):
+        tp = float(cm[i, i])
+        fp = float(cm[:, i].sum() - cm[i, i])
+        fn = float(cm[i, :].sum() - cm[i, i])
+        support = int(cm[i, :].sum())
+
+        precision = float(tp / (tp + fp)) if (tp + fp) &gt; 0 else 0.0
+        recall = float(tp / (tp + fn)) if (tp + fn) &gt; 0 else 0.0
+        f1 = float(2.0 * precision * recall / (precision + recall)) if (precision + recall) &gt; 0 else 0.0
+
+        name = label_names[i] if i &lt; len(label_names) else str(i)
+        per_class[name] = {
+            &quot;class_id&quot;: int(i),
+            &quot;precision&quot;: precision,
+            &quot;recall&quot;: recall,
+            &quot;f1&quot;: f1,
+            &quot;support&quot;: support,
+        }
+
+        f1s.append(f1)
+        weights.append(support)
+
+    macro_f1 = float(np.mean(f1s)) if f1s else 0.0
+    weighted_f1 = float(np.average(f1s, weights=weights)) if sum(weights) &gt; 0 else 0.0
+
+    true_counts = {label_names[i] if i &lt; len(label_names) else str(i): int(cm[i, :].sum()) for i in range(num_classes)}
+    pred_counts = {label_names[i] if i &lt; len(label_names) else str(i): int(cm[:, i].sum()) for i in range(num_classes)}
+
+    return {
+        &quot;accuracy&quot;: acc,
+        &quot;macro_f1&quot;: macro_f1,
+        &quot;weighted_f1&quot;: weighted_f1,
+        &quot;per_class&quot;: per_class,
+        &quot;true_counts&quot;: true_counts,
+        &quot;pred_counts&quot;: pred_counts,
+        &quot;confusion_matrix&quot;: cm.tolist(),
+    }
+
+
+@torch.no_grad()
+def evaluate(
+    model: nn.Module,
+    loader: DataLoader,
+    criterion: nn.Module,
+    device: torch.device,
+    num_classes: int,
+    label_names: List[str],
+    collect_probs: bool = False,
+) -&gt; Dict[str, object]:
+    model.eval()
+
+    losses = []
+    all_true = []
+    all_pred = []
+    all_conf = []
+    all_prob = []
+
+    for X, Z, y in loader:
+        X = X.to(device, non_blocking=True)
+        Z = Z.to(device, non_blocking=True)
+        y = y.to(device, non_blocking=True)
+
+        logits = model(X, z_values=Z)
+        loss = criterion(logits, y)
+
+        probs = torch.softmax(logits, dim=1)
+        conf, pred = torch.max(probs, dim=1)
+
+        losses.append(float(loss.item()) * int(X.size(0)))
+        all_true.append(y.detach().cpu().numpy())
+        all_pred.append(pred.detach().cpu().numpy())
+        all_conf.append(conf.detach().cpu().numpy())
+        if collect_probs:
+            all_prob.append(probs.detach().cpu().numpy())
+
+    y_true = np.concatenate(all_true) if all_true else np.asarray([], dtype=np.int64)
+    y_pred = np.concatenate(all_pred) if all_pred else np.asarray([], dtype=np.int64)
+    conf = np.concatenate(all_conf) if all_conf else np.asarray([], dtype=np.float32)
+
+    metrics = metrics_from_predictions(y_true, y_pred, num_classes, label_names)
+    avg_loss = float(sum(losses) / max(len(y_true), 1))
+
+    out = {
+        &quot;loss&quot;: avg_loss,
+        &quot;y_true&quot;: y_true,
+        &quot;y_pred&quot;: y_pred,
+        &quot;confidence&quot;: conf,
+        **metrics,
+    }
+    if collect_probs:
+        out[&quot;probs&quot;] = np.concatenate(all_prob) if all_prob else np.zeros((0, num_classes), dtype=np.float32)
+    return out
+
+
+def compute_epoch_lr(
+    *,
+    base_lr: float,
+    epoch: int,
+    total_epochs: int,
+    scheduler_name: str,
+    warmup_epochs: int,
+    min_lr_ratio: float,
+) -&gt; float:
+    &quot;&quot;&quot;
+    Epoch-level LR schedule.
+
+    none:
+        lr = base_lr
+
+    warmup_cosine:
+        - warmup: linearly increase LR from base_lr/warmup_epochs to base_lr
+        - cosine: decay from base_lr to base_lr * min_lr_ratio
+
+    epoch is 1-indexed.
+    &quot;&quot;&quot;
+    if scheduler_name == &quot;none&quot;:
+        return float(base_lr)
+
+    if scheduler_name != &quot;warmup_cosine&quot;:
+        raise ValueError(f&quot;Unknown scheduler: {scheduler_name}&quot;)
+
+    total_epochs = max(int(total_epochs), 1)
+    warmup_epochs = max(int(warmup_epochs), 0)
+    min_lr_ratio = float(min(max(min_lr_ratio, 0.0), 1.0))
+
+    if warmup_epochs &gt; 0 and epoch &lt;= warmup_epochs:
+        return float(base_lr) * float(epoch) / float(warmup_epochs)
+
+    if total_epochs &lt;= warmup_epochs:
+        return float(base_lr)
+
+    progress = float(epoch - warmup_epochs) / float(max(total_epochs - warmup_epochs, 1))
+    progress = min(max(progress, 0.0), 1.0)
+    cosine = 0.5 * (1.0 + math.cos(math.pi * progress))
+    lr_ratio = min_lr_ratio + (1.0 - min_lr_ratio) * cosine
+    return float(base_lr) * float(lr_ratio)
+
+
+def set_optimizer_lr(optimizer: torch.optim.Optimizer, lr: float) -&gt; None:
+    for group in optimizer.param_groups:
+        group[&quot;lr&quot;] = float(lr)
+
+
+def train_one_epoch(
+    model: nn.Module,
+    loader: DataLoader,
+    criterion: nn.Module,
+    optimizer: torch.optim.Optimizer,
+    device: torch.device,
+    grad_clip_norm: float,
+) -&gt; float:
+    model.train()
+    total_loss = 0.0
+    total_n = 0
+
+    for X, Z, y in loader:
+        X = X.to(device, non_blocking=True)
+        Z = Z.to(device, non_blocking=True)
+        y = y.to(device, non_blocking=True)
+
+        optimizer.zero_grad(set_to_none=True)
+        logits = model(X, z_values=Z)
+        loss = criterion(logits, y)
+        loss.backward()
+
+        if grad_clip_norm and grad_clip_norm &gt; 0:
+            torch.nn.utils.clip_grad_norm_(model.parameters(), float(grad_clip_norm))
+
+        optimizer.step()
+
+        n = int(X.size(0))
+        total_loss += float(loss.item()) * n
+        total_n += n
+
+    return float(total_loss / max(total_n, 1))
+
+
+def write_history_csv(path: Path, rows: List[Dict[str, object]]) -&gt; None:
+    if not rows:
+        return
+    keys = list(rows[0].keys())
+    with path.open(&quot;w&quot;, newline=&quot;&quot;, encoding=&quot;utf-8&quot;) as f:
+        writer = csv.DictWriter(f, fieldnames=keys)
+        writer.writeheader()
+        writer.writerows(rows)
+
+
+def write_confusion_outputs(
+    out_dir: Path,
+    prefix: str,
+    report: Dict[str, object],
+    label_names: List[str],
+) -&gt; None:
+    cm = np.asarray(report[&quot;confusion_matrix&quot;], dtype=np.int64)
+
+    json_path = out_dir / f&quot;{prefix}_confusion_matrix_best.json&quot;
+    csv_path = out_dir / f&quot;{prefix}_confusion_matrix_best.csv&quot;
+
+    json_path.write_text(json.dumps({
+        &quot;labels&quot;: label_names,
+        &quot;matrix&quot;: cm.tolist(),
+        &quot;note&quot;: &quot;rows=true labels, columns=predicted labels&quot;,
+    }, ensure_ascii=False, indent=2), encoding=&quot;utf-8&quot;)
+
+    with csv_path.open(&quot;w&quot;, newline=&quot;&quot;, encoding=&quot;utf-8&quot;) as f:
+        writer = csv.writer(f)
+        writer.writerow([&quot;true\\pred&quot;] + label_names)
+        for i, row in enumerate(cm.tolist()):
+            writer.writerow([label_names[i] if i &lt; len(label_names) else str(i)] + row)
+
+
+def write_predictions_csv(
+    path: Path,
+    y_true: np.ndarray,
+    y_pred: np.ndarray,
+    confidence: np.ndarray,
+    label_names: List[str],
+) -&gt; None:
+    with path.open(&quot;w&quot;, newline=&quot;&quot;, encoding=&quot;utf-8&quot;) as f:
+        writer = csv.writer(f)
+        writer.writerow([&quot;sample_index&quot;, &quot;true_id&quot;, &quot;true_label&quot;, &quot;pred_id&quot;, &quot;pred_label&quot;, &quot;correct&quot;, &quot;confidence&quot;])
+        for idx, (t, p, c) in enumerate(zip(y_true.astype(int), y_pred.astype(int), confidence.astype(float))):
+            true_label = label_names[t] if 0 &lt;= t &lt; len(label_names) else str(t)
+            pred_label = label_names[p] if 0 &lt;= p &lt; len(label_names) else str(p)
+            writer.writerow([idx, int(t), true_label, int(p), pred_label, int(t == p), float(c)])
+
+
+def make_diagnosis_summary(
+    *,
+    best_epoch: int,
+    best_train: Dict[str, object],
+    best_val: Dict[str, object],
+    label_names: List[str],
+    args: argparse.Namespace,
+) -&gt; Dict[str, object]:
+    train_macro = float(best_train[&quot;macro_f1&quot;])
+    val_macro = float(best_val[&quot;macro_f1&quot;])
+    train_loss = float(best_train[&quot;loss&quot;])
+    val_loss = float(best_val[&quot;loss&quot;])
+    gap = train_macro - val_macro
+
+    per_class = best_val[&quot;per_class&quot;]
+    worst_classes = sorted(
+        [
+            {
+                &quot;label&quot;: label,
+                &quot;f1&quot;: float(m[&quot;f1&quot;]),
+                &quot;precision&quot;: float(m[&quot;precision&quot;]),
+                &quot;recall&quot;: float(m[&quot;recall&quot;]),
+                &quot;support&quot;: int(m[&quot;support&quot;]),
+            }
+            for label, m in per_class.items()
+        ],
+        key=lambda x: (x[&quot;f1&quot;], -x[&quot;support&quot;]),
+    )[:10]
+
+    hints = []
+
+    if train_macro &lt; 0.50 and val_macro &lt; 0.50:
+        hints.append({
+            &quot;pattern&quot;: &quot;train_low_val_low&quot;,
+            &quot;meaning&quot;: &quot;Could be underfit, optimization issue, or data/preprocess signal issue.&quot;,
+            &quot;next_checks&quot;: [
+                &quot;Increase epochs or check if loss keeps decreasing.&quot;,
+                &quot;Try hidden_dim 256 or num_layers 4 while watching train F1.&quot;,
+                &quot;Compare against known old/hybrid results without rerunning if already available.&quot;,
+                &quot;Inspect preprocess_token_compare for whether representation improved but class signal did not.&quot;,
+            ],
+        })
+
+    if train_macro &gt;= 0.70 and gap &gt; 0.15:
+        hints.append({
+            &quot;pattern&quot;: &quot;train_high_val_low&quot;,
+            &quot;meaning&quot;: &quot;Likely overfit or train/val distribution mismatch.&quot;,
+            &quot;next_checks&quot;: [
+                &quot;Increase dropout/weight decay.&quot;,
+                &quot;Reduce hidden_dim/layers.&quot;,
+                &quot;Check per-class train vs val support.&quot;,
+                &quot;Check preprocessing applied train-fitted mapping to val correctly.&quot;,
+            ],
+        })
+
+    if abs(gap) &lt;= 0.05 and val_macro &lt; 0.60:
+        hints.append({
+            &quot;pattern&quot;: &quot;small_gap_but_low_score&quot;,
+            &quot;meaning&quot;: &quot;Model may be consistently limited; not obvious overfit.&quot;,
+            &quot;next_checks&quot;: [
+                &quot;Try capacity sweep: hidden_dim 64/128/256.&quot;,
+                &quot;Try depth sweep: layers 1/2/3/4.&quot;,
+                &quot;Check whether class weighting helps/hurts macro-F1.&quot;,
+            ],
+        })
+
+    if val_loss &gt; train_loss * 1.5 and gap &gt; 0.10:
+        hints.append({
+            &quot;pattern&quot;: &quot;loss_gap&quot;,
+            &quot;meaning&quot;: &quot;Validation loss much higher than train loss.&quot;,
+            &quot;next_checks&quot;: [
+                &quot;Potential overfit.&quot;,
+                &quot;Check label imbalance and rare-class behavior.&quot;,
+                &quot;Try stronger regularization.&quot;,
+            ],
+        })
+
+    if not hints:
+        hints.append({
+            &quot;pattern&quot;: &quot;no_strong_single_pattern&quot;,
+            &quot;meaning&quot;: &quot;No single failure mode is obvious from aggregate metrics alone.&quot;,
+            &quot;next_checks&quot;: [
+                &quot;Use per-class report and confusion matrix.&quot;,
+                &quot;Run one-variable ablations only: hidden_dim, layers, heads, norm_first.&quot;,
+            ],
+        })
+
+    return {
+        &quot;best_epoch&quot;: int(best_epoch),
+        &quot;train&quot;: {
+            &quot;loss&quot;: train_loss,
+            &quot;accuracy&quot;: float(best_train[&quot;accuracy&quot;]),
+            &quot;macro_f1&quot;: train_macro,
+            &quot;weighted_f1&quot;: float(best_train[&quot;weighted_f1&quot;]),
+        },
+        &quot;val&quot;: {
+            &quot;loss&quot;: val_loss,
+            &quot;accuracy&quot;: float(best_val[&quot;accuracy&quot;]),
+            &quot;macro_f1&quot;: val_macro,
+            &quot;weighted_f1&quot;: float(best_val[&quot;weighted_f1&quot;]),
+        },
+        &quot;generalization_gap_macro_f1&quot;: float(gap),
+        &quot;worst_val_classes_by_f1&quot;: worst_classes,
+        &quot;diagnosis_hints_not_final_conclusion&quot;: hints,
+        &quot;ablation_order_recommended&quot;: [
+            &quot;Keep data fixed; run hidden_dim 64/128/256.&quot;,
+            &quot;Keep best hidden_dim; run num_layers 1/2/3/4.&quot;,
+            &quot;Keep best depth; run num_heads 2/4/8, ensuring hidden_dim % heads == 0.&quot;,
+            &quot;Compare --norm-first and --no-norm-first.&quot;,
+            &quot;Compare --use-class-weights and --no-use-class-weights.&quot;,
+        ],
+        &quot;model_config&quot;: {
+            &quot;value_dim&quot;: args.value_dim,
+            &quot;feature_dim&quot;: args.feature_dim,
+            &quot;cell_dim&quot;: args.value_dim + args.feature_dim,
+            &quot;value_num_bins&quot;: args.value_num_bins,
+            &quot;uses_continuous_z&quot;: True,
+            &quot;hidden_dim&quot;: args.hidden_dim,
+            &quot;num_layers&quot;: args.num_layers,
+            &quot;num_heads&quot;: args.num_heads,
+            &quot;dropout&quot;: args.dropout,
+            &quot;classifier_hidden_dim&quot;: args.classifier_hidden_dim,
+            &quot;classifier_dropout&quot;: args.classifier_dropout,
+            &quot;norm_first&quot;: args.norm_first,
+            &quot;use_class_weights&quot;: args.use_class_weights,
+            &quot;scheduler&quot;: args.scheduler,
+            &quot;warmup_epochs&quot;: args.warmup_epochs,
+            &quot;min_lr_ratio&quot;: args.min_lr_ratio,
+        },
+    }
+
+
+def save_json(path: Path, obj: Dict[str, object]) -&gt; None:
+    path.write_text(json.dumps(obj, ensure_ascii=False, indent=2), encoding=&quot;utf-8&quot;)
+
+
+def main() -&gt; None:
+    args = parse_args()
+    set_seed(int(args.seed))
+
+    K = int(args.K)
+    dataset_path = Path(args.dataset_npz) if args.dataset_npz else default_dataset_path(K)
+    metadata_path = Path(args.metadata_json) if args.metadata_json else default_metadata_path(K)
+
+    data, meta = load_token_dataset(dataset_path, metadata_path)
+
+    X_train = data[&quot;X_train_tokens&quot;].astype(np.int64)
+    y_train = data[&quot;y_train&quot;].astype(np.int64)
+    X_val = data[&quot;X_val_tokens&quot;].astype(np.int64)
+    y_val = data[&quot;y_val&quot;].astype(np.int64)
+
+    # build_token.py stores continuous preprocessed z before rounding.
+    # Use it so K controls coarse/discrete token features, while the model still
+    # receives fine numeric signal. If an old NPZ is loaded, fall back to token/K.
+    X_train_z = data.get(&quot;X_train_z&quot;)
+    X_val_z = data.get(&quot;X_val_z&quot;)
+    if X_train_z is None:
+        X_train_z = X_train.astype(np.float32) / float(max(K, 1))
+    else:
+        X_train_z = X_train_z.astype(np.float32)
+    if X_val_z is None:
+        X_val_z = X_val.astype(np.float32) / float(max(K, 1))
+    else:
+        X_val_z = X_val_z.astype(np.float32)
+    X_train_z = np.clip(X_train_z, 0.0, 1.0).astype(np.float32)
+    X_val_z = np.clip(X_val_z, 0.0, 1.0).astype(np.float32)
+
+    label_mapping = meta[&quot;label_mapping&quot;]
+    label_names = [label for label, _ in sorted(label_mapping.items(), key=lambda kv: kv[1])]
+    num_classes = int(len(label_names))
+    n_features = int(meta[&quot;n_features&quot;])
+
+    run_name = args.run_name
+    if not run_name:
+        timestamp = datetime.now().strftime(&quot;%Y%m%d_%H%M%S&quot;)
+        run_name = (
+            f&quot;{timestamp}_K{K}_h{args.hidden_dim}_L{args.num_layers}_&quot;
+            f&quot;H{args.num_heads}_seed{args.seed}&quot;
+        )
+
+    out_dir = Path(args.out_root) / f&quot;K{K}&quot; / run_name
+    out_dir.mkdir(parents=True, exist_ok=True)
+
+    device = pick_device(args.device)
+
+    config_obj = {
+        &quot;stage&quot;: &quot;train&quot;,
+        &quot;run_name&quot;: run_name,
+        &quot;K&quot;: K,
+        &quot;dataset_npz&quot;: str(dataset_path),
+        &quot;metadata_json&quot;: str(metadata_path),
+        &quot;out_dir&quot;: str(out_dir),
+        &quot;seed&quot;: int(args.seed),
+        &quot;device&quot;: str(device),
+        &quot;epochs&quot;: int(args.epochs),
+        &quot;batch_size&quot;: int(args.batch_size),
+        &quot;lr&quot;: float(args.lr),
+        &quot;weight_decay&quot;: float(args.weight_decay),
+        &quot;scheduler&quot;: str(args.scheduler),
+        &quot;warmup_epochs&quot;: int(args.warmup_epochs),
+        &quot;min_lr_ratio&quot;: float(args.min_lr_ratio),
+        &quot;patience&quot;: int(args.patience),
+        &quot;min_delta&quot;: float(args.min_delta),
+        &quot;grad_clip_norm&quot;: float(args.grad_clip_norm),
+        &quot;use_class_weights&quot;: bool(args.use_class_weights),
+        &quot;n_features&quot;: n_features,
+        &quot;num_classes&quot;: num_classes,
+        &quot;label_names&quot;: label_names,
+        &quot;model&quot;: {
+            &quot;value_dim&quot;: int(args.value_dim),
+            &quot;feature_dim&quot;: int(args.feature_dim),
+            &quot;cell_dim&quot;: int(args.value_dim + args.feature_dim),
+            &quot;value_num_bins&quot;: int(args.value_num_bins),
+            &quot;uses_continuous_z&quot;: True,
+            &quot;hidden_dim&quot;: int(args.hidden_dim),
+            &quot;num_layers&quot;: int(args.num_layers),
+            &quot;num_heads&quot;: int(args.num_heads),
+            &quot;dropout&quot;: float(args.dropout),
+            &quot;classifier_hidden_dim&quot;: int(args.classifier_hidden_dim),
+            &quot;classifier_dropout&quot;: float(args.classifier_dropout),
+            &quot;norm_first&quot;: bool(args.norm_first),
+        },
+        &quot;data_shapes&quot;: {
+            &quot;X_train&quot;: list(X_train.shape),
+            &quot;X_train_z&quot;: list(X_train_z.shape),
+            &quot;y_train&quot;: list(y_train.shape),
+            &quot;X_val&quot;: list(X_val.shape),
+            &quot;X_val_z&quot;: list(X_val_z.shape),
+            &quot;y_val&quot;: list(y_val.shape),
+        },
+        &quot;torch_version&quot;: torch.__version__,
+    }
+    save_json(out_dir / &quot;config.json&quot;, config_obj)
+
+    train_ds = TokenDataset(X_train, X_train_z, y_train)
+    val_ds = TokenDataset(X_val, X_val_z, y_val)
+
+    generator = torch.Generator()
+    generator.manual_seed(int(args.seed))
+
+    train_loader = DataLoader(
+        train_ds,
+        batch_size=int(args.batch_size),
+        shuffle=True,
+        num_workers=int(args.num_workers),
+        pin_memory=(device.type == &quot;cuda&quot;),
+        generator=generator,
+    )
+    train_eval_loader = DataLoader(
+        train_ds,
+        batch_size=int(args.batch_size),
+        shuffle=False,
+        num_workers=int(args.num_workers),
+        pin_memory=(device.type == &quot;cuda&quot;),
+    )
+    val_loader = DataLoader(
+        val_ds,
+        batch_size=int(args.batch_size),
+        shuffle=False,
+        num_workers=int(args.num_workers),
+        pin_memory=(device.type == &quot;cuda&quot;),
+    )
+
+    model = TabularTransformerClassifier(
+        K=K,
+        n_features=n_features,
+        num_classes=num_classes,
+        value_dim=int(args.value_dim),
+        feature_dim=int(args.feature_dim),
+        value_num_bins=int(args.value_num_bins),
+        hidden_dim=int(args.hidden_dim),
+        num_layers=int(args.num_layers),
+        num_heads=int(args.num_heads),
+        dropout=float(args.dropout),
+        classifier_hidden_dim=int(args.classifier_hidden_dim),
+        classifier_dropout=float(args.classifier_dropout),
+        norm_first=bool(args.norm_first),
+    ).to(device)
+
+    if args.use_class_weights:
+        weights = compute_class_weights(y_train, num_classes).to(device)
+        criterion = nn.CrossEntropyLoss(weight=weights)
+        class_weights_log = weights.detach().cpu().numpy().tolist()
+    else:
+        criterion = nn.CrossEntropyLoss()
+        class_weights_log = None
+
+    optimizer = torch.optim.AdamW(
+        model.parameters(),
+        lr=float(args.lr),
+        weight_decay=float(args.weight_decay),
+    )
+
+    save_json(out_dir / &quot;class_weights.json&quot;, {
+        &quot;use_class_weights&quot;: bool(args.use_class_weights),
+        &quot;class_weights&quot;: class_weights_log,
+        &quot;label_names&quot;: label_names,
+        &quot;train_counts&quot;: np.bincount(y_train, minlength=num_classes).astype(int).tolist(),
+        &quot;val_counts&quot;: np.bincount(y_val, minlength=num_classes).astype(int).tolist(),
+    })
+
+    print(&quot;===== training start =====&quot;)
+    print(f&quot;run_dir: {out_dir}&quot;)
+    print(f&quot;device: {device}&quot;)
+    print(f&quot;dataset: {dataset_path}&quot;)
+    print(f&quot;train tokens/z shape: {X_train.shape}/{X_train_z.shape}, val tokens/z shape: {X_val.shape}/{X_val_z.shape}&quot;)
+    print(f&quot;classes: {num_classes}&quot;)
+    print(f&quot;model: {model}&quot;)
+    print(f&quot;use_class_weights: {args.use_class_weights}&quot;)
+    print(f&quot;scheduler: {args.scheduler}, warmup_epochs={args.warmup_epochs}, min_lr_ratio={args.min_lr_ratio}&quot;)
+
+    history: List[Dict[str, object]] = []
+    best_metric = -math.inf
+    best_epoch = -1
+    best_train_eval = None
+    best_val_eval = None
+    bad_epochs = 0
+
+    for epoch in range(1, int(args.epochs) + 1):
+        t0 = time.time()
+
+        lr_epoch = compute_epoch_lr(
+            base_lr=float(args.lr),
+            epoch=epoch,
+            total_epochs=int(args.epochs),
+            scheduler_name=str(args.scheduler),
+            warmup_epochs=int(args.warmup_epochs),
+            min_lr_ratio=float(args.min_lr_ratio),
+        )
+        set_optimizer_lr(optimizer, lr_epoch)
+
+        train_step_loss = train_one_epoch(
+            model=model,
+            loader=train_loader,
+            criterion=criterion,
+            optimizer=optimizer,
+            device=device,
+            grad_clip_norm=float(args.grad_clip_norm),
+        )
+
+        train_eval = evaluate(model, train_eval_loader, criterion, device, num_classes, label_names)
+        val_eval = evaluate(model, val_loader, criterion, device, num_classes, label_names)
+
+        epoch_seconds = time.time() - t0
+        lr_now = float(lr_epoch)
+
+        row = {
+            &quot;epoch&quot;: epoch,
+            &quot;lr&quot;: lr_now,
+            &quot;epoch_seconds&quot;: round(epoch_seconds, 3),
+            &quot;train_step_loss&quot;: float(train_step_loss),
+            &quot;train_loss&quot;: float(train_eval[&quot;loss&quot;]),
+            &quot;train_acc&quot;: float(train_eval[&quot;accuracy&quot;]),
+            &quot;train_macro_f1&quot;: float(train_eval[&quot;macro_f1&quot;]),
+            &quot;train_weighted_f1&quot;: float(train_eval[&quot;weighted_f1&quot;]),
+            &quot;val_loss&quot;: float(val_eval[&quot;loss&quot;]),
+            &quot;val_acc&quot;: float(val_eval[&quot;accuracy&quot;]),
+            &quot;val_macro_f1&quot;: float(val_eval[&quot;macro_f1&quot;]),
+            &quot;val_weighted_f1&quot;: float(val_eval[&quot;weighted_f1&quot;]),
+            &quot;macro_f1_gap_train_minus_val&quot;: float(train_eval[&quot;macro_f1&quot;] - val_eval[&quot;macro_f1&quot;]),
+        }
+        history.append(row)
+        write_history_csv(out_dir / &quot;history.csv&quot;, history)
+
+        metric = float(val_eval[&quot;macro_f1&quot;])
+        improved = metric &gt; best_metric + float(args.min_delta)
+
+        if improved:
+            best_metric = metric
+            best_epoch = epoch
+            bad_epochs = 0
+            best_train_eval = train_eval
+            best_val_eval = val_eval
+
+            torch.save({
+                &quot;model_state_dict&quot;: model.state_dict(),
+                &quot;config&quot;: config_obj,
+                &quot;best_epoch&quot;: best_epoch,
+                &quot;best_val_macro_f1&quot;: best_metric,
+                &quot;label_names&quot;: label_names,
+            }, out_dir / &quot;best_model.pt&quot;)
+        else:
+            bad_epochs += 1
+
+        torch.save({
+            &quot;model_state_dict&quot;: model.state_dict(),
+            &quot;config&quot;: config_obj,
+            &quot;epoch&quot;: epoch,
+            &quot;val_macro_f1&quot;: metric,
+            &quot;label_names&quot;: label_names,
+        }, out_dir / &quot;last_model.pt&quot;)
+
+        print(
+            f&quot;[epoch {epoch:03d}] &quot;
+            f&quot;train_loss={row[&apos;train_loss&apos;]:.4f} &quot;
+            f&quot;train_macroF1={row[&apos;train_macro_f1&apos;]:.4f} &quot;
+            f&quot;val_loss={row[&apos;val_loss&apos;]:.4f} &quot;
+            f&quot;val_macroF1={row[&apos;val_macro_f1&apos;]:.4f} &quot;
+            f&quot;val_acc={row[&apos;val_acc&apos;]:.4f} &quot;
+            f&quot;gap={row[&apos;macro_f1_gap_train_minus_val&apos;]:.4f} &quot;
+            f&quot;best={best_metric:.4f}@{best_epoch} &quot;
+            f&quot;bad_epochs={bad_epochs}&quot;
+        )
+
+        if bad_epochs &gt;= int(args.patience):
+            print(f&quot;early stopping at epoch {epoch}; best epoch={best_epoch}, best val macro-F1={best_metric:.4f}&quot;)
+            break
+
+    if best_epoch &lt; 0:
+        raise RuntimeError(&quot;No best epoch was recorded.&quot;)
+
+    # Reload best checkpoint and compute final detailed reports.
+    ckpt = torch.load(out_dir / &quot;best_model.pt&quot;, map_location=device, weights_only=False)
+    model.load_state_dict(ckpt[&quot;model_state_dict&quot;])
+
+    train_best = evaluate(model, train_eval_loader, criterion, device, num_classes, label_names, collect_probs=True)
+    val_best = evaluate(model, val_loader, criterion, device, num_classes, label_names, collect_probs=True)
+
+    save_json(out_dir / &quot;train_classification_report_best.json&quot;, {
+        &quot;loss&quot;: train_best[&quot;loss&quot;],
+        &quot;accuracy&quot;: train_best[&quot;accuracy&quot;],
+        &quot;macro_f1&quot;: train_best[&quot;macro_f1&quot;],
+        &quot;weighted_f1&quot;: train_best[&quot;weighted_f1&quot;],
+        &quot;per_class&quot;: train_best[&quot;per_class&quot;],
+        &quot;true_counts&quot;: train_best[&quot;true_counts&quot;],
+        &quot;pred_counts&quot;: train_best[&quot;pred_counts&quot;],
+    })
+    save_json(out_dir / &quot;val_classification_report_best.json&quot;, {
+        &quot;loss&quot;: val_best[&quot;loss&quot;],
+        &quot;accuracy&quot;: val_best[&quot;accuracy&quot;],
+        &quot;macro_f1&quot;: val_best[&quot;macro_f1&quot;],
+        &quot;weighted_f1&quot;: val_best[&quot;weighted_f1&quot;],
+        &quot;per_class&quot;: val_best[&quot;per_class&quot;],
+        &quot;true_counts&quot;: val_best[&quot;true_counts&quot;],
+        &quot;pred_counts&quot;: val_best[&quot;pred_counts&quot;],
+    })
+
+    write_confusion_outputs(out_dir, &quot;train&quot;, train_best, label_names)
+    write_confusion_outputs(out_dir, &quot;val&quot;, val_best, label_names)
+
+    write_predictions_csv(
+        out_dir / &quot;val_predictions_best.csv&quot;,
+        y_true=val_best[&quot;y_true&quot;],
+        y_pred=val_best[&quot;y_pred&quot;],
+        confidence=val_best[&quot;confidence&quot;],
+        label_names=label_names,
+    )
+
+    diagnosis = make_diagnosis_summary(
+        best_epoch=best_epoch,
+        best_train=train_best,
+        best_val=val_best,
+        label_names=label_names,
+        args=args,
+    )
+    save_json(out_dir / &quot;diagnosis_summary.json&quot;, diagnosis)
+
+    print(&quot;===== training done =====&quot;)
+    print(f&quot;best_epoch: {best_epoch}&quot;)
+    print(f&quot;best_val_macro_f1: {float(val_best[&apos;macro_f1&apos;]):.6f}&quot;)
+    print(f&quot;best_val_weighted_f1: {float(val_best[&apos;weighted_f1&apos;]):.6f}&quot;)
+    print(f&quot;best_val_acc: {float(val_best[&apos;accuracy&apos;]):.6f}&quot;)
+    print(f&quot;run_dir: {out_dir}&quot;)
+    print(&quot;Key files:&quot;)
+    print(f&quot;  {out_dir / &apos;history.csv&apos;}&quot;)
+    print(f&quot;  {out_dir / &apos;diagnosis_summary.json&apos;}&quot;)
+    print(f&quot;  {out_dir / &apos;val_classification_report_best.json&apos;}&quot;)
+    print(f&quot;  {out_dir / &apos;val_confusion_matrix_best.csv&apos;}&quot;)
+    print(f&quot;  {out_dir / &apos;best_model.pt&apos;}&quot;)
+
+
+if __name__ == &quot;__main__&quot;:
+    main()</file><file path="02_src/config.py">#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+&quot;&quot;&quot;
+final_pipeline/final_config.py
+
+Global config for final_pipeline.
+
+Edit this file when changing K, thresholds, input/output paths, or special-feature rules.
+&quot;&quot;&quot;
+
+from __future__ import annotations
+
+from pathlib import Path
+
+
+# ---------------------------------------------------------------------
+# Project paths
+# ---------------------------------------------------------------------
+FINAL_PIPELINE_DIR = Path(__file__).resolve().parent
+PROJECT_ROOT = FINAL_PIPELINE_DIR.parent
+
+SPLIT_DIR = PROJECT_ROOT / &quot;01_split&quot;
+
+TRAIN_CSV = SPLIT_DIR / &quot;train_raw.csv&quot;
+VAL_CSV = SPLIT_DIR / &quot;val_raw.csv&quot;
+
+OUTPUT_ROOT = PROJECT_ROOT / &quot;03_outputs&quot;
+TOKEN_DIAG_DIR = OUTPUT_ROOT / &quot;token_diag&quot;
+PREPROCESS_DIR = OUTPUT_ROOT / &quot;preprocessing&quot;
+BUILD_TOKEN_DIR = OUTPUT_ROOT / &quot;build_token&quot;
+TOKEN_OCCUPANCY_DIR = OUTPUT_ROOT / &quot;token_occupancy&quot;
+
+
+# ---------------------------------------------------------------------
+# Tokenization config
+# ---------------------------------------------------------------------
+# Main K used by token_diag, preprocessing decision, and build_token.
+TOKEN_K = 1000
+
+# Later experiment reminder: run two K settings as two separate runs.
+# Change the second value later if needed.
+EXPERIMENT_K_VALUES = [1000, 256]
+
+TOKEN_QUANTILES = [0, 1, 5] + list(range(10, 95, 5)) + [95, 99, 100]
+
+
+# ---------------------------------------------------------------------
+# Columns
+# ---------------------------------------------------------------------
+TARGET_COLS = [&quot;label_L1&quot;, &quot;label_L2&quot;, &quot;label_L3&quot;, &quot;Class&quot;, &quot;Category&quot;]
+DROP_COLS = []
+
+DEFAULT_LABEL_COL = &quot;label_L2&quot;
+
+
+# ---------------------------------------------------------------------
+# Preprocessing decision config
+# ---------------------------------------------------------------------
+# Main piecewise condition:
+#   possible_unique = min(raw_unique, TOKEN_K + 1)
+#   unique_preserve_ratio = num_tokens_used / possible_unique
+# If this ratio is lower than threshold, tokenization lost too many
+# distinguishable raw values -&gt; piecewise candidate.
+UNIQUE_PRESERVE_THRESHOLD = 0.95
+
+# If collisions exist, decide whether they mainly live in left/body/right.
+# If one region accounts for &gt;= this fraction of total collision loss,
+# that region becomes the piecewise_side. Otherwise side = &quot;mixed&quot;.
+PIECEWISE_SIDE_DOMINANCE_RATIO = 0.60
+
+# Special scaling for delay-like features:
+#   z = x / (max + SPECIAL_DELAY_EPS)
+#   token = round(TOKEN_K * z)
+SPECIAL_DELAY_KEYWORDS = [&quot;rtt&quot;, &quot;delay&quot;, &quot;invocation&quot;]
+SPECIAL_DELAY_EPS = 0.1
+
+# Action for features whose minmax tokenization preserves too few raw unique
+# values according to UNIQUE_PRESERVE_THRESHOLD.
+# Recommended current default: blended_rank.
+#   blended_rank    : z = (1-alpha)*minmax_z + alpha*rank_z
+#   local_piecewise : legacy experimental local interval zoom
+#   global_rank     : legacy full unique-rank transform
+#   keep_minmax     : do not transform compressed features
+COMPRESSED_FEATURE_ACTION = &quot;blended_rank&quot;
+BLENDED_RANK_ALPHA = 0.25
+
+# Legacy local piecewise token reallocation. Kept as an optional experiment,
+# but no longer default because diagnostics showed it can over-edit wide
+# collision intervals and damage useful regularization.
+LOCAL_PIECEWISE_MARGIN = 1.10
+LOCAL_PIECEWISE_MIN_WIDTH = 0.03
+LOCAL_PIECEWISE_MAX_WIDTH = 0.50
+LOCAL_PIECEWISE_MIN_UNIQUE = 3
+
+
+# ---------------------------------------------------------------------
+# Output file helpers
+# ---------------------------------------------------------------------
+def token_diag_json_path(k: int | None = None) -&gt; Path:
+    kk = TOKEN_K if k is None else int(k)
+    return TOKEN_DIAG_DIR / f&quot;token_diag_train_K{kk}.json&quot;
+
+
+def token_diag_latest_json_path() -&gt; Path:
+    return TOKEN_DIAG_DIR / &quot;token_diag_train.json&quot;
+
+
+def preprocess_train_csv_path(k: int | None = None) -&gt; Path:
+    kk = TOKEN_K if k is None else int(k)
+    return PREPROCESS_DIR / f&quot;train_preprocessed_K{kk}.csv&quot;
+
+
+def preprocess_val_csv_path(k: int | None = None) -&gt; Path:
+    kk = TOKEN_K if k is None else int(k)
+    return PREPROCESS_DIR / f&quot;val_preprocessed_K{kk}.csv&quot;
+
+
+def preprocess_policy_json_path(k: int | None = None) -&gt; Path:
+    kk = TOKEN_K if k is None else int(k)
+    return PREPROCESS_DIR / f&quot;preprocess_policy_K{kk}.json&quot;
+
+
+def preprocess_report_json_path(k: int | None = None) -&gt; Path:
+    kk = TOKEN_K if k is None else int(k)
+    return PREPROCESS_DIR / f&quot;preprocess_report_K{kk}.json&quot;
+
+
+def build_token_dir(k: int | None = None) -&gt; Path:
+    kk = TOKEN_K if k is None else int(k)
+    return BUILD_TOKEN_DIR / f&quot;K{kk}&quot;
+
+
+def token_dataset_npz_path(k: int | None = None) -&gt; Path:
+    kk = TOKEN_K if k is None else int(k)
+    return build_token_dir(kk) / f&quot;token_dataset_K{kk}.npz&quot;
+
+
+def token_metadata_json_path(k: int | None = None) -&gt; Path:
+    kk = TOKEN_K if k is None else int(k)
+    return build_token_dir(kk) / f&quot;token_metadata_K{kk}.json&quot;
+
+# ---------------------------------------------------------------------
+# Embedding config
+# ---------------------------------------------------------------------
+# V(cell) = V(value) || V(feature)
+# Default: 32 + 32 = 64-dimensional cell embedding.
+VALUE_EMBED_DIM = 32
+FEATURE_EMBED_DIM = 32
+VALUE_RANDOM_STD = 0.02
+
+# Decouple numeric token resolution K from the number of learnable value vectors.
+# token/K remains exact and monotonic, but the random learnable part is looked up
+# through this many coarse value bins. Set to 0 or None to fall back to K+1 bins.
+VALUE_NUM_BINS = 128
+
+PREPROCESS_EVAL_DIR = OUTPUT_ROOT / &quot;preprocess_eval&quot;
+
+# ---------------------------------------------------------------------
+# Model config
+# ---------------------------------------------------------------------
+# TabularTransformerClassifier config.
+# cell_dim = VALUE_EMBED_DIM + FEATURE_EMBED_DIM.
+MODEL_HIDDEN_DIM = 128
+MODEL_NUM_LAYERS = 3
+MODEL_NUM_HEADS = 4
+MODEL_DROPOUT = 0.1
+CLASSIFIER_HIDDEN_DIM = 128
+CLASSIFIER_DROPOUT = 0.1
+TRANSFORMER_NORM_FIRST = True
+MODEL_ACTIVATION = &quot;gelu&quot;
+
+# ---------------------------------------------------------------------
+# Training config
+# ---------------------------------------------------------------------
+TRAIN_RUN_DIR = OUTPUT_ROOT / &quot;train_runs&quot;
+TRAIN_SEED = 42
+TRAIN_DEVICE = &quot;auto&quot;
+
+TRAIN_EPOCHS = 80
+TRAIN_BATCH_SIZE = 256
+TRAIN_LR = 1e-3
+TRAIN_WEIGHT_DECAY = 1e-4
+TRAIN_PATIENCE = 12
+TRAIN_MIN_DELTA = 1e-4
+TRAIN_NUM_WORKERS = 0
+TRAIN_GRAD_CLIP_NORM = 1.0
+
+# Macro-F1 matters for imbalanced L2 classification, so class weighting is on by default.
+USE_CLASS_WEIGHTS = True
+
+# ---------------------------------------------------------------------
+# Scheduler config
+# ---------------------------------------------------------------------
+# Use warmup+cosine by default to make Transformer training more stable.
+TRAIN_SCHEDULER = &quot;warmup_cosine&quot;
+TRAIN_WARMUP_EPOCHS = 8
+TRAIN_MIN_LR_RATIO = 0.05</file><file path="03_outputs/build_token/K1000/token_metadata_K1000.json">{
+  &quot;stage&quot;: &quot;build_token&quot;,
+  &quot;K&quot;: 1000,
+  &quot;input&quot;: {
+    &quot;train_preprocessed_csv&quot;: &quot;/home/pak/Documents/dacn/03_outputs/preprocessing/train_preprocessed_K1000.csv&quot;,
+    &quot;val_preprocessed_csv&quot;: &quot;/home/pak/Documents/dacn/03_outputs/preprocessing/val_preprocessed_K1000.csv&quot;,
+    &quot;preprocess_policy_json&quot;: &quot;/home/pak/Documents/dacn/03_outputs/preprocessing/preprocess_policy_K1000.json&quot;
+  },
+  &quot;label_col&quot;: &quot;label_L2&quot;,
+  &quot;label_mapping&quot;: {
+    &quot;Benign                                                                                      &quot;: 0,
+    &quot;Ransomware&quot;: 1,
+    &quot;Spyware&quot;: 2,
+    &quot;Trojan&quot;: 3
+  },
+  &quot;n_features&quot;: 55,
+  &quot;feature_names&quot;: [
+    &quot;pslist.nproc&quot;,
+    &quot;pslist.nppid&quot;,
+    &quot;pslist.avg_threads&quot;,
+    &quot;pslist.nprocs64bit&quot;,
+    &quot;pslist.avg_handlers&quot;,
+    &quot;dlllist.ndlls&quot;,
+    &quot;dlllist.avg_dlls_per_proc&quot;,
+    &quot;handles.nhandles&quot;,
+    &quot;handles.avg_handles_per_proc&quot;,
+    &quot;handles.nport&quot;,
+    &quot;handles.nfile&quot;,
+    &quot;handles.nevent&quot;,
+    &quot;handles.ndesktop&quot;,
+    &quot;handles.nkey&quot;,
+    &quot;handles.nthread&quot;,
+    &quot;handles.ndirectory&quot;,
+    &quot;handles.nsemaphore&quot;,
+    &quot;handles.ntimer&quot;,
+    &quot;handles.nsection&quot;,
+    &quot;handles.nmutant&quot;,
+    &quot;ldrmodules.not_in_load&quot;,
+    &quot;ldrmodules.not_in_init&quot;,
+    &quot;ldrmodules.not_in_mem&quot;,
+    &quot;ldrmodules.not_in_load_avg&quot;,
+    &quot;ldrmodules.not_in_init_avg&quot;,
+    &quot;ldrmodules.not_in_mem_avg&quot;,
+    &quot;malfind.ninjections&quot;,
+    &quot;malfind.commitCharge&quot;,
+    &quot;malfind.protection&quot;,
+    &quot;malfind.uniqueInjections&quot;,
+    &quot;psxview.not_in_pslist&quot;,
+    &quot;psxview.not_in_eprocess_pool&quot;,
+    &quot;psxview.not_in_ethread_pool&quot;,
+    &quot;psxview.not_in_pspcid_list&quot;,
+    &quot;psxview.not_in_csrss_handles&quot;,
+    &quot;psxview.not_in_session&quot;,
+    &quot;psxview.not_in_deskthrd&quot;,
+    &quot;psxview.not_in_pslist_false_avg&quot;,
+    &quot;psxview.not_in_eprocess_pool_false_avg&quot;,
+    &quot;psxview.not_in_ethread_pool_false_avg&quot;,
+    &quot;psxview.not_in_pspcid_list_false_avg&quot;,
+    &quot;psxview.not_in_csrss_handles_false_avg&quot;,
+    &quot;psxview.not_in_session_false_avg&quot;,
+    &quot;psxview.not_in_deskthrd_false_avg&quot;,
+    &quot;modules.nmodules&quot;,
+    &quot;svcscan.nservices&quot;,
+    &quot;svcscan.kernel_drivers&quot;,
+    &quot;svcscan.fs_drivers&quot;,
+    &quot;svcscan.process_services&quot;,
+    &quot;svcscan.shared_process_services&quot;,
+    &quot;svcscan.interactive_process_services&quot;,
+    &quot;svcscan.nactive&quot;,
+    &quot;callbacks.ncallbacks&quot;,
+    &quot;callbacks.nanonymous&quot;,
+    &quot;callbacks.ngeneric&quot;
+  ],
+  &quot;splits&quot;: {
+    &quot;train&quot;: {
+      &quot;n_rows&quot;: 46876,
+      &quot;X_tokens_shape&quot;: [
+        46876,
+        55
+      ],
+      &quot;X_z_shape&quot;: [
+        46876,
+        55
+      ],
+      &quot;y_shape&quot;: [
+        46876
+      ],
+      &quot;token_min&quot;: 0,
+      &quot;token_max&quot;: 1000
+    },
+    &quot;val&quot;: {
+      &quot;n_rows&quot;: 11720,
+      &quot;X_tokens_shape&quot;: [
+        11720,
+        55
+      ],
+      &quot;X_z_shape&quot;: [
+        11720,
+        55
+      ],
+      &quot;y_shape&quot;: [
+        11720
+      ],
+      &quot;token_min&quot;: 0,
+      &quot;token_max&quot;: 1000
+    }
+  },
+  &quot;outputs&quot;: {
+    &quot;token_dataset_npz&quot;: &quot;/home/pak/Documents/dacn/03_outputs/build_token/K1000/token_dataset_K1000.npz&quot;,
+    &quot;token_metadata_json&quot;: &quot;/home/pak/Documents/dacn/03_outputs/build_token/K1000/token_metadata_K1000.json&quot;
+  },
+  &quot;note&quot;: &quot;This file only converts preprocessed z values to integer token IDs. Embedding/model are separate files.&quot;
+}</file></files></repomix>
