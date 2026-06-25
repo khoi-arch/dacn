@@ -1,0 +1,113 @@
+{
+  "stage": "build_token",
+  "K": 1000,
+  "input": {
+    "train_preprocessed_csv": "/home/pak/Documents/dacn/03_outputs/preprocessing/train_preprocessed_K1000.csv",
+    "val_preprocessed_csv": "/home/pak/Documents/dacn/03_outputs/preprocessing/val_preprocessed_K1000.csv",
+    "preprocess_policy_json": "/home/pak/Documents/dacn/03_outputs/preprocessing/preprocess_policy_K1000.json"
+  },
+  "label_col": "label_L2",
+  "label_mapping": {
+    "Benign                                                                                      ": 0,
+    "Ransomware": 1,
+    "Spyware": 2,
+    "Trojan": 3
+  },
+  "n_features": 55,
+  "feature_names": [
+    "pslist.nproc",
+    "pslist.nppid",
+    "pslist.avg_threads",
+    "pslist.nprocs64bit",
+    "pslist.avg_handlers",
+    "dlllist.ndlls",
+    "dlllist.avg_dlls_per_proc",
+    "handles.nhandles",
+    "handles.avg_handles_per_proc",
+    "handles.nport",
+    "handles.nfile",
+    "handles.nevent",
+    "handles.ndesktop",
+    "handles.nkey",
+    "handles.nthread",
+    "handles.ndirectory",
+    "handles.nsemaphore",
+    "handles.ntimer",
+    "handles.nsection",
+    "handles.nmutant",
+    "ldrmodules.not_in_load",
+    "ldrmodules.not_in_init",
+    "ldrmodules.not_in_mem",
+    "ldrmodules.not_in_load_avg",
+    "ldrmodules.not_in_init_avg",
+    "ldrmodules.not_in_mem_avg",
+    "malfind.ninjections",
+    "malfind.commitCharge",
+    "malfind.protection",
+    "malfind.uniqueInjections",
+    "psxview.not_in_pslist",
+    "psxview.not_in_eprocess_pool",
+    "psxview.not_in_ethread_pool",
+    "psxview.not_in_pspcid_list",
+    "psxview.not_in_csrss_handles",
+    "psxview.not_in_session",
+    "psxview.not_in_deskthrd",
+    "psxview.not_in_pslist_false_avg",
+    "psxview.not_in_eprocess_pool_false_avg",
+    "psxview.not_in_ethread_pool_false_avg",
+    "psxview.not_in_pspcid_list_false_avg",
+    "psxview.not_in_csrss_handles_false_avg",
+    "psxview.not_in_session_false_avg",
+    "psxview.not_in_deskthrd_false_avg",
+    "modules.nmodules",
+    "svcscan.nservices",
+    "svcscan.kernel_drivers",
+    "svcscan.fs_drivers",
+    "svcscan.process_services",
+    "svcscan.shared_process_services",
+    "svcscan.interactive_process_services",
+    "svcscan.nactive",
+    "callbacks.ncallbacks",
+    "callbacks.nanonymous",
+    "callbacks.ngeneric"
+  ],
+  "splits": {
+    "train": {
+      "n_rows": 46876,
+      "X_tokens_shape": [
+        46876,
+        55
+      ],
+      "X_z_shape": [
+        46876,
+        55
+      ],
+      "y_shape": [
+        46876
+      ],
+      "token_min": 0,
+      "token_max": 1000
+    },
+    "val": {
+      "n_rows": 11720,
+      "X_tokens_shape": [
+        11720,
+        55
+      ],
+      "X_z_shape": [
+        11720,
+        55
+      ],
+      "y_shape": [
+        11720
+      ],
+      "token_min": 0,
+      "token_max": 1000
+    }
+  },
+  "outputs": {
+    "token_dataset_npz": "/home/pak/Documents/dacn/03_outputs/build_token/K1000/token_dataset_K1000.npz",
+    "token_metadata_json": "/home/pak/Documents/dacn/03_outputs/build_token/K1000/token_metadata_K1000.json"
+  },
+  "note": "This file only converts preprocessed z values to integer token IDs. Embedding/model are separate files."
+}

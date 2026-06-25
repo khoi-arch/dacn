@@ -1,0 +1,30 @@
+==================================================
+🔍 BÁO CÁO CHIA DỮ LIỆU (SANITY CHECKS)
+==================================================
+1. KÍCH THƯỚC (SIZE):
+   - Tổng: 58596 samples
+   - Train (80%): 46876 samples
+   - Test (20%): 11720 samples
+2. GIAO THOA INDEX (ANTI-LEAK):
+   - Trùng lặp Train/Test: 0
+   -> Trạng thái: PASS ✅
+3. PHÂN PHỐI NHÃN L3 (STRATIFY CHECK):
+                      Train (%)  Test (%)
+label_L3                                 
+Benign                    50.00     50.00
+Ransomware-Ako             3.41      3.41
+Ransomware-Conti           3.39      3.40
+Ransomware-Maze            3.34      3.34
+Ransomware-Pysa            2.93      2.93
+Ransomware-Shade           3.63      3.63
+Spyware-180solutions       3.41      3.41
+Spyware-CWS                3.41      3.41
+Spyware-Gator              3.75      3.75
+Spyware-TIBS               2.41      2.41
+Spyware-Transponder        4.11      4.11
+Trojan-Emotet              3.36      3.35
+Trojan-Reconyc             2.68      2.68
+Trojan-Refroso             3.41      3.41
+Trojan-Scar                3.41      3.41
+Trojan-Zeus                3.33      3.33
+==================================================

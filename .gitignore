@@ -1,0 +1,44 @@
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Virtual env
+venv/
+.venv/
+env/
+
+# Editor / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Backups / temp
+*.bak
+*.bak_*
+*.tmp
+*.log
+
+# Training outputs: ignore all by default
+03_outputs/*
+
+# Keep only prebuilt K1000 token dataset for Kaggle train-only workflow
+!03_outputs/build_token/
+!03_outputs/build_token/K1000/
+!03_outputs/build_token/K1000/token_dataset_K1000.npz
+!03_outputs/build_token/K1000/token_metadata_K1000.json
+
+# Model checkpoints / run logs
+*.pt
+*.pth
+*.ckpt
+wandb/
+runs/
+logs/
+
+# Repomix
+dacn_current_*.xml
+repomix-output.*
