@@ -112,15 +112,54 @@ def load_dataset(dataset_path: Path, metadata_path: Path) -> Tuple[Dict[str, np.
     return data, meta
 
 
+def resolve_repo_path(path_from_meta: str, fallback_relative: str) -> Path:
+    """
+    Metadata may contain absolute local paths such as:
+      /home/pak/Documents/dacn/03_outputs/...
+
+    On Kaggle, the repo is cloned to:
+      /kaggle/working/dacn
+
+    So if the metadata path does not exist, fall back to the same relative
+    path inside the current repository.
+    """
+    p = Path(path_from_meta)
+    if p.exists():
+        return p
+
+    repo_root = Path(__file__).resolve().parents[1]
+    fallback = repo_root / fallback_relative
+    if fallback.exists():
+        return fallback
+
+    # Last fallback: keep only the path after "03_outputs" if present.
+    parts = list(p.parts)
+    if "03_outputs" in parts:
+        idx = parts.index("03_outputs")
+        rel = Path(*parts[idx:])
+        candidate = repo_root / rel
+        if candidate.exists():
+            return candidate
+
+    raise FileNotFoundError(
+        f"Could not resolve path. metadata_path={p}, fallback={fallback}"
+    )
+
+
 def load_global_z_from_preprocessed(meta: Dict[str, object]) -> Tuple[np.ndarray, np.ndarray]:
     feature_names = [str(x) for x in meta["feature_names"]]
-    train_path = Path(meta["input"]["train_preprocessed"])
-    val_path = Path(meta["input"]["val_preprocessed"])
 
-    if not train_path.exists():
-        raise FileNotFoundError(f"train_preprocessed not found: {train_path}")
-    if not val_path.exists():
-        raise FileNotFoundError(f"val_preprocessed not found: {val_path}")
+    train_path = resolve_repo_path(
+        meta["input"]["train_preprocessed"],
+        "03_outputs/preprocessing/train_preprocessed_K1000.csv",
+    )
+    val_path = resolve_repo_path(
+        meta["input"]["val_preprocessed"],
+        "03_outputs/preprocessing/val_preprocessed_K1000.csv",
+    )
+
+    print(f"[global_z] train_preprocessed: {train_path}")
+    print(f"[global_z] val_preprocessed:   {val_path}")
 
     train = pd.read_csv(train_path)
     val = pd.read_csv(val_path)
