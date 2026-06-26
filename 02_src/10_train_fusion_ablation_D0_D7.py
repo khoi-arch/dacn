@@ -98,6 +98,11 @@ def parse_args() -> argparse.Namespace:
 
     # sigmoid(0)=0.5. Conservative default; model can move it up/down per feature.
     p.add_argument("--gate-init", type=float, default=0.0)
+    p.add_argument(
+        "--diagnostic-only",
+        action="store_true",
+        help="Build data/model diagnostics and exit before training. Useful for checking boundary collapse and scale diagnostics.",
+    )
 
     return p.parse_args()
 
@@ -471,12 +476,12 @@ class BaseValueEmbedding(nn.Module):
 class D0OffsetInterpolationEmbedding(BaseValueEmbedding):
     def __init__(self, *, num_bins: int, n_features: int, value_dim: int, feature_dim: int):
         super().__init__(num_bins=num_bins, n_features=n_features, value_dim=value_dim, feature_dim=feature_dim)
-        self.bin_embedding = nn.Embedding(self.num_bins, self.value_dim)
+        self.bin_embedding = nn.Embedding(self.num_bins + 1, self.value_dim)
         nn.init.normal_(self.bin_embedding.weight, mean=0.0, std=self.init_std)
 
     def local_interp(self, bin_ids: torch.Tensor, offset: torch.Tensor) -> torch.Tensor:
         b0 = bin_ids.long().clamp(0, self.num_bins - 1)
-        b1 = (b0 + 1).clamp(0, self.num_bins - 1)
+        b1 = b0 + 1
         e0 = self.bin_embedding(b0)
         e1 = self.bin_embedding(b1)
         return (1.0 - offset) * e0 + offset * e1
@@ -493,12 +498,12 @@ class D1InterpRawScalarConcatEmbedding(BaseValueEmbedding):
         if self.value_dim < 2:
             raise ValueError("value_dim must be >= 2")
         self.local_dim = self.value_dim - 1
-        self.bin_embedding = nn.Embedding(self.num_bins, self.local_dim)
+        self.bin_embedding = nn.Embedding(self.num_bins + 1, self.local_dim)
         nn.init.normal_(self.bin_embedding.weight, mean=0.0, std=self.init_std)
 
     def local_interp(self, bin_ids: torch.Tensor, offset: torch.Tensor) -> torch.Tensor:
         b0 = bin_ids.long().clamp(0, self.num_bins - 1)
-        b1 = (b0 + 1).clamp(0, self.num_bins - 1)
+        b1 = b0 + 1
         e0 = self.bin_embedding(b0)
         e1 = self.bin_embedding(b1)
         return (1.0 - offset) * e0 + offset * e1
@@ -525,7 +530,7 @@ class D2D4D5InterpProjectGateConcatEmbedding(BaseValueEmbedding):
     def __init__(self, *, num_bins: int, n_features: int, value_dim: int, feature_dim: int, gate_init: float):
         super().__init__(num_bins=num_bins, n_features=n_features, value_dim=value_dim, feature_dim=feature_dim)
 
-        self.bin_embedding = nn.Embedding(self.num_bins, self.value_dim)
+        self.bin_embedding = nn.Embedding(self.num_bins + 1, self.value_dim)
         self.cont_proj = nn.Sequential(
             nn.Linear(1, self.value_dim),
             nn.GELU(),
@@ -547,7 +552,7 @@ class D2D4D5InterpProjectGateConcatEmbedding(BaseValueEmbedding):
 
     def local_interp(self, bin_ids: torch.Tensor, offset: torch.Tensor) -> torch.Tensor:
         b0 = bin_ids.long().clamp(0, self.num_bins - 1)
-        b1 = (b0 + 1).clamp(0, self.num_bins - 1)
+        b1 = b0 + 1
         e0 = self.bin_embedding(b0)
         e1 = self.bin_embedding(b1)
         return (1.0 - offset) * e0 + offset * e1
@@ -589,7 +594,7 @@ class D3InterpRawFiLMEmbedding(BaseValueEmbedding):
     def __init__(self, *, num_bins: int, n_features: int, value_dim: int, feature_dim: int, gate_init: float):
         super().__init__(num_bins=num_bins, n_features=n_features, value_dim=value_dim, feature_dim=feature_dim)
 
-        self.bin_embedding = nn.Embedding(self.num_bins, self.value_dim)
+        self.bin_embedding = nn.Embedding(self.num_bins + 1, self.value_dim)
         self.gamma_proj = nn.Sequential(nn.Linear(1, self.value_dim), nn.GELU(), nn.Linear(self.value_dim, self.value_dim))
         self.beta_proj = nn.Sequential(nn.Linear(1, self.value_dim), nn.GELU(), nn.Linear(self.value_dim, self.value_dim))
         self.cont_gate_logit = nn.Parameter(torch.full((self.n_features, 1), float(gate_init)))
@@ -603,7 +608,7 @@ class D3InterpRawFiLMEmbedding(BaseValueEmbedding):
 
     def local_interp(self, bin_ids: torch.Tensor, offset: torch.Tensor) -> torch.Tensor:
         b0 = bin_ids.long().clamp(0, self.num_bins - 1)
-        b1 = (b0 + 1).clamp(0, self.num_bins - 1)
+        b1 = b0 + 1
         e0 = self.bin_embedding(b0)
         e1 = self.bin_embedding(b1)
         return (1.0 - offset) * e0 + offset * e1
@@ -806,6 +811,158 @@ def malware_avg_f1(report: Dict[str, object]) -> float:
     return float(np.mean(vals)) if vals else 0.0
 
 
+
+
+def make_boundary_bin_diagnostics(
+    X_bin: np.ndarray,
+    X_offset: np.ndarray,
+    *,
+    num_bins: int,
+    feature_names: List[str],
+    split_name: str,
+) -> Dict[str, object]:
+    """Measure how much data falls into the last bin affected by old boundary collapse."""
+    Xb = np.asarray(X_bin, dtype=np.int64)
+    Off = np.asarray(X_offset, dtype=np.float32)
+    if Xb.shape != Off.shape:
+        raise ValueError(f"boundary diag shape mismatch: X_bin={Xb.shape}, X_offset={Off.shape}")
+
+    last_bin = int(num_bins) - 1
+    mask = Xb == last_bin
+    n_rows, n_features = Xb.shape
+    total_cells = int(mask.size)
+    last_cells = int(mask.sum())
+
+    per_feature = []
+    for j, name in enumerate(feature_names):
+        mj = mask[:, j]
+        cnt = int(mj.sum())
+        if cnt:
+            offsets = Off[mj, j]
+            offset_min = float(offsets.min())
+            offset_max = float(offsets.max())
+            offset_mean = float(offsets.mean())
+            offset_std = float(offsets.std())
+        else:
+            offset_min = offset_max = offset_mean = offset_std = None
+        per_feature.append({
+            "feature": str(name),
+            "last_bin_count": cnt,
+            "last_bin_ratio": float(cnt / max(n_rows, 1)),
+            "last_bin_offset_min": offset_min,
+            "last_bin_offset_max": offset_max,
+            "last_bin_offset_mean": offset_mean,
+            "last_bin_offset_std": offset_std,
+        })
+
+    top = sorted(per_feature, key=lambda r: r["last_bin_ratio"], reverse=True)[:15]
+    return {
+        "split": split_name,
+        "num_bins": int(num_bins),
+        "last_bin_id": int(last_bin),
+        "n_rows": int(n_rows),
+        "n_features": int(n_features),
+        "total_cells": total_cells,
+        "last_bin_cells": last_cells,
+        "last_bin_cell_ratio": float(last_cells / max(total_cells, 1)),
+        "features_with_last_bin": int(sum(1 for r in per_feature if r["last_bin_count"] > 0)),
+        "max_feature_last_bin_ratio": float(max((r["last_bin_ratio"] for r in per_feature), default=0.0)),
+        "mean_feature_last_bin_ratio": float(np.mean([r["last_bin_ratio"] for r in per_feature])) if per_feature else 0.0,
+        "top_features_by_last_bin_ratio": top,
+    }
+
+
+def make_embedding_runtime_diagnostics(
+    model: "FusionAblationTransformer",
+    *,
+    X_bin: np.ndarray,
+    X_offset: np.ndarray,
+    X_cont: np.ndarray,
+    X_mask: np.ndarray,
+    device: torch.device,
+    max_rows: int = 2048,
+) -> Dict[str, object]:
+    """Lightweight forward-scale checks before training.
+
+    This verifies that endpoint interpolation is not collapsed at the final bin,
+    and records activation scales for local embedding vs continuous branch.
+    """
+    emb = model.embedding
+    n = int(min(max_rows, X_bin.shape[0]))
+    X = torch.as_tensor(X_bin[:n], dtype=torch.long, device=device)
+    V = torch.as_tensor(
+        np.stack([
+            X_offset[:n].astype(np.float32),
+            X_cont[:n].astype(np.float32),
+            X_mask[:n].astype(np.float32),
+        ], axis=-1),
+        dtype=torch.float32,
+        device=device,
+    )
+    out: Dict[str, object] = {
+        "n_rows_checked": n,
+        "has_local_interp": bool(hasattr(emb, "local_interp")),
+        "embedding_class": emb.__class__.__name__,
+    }
+
+    with torch.no_grad():
+        vals = V.to(dtype=torch.float32, device=device)
+        offset = vals[..., 0:1].clamp(0.0, 1.0)
+        cont = vals[..., 1:2].clamp(0.0, 1.0)
+        mask = vals[..., 2:3].clamp(0.0, 1.0)
+        out["offset_mean"] = float(offset.mean().detach().cpu())
+        out["offset_std"] = float(offset.std(unbiased=False).detach().cpu())
+        out["continuous_mean"] = float(cont.mean().detach().cpu())
+        out["continuous_std"] = float(cont.std(unbiased=False).detach().cpu())
+        out["continuous_mask_mean"] = float(mask.mean().detach().cpu())
+
+        if hasattr(emb, "bin_embedding"):
+            out["bin_embedding_num_embeddings"] = int(emb.bin_embedding.num_embeddings)
+            out["bin_embedding_dim"] = int(emb.bin_embedding.embedding_dim)
+            out["bin_embedding_weight_std"] = float(emb.bin_embedding.weight.detach().std(unbiased=False).cpu())
+
+        if hasattr(emb, "local_interp"):
+            local = emb.local_interp(X, offset)
+            out["local_abs_mean"] = float(local.abs().mean().detach().cpu())
+            out["local_std"] = float(local.std(unbiased=False).detach().cpu())
+            out["local_l2_mean_per_cell"] = float(torch.linalg.vector_norm(local, dim=-1).mean().detach().cpu())
+
+            # Direct boundary sensitivity check: old implementation gives zero here.
+            b_last = torch.full((1, 1), int(emb.num_bins) - 1, dtype=torch.long, device=device)
+            off0 = torch.zeros((1, 1, 1), dtype=torch.float32, device=device)
+            off1 = torch.ones((1, 1, 1), dtype=torch.float32, device=device)
+            y0 = emb.local_interp(b_last, off0)
+            y1 = emb.local_interp(b_last, off1)
+            diff = torch.linalg.vector_norm(y1 - y0, dim=-1)
+            out["last_bin_offset_sensitivity_l2"] = float(diff.item())
+            out["last_bin_boundary_collapse_fixed"] = bool(float(diff.item()) > 1e-12)
+
+            # Scale-ratio check most relevant for D1 raw_scalar_concat.
+            local_abs = float(local.abs().mean().detach().cpu())
+            cont_abs = float(cont.abs().mean().detach().cpu())
+            out["continuous_abs_mean_over_local_abs_mean"] = float(cont_abs / max(local_abs, 1e-12))
+
+        if hasattr(emb, "gamma_proj") and hasattr(emb, "beta_proj"):
+            gamma = torch.tanh(emb.gamma_proj(cont))
+            beta = emb.beta_proj(cont)
+            if hasattr(emb, "cont_gate_logit"):
+                Bsz, F = X.shape
+                gate = torch.sigmoid(emb.cont_gate_logit).to(device=device).unsqueeze(0).expand(Bsz, F, 1)
+                g = mask * gate
+            else:
+                g = mask
+            out["film_gamma_abs_mean"] = float(gamma.abs().mean().detach().cpu())
+            out["film_beta_abs_mean"] = float(beta.abs().mean().detach().cpu())
+            out["film_gate_mean"] = float(g.mean().detach().cpu())
+            if hasattr(emb, "local_interp"):
+                delta = (local * (g * gamma)) + (g * beta)
+                out["film_delta_l2_mean_per_cell"] = float(torch.linalg.vector_norm(delta, dim=-1).mean().detach().cpu())
+                out["film_delta_over_local_l2_mean"] = float(
+                    out["film_delta_l2_mean_per_cell"] / max(out.get("local_l2_mean_per_cell", 0.0), 1e-12)
+                )
+
+    return out
+
 def make_diagnosis_summary(
     *,
     args: argparse.Namespace,
@@ -816,6 +973,8 @@ def make_diagnosis_summary(
     metadata: Dict[str, object],
     continuous_info: Dict[str, object],
     selective_info: Dict[str, object],
+    boundary_data_diagnostics: Dict[str, object],
+    embedding_runtime_diagnostics: Dict[str, object],
     model: FusionAblationTransformer,
 ) -> Dict[str, object]:
     train_macro = float(best_train["macro_f1"])
@@ -878,6 +1037,8 @@ def make_diagnosis_summary(
         },
         "continuous_info": continuous_info,
         "selective_info": selective_info,
+        "boundary_data_diagnostics": boundary_data_diagnostics,
+        "embedding_runtime_diagnostics": embedding_runtime_diagnostics,
         "embedding_extra_summary": model.embedding_extra_summary(),
         "strategy_counts": metadata.get("strategy_counts", {}),
         "baseline_to_compare": {
@@ -953,6 +1114,16 @@ def main() -> None:
         M_train = np.ones_like(X_train, dtype=np.float32)
         M_val = np.ones_like(X_val, dtype=np.float32)
 
+    feature_names_for_diag = [str(x) for x in meta["feature_names"]]
+    boundary_data_diagnostics = {
+        "train": make_boundary_bin_diagnostics(
+            X_train, O_train, num_bins=B, feature_names=feature_names_for_diag, split_name="train"
+        ),
+        "val": make_boundary_bin_diagnostics(
+            X_val, O_val, num_bins=B, feature_names=feature_names_for_diag, split_name="val"
+        ),
+    }
+
     label_mapping = meta["label_mapping"]
     label_names = [label for label, _ in sorted(label_mapping.items(), key=lambda kv: kv[1])]
     num_classes = int(len(label_names))
@@ -984,6 +1155,7 @@ def main() -> None:
         "seed": int(args.seed),
         "device": str(device),
         "epochs": int(args.epochs),
+        "diagnostic_only": bool(args.diagnostic_only),
         "batch_size": int(args.batch_size),
         "lr": float(args.lr),
         "weight_decay": float(args.weight_decay),
@@ -1017,6 +1189,7 @@ def main() -> None:
             "norm_first": bool(args.norm_first),
             "gate_init": float(args.gate_init),
         },
+        "boundary_data_diagnostics": boundary_data_diagnostics,
         "data_shapes": {
             "X_train_bin": list(X_train.shape),
             "X_train_offset": list(O_train.shape),
@@ -1080,6 +1253,17 @@ def main() -> None:
         activation=str(cfg("MODEL_ACTIVATION", "gelu")),
     ).to(device)
 
+    embedding_runtime_diagnostics = make_embedding_runtime_diagnostics(
+        model,
+        X_bin=X_train,
+        X_offset=O_train,
+        X_cont=X_train_cont,
+        X_mask=M_train,
+        device=device,
+    )
+    config_obj["embedding_runtime_diagnostics"] = embedding_runtime_diagnostics
+    _train_mod.save_json(out_dir / "config.json", config_obj)
+
     if args.use_class_weights:
         weights = _train_mod.compute_class_weights(y_train, num_classes).to(device)
         criterion = nn.CrossEntropyLoss(weight=weights)
@@ -1114,6 +1298,29 @@ def main() -> None:
     print(f"val bin/offset/continuous/mask shape:   {X_val.shape}/{O_val.shape}/{X_val_cont.shape}/{M_val.shape}")
     print(f"classes: {num_classes} {label_names}")
     print(f"strategy_counts: {meta.get('strategy_counts', {})}")
+    print(f"boundary last-bin train cell ratio: {boundary_data_diagnostics['train']['last_bin_cell_ratio']:.6f}")
+    print(f"boundary last-bin val cell ratio:   {boundary_data_diagnostics['val']['last_bin_cell_ratio']:.6f}")
+    print(f"last-bin offset sensitivity L2:     {embedding_runtime_diagnostics.get('last_bin_offset_sensitivity_l2')}")
+    print(f"boundary collapse fixed:            {embedding_runtime_diagnostics.get('last_bin_boundary_collapse_fixed')}")
+
+    if bool(args.diagnostic_only):
+        diagnostic_only_obj = {
+            "run_id": args.run_id,
+            "spec": spec,
+            "dataset_npz": str(dataset_path),
+            "metadata_json": str(metadata_path),
+            "boundary_data_diagnostics": boundary_data_diagnostics,
+            "embedding_runtime_diagnostics": embedding_runtime_diagnostics,
+            "continuous_info": continuous_info,
+            "selective_info": selective_info,
+            "data_shapes": config_obj["data_shapes"],
+            "model_config": config_obj["model"],
+            "note": "Diagnostic-only run exited before training.",
+        }
+        _train_mod.save_json(out_dir / "diagnostics_only.json", diagnostic_only_obj)
+        print("diagnostic-only mode: exiting before training")
+        print(f"diagnostics_only:       {out_dir / 'diagnostics_only.json'}")
+        return
 
     history: List[Dict[str, object]] = []
     best_metric = -math.inf
@@ -1248,6 +1455,8 @@ def main() -> None:
         metadata=meta,
         continuous_info=continuous_info,
         selective_info=selective_info,
+        boundary_data_diagnostics=boundary_data_diagnostics,
+        embedding_runtime_diagnostics=embedding_runtime_diagnostics,
         model=model,
     )
     _train_mod.save_json(out_dir / "diagnosis_summary.json", diagnosis)
