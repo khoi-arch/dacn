@@ -1,0 +1,3787 @@
+{
+  "A_K512_current_mixed::pslist.nprocs64bit": {
+    "policy": "A_K512_current_mixed",
+    "feature": "pslist.nprocs64bit",
+    "raw_unique": 1,
+    "mapping": [
+      {
+        "raw_value": 0.0,
+        "bins": [
+          0
+        ],
+        "offsets": [
+          0.5
+        ],
+        "n_offsets": 1
+      }
+    ]
+  },
+  "A_K512_current_mixed::handles.nport": {
+    "policy": "A_K512_current_mixed",
+    "feature": "handles.nport",
+    "raw_unique": 1,
+    "mapping": [
+      {
+        "raw_value": 0.0,
+        "bins": [
+          0
+        ],
+        "offsets": [
+          0.5
+        ],
+        "n_offsets": 1
+      }
+    ]
+  },
+  "A_K512_current_mixed::psxview.not_in_eprocess_pool": {
+    "policy": "A_K512_current_mixed",
+    "feature": "psxview.not_in_eprocess_pool",
+    "raw_unique": 2,
+    "mapping": [
+      {
+        "raw_value": 0.0,
+        "bins": [
+          0
+        ],
+        "offsets": [
+          0.0
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 1.0,
+        "bins": [
+          511
+        ],
+        "offsets": [
+          1.0
+        ],
+        "n_offsets": 1
+      }
+    ]
+  },
+  "A_K512_current_mixed::modules.nmodules": {
+    "policy": "A_K512_current_mixed",
+    "feature": "modules.nmodules",
+    "raw_unique": 3,
+    "mapping": [
+      {
+        "raw_value": 126.0,
+        "bins": [
+          0
+        ],
+        "offsets": [
+          0.0
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 137.0,
+        "bins": [
+          469
+        ],
+        "offsets": [
+          0.33335039019584656
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 138.0,
+        "bins": [
+          511
+        ],
+        "offsets": [
+          1.0
+        ],
+        "n_offsets": 1
+      }
+    ]
+  },
+  "A_K512_current_mixed::svcscan.kernel_drivers": {
+    "policy": "A_K512_current_mixed",
+    "feature": "svcscan.kernel_drivers",
+    "raw_unique": 19,
+    "mapping": [
+      {
+        "raw_value": 55.0,
+        "bins": [
+          0
+        ],
+        "offsets": [
+          0.0
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 58.0,
+        "bins": [
+          9
+        ],
+        "offsets": [
+          0.19760537147521973
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 59.0,
+        "bins": [
+          12
+        ],
+        "offsets": [
+          0.26347365975379944
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 107.0,
+        "bins": [
+          159
+        ],
+        "offsets": [
+          0.4251571297645569
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 108.0,
+        "bins": [
+          162
+        ],
+        "offsets": [
+          0.4910131096839905
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 150.0,
+        "bins": [
+          291
+        ],
+        "offsets": [
+          0.25747713446617126
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 172.0,
+        "bins": [
+          358
+        ],
+        "offsets": [
+          0.7065855860710144
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 174.0,
+        "bins": [
+          364
+        ],
+        "offsets": [
+          0.8383181095123291
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 175.0,
+        "bins": [
+          367
+        ],
+        "offsets": [
+          0.904204785823822
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 176.0,
+        "bins": [
+          370
+        ],
+        "offsets": [
+          0.9700608253479004
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 178.0,
+        "bins": [
+          377
+        ],
+        "offsets": [
+          0.10180863738059998
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 181.0,
+        "bins": [
+          386
+        ],
+        "offsets": [
+          0.29940736293792725
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 189.0,
+        "bins": [
+          410
+        ],
+        "offsets": [
+          0.8263424038887024
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 197.0,
+        "bins": [
+          435
+        ],
+        "offsets": [
+          0.3532927930355072
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 200.0,
+        "bins": [
+          444
+        ],
+        "offsets": [
+          0.5509120225906372
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 219.0,
+        "bins": [
+          502
+        ],
+        "offsets": [
+          0.8023961782455444
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 220.0,
+        "bins": [
+          505
+        ],
+        "offsets": [
+          0.8682572841644287
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 221.0,
+        "bins": [
+          508
+        ],
+        "offsets": [
+          0.9341440200805664
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 222.0,
+        "bins": [
+          511
+        ],
+        "offsets": [
+          1.0
+        ],
+        "n_offsets": 1
+      }
+    ]
+  },
+  "A_K512_current_mixed::svcscan.fs_drivers": {
+    "policy": "A_K512_current_mixed",
+    "feature": "svcscan.fs_drivers",
+    "raw_unique": 10,
+    "mapping": [
+      {
+        "raw_value": 6.0,
+        "bins": [
+          0
+        ],
+        "offsets": [
+          0.0
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 9.0,
+        "bins": [
+          76
+        ],
+        "offsets": [
+          0.800000011920929
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 10.0,
+        "bins": [
+          102
+        ],
+        "offsets": [
+          0.4000000059604645
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 11.0,
+        "bins": [
+          128
+        ],
+        "offsets": [
+          0.0
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 13.0,
+        "bins": [
+          179
+        ],
+        "offsets": [
+          0.20000000298023224
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 22.0,
+        "bins": [
+          409
+        ],
+        "offsets": [
+          0.6000000238418579
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 23.0,
+        "bins": [
+          435
+        ],
+        "offsets": [
+          0.20000000298023224
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 24.0,
+        "bins": [
+          460
+        ],
+        "offsets": [
+          0.800000011920929
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 25.0,
+        "bins": [
+          486
+        ],
+        "offsets": [
+          0.4000000059604645
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 26.0,
+        "bins": [
+          511
+        ],
+        "offsets": [
+          1.0
+        ],
+        "n_offsets": 1
+      }
+    ]
+  },
+  "A_K512_current_mixed::svcscan.process_services": {
+    "policy": "A_K512_current_mixed",
+    "feature": "svcscan.process_services",
+    "raw_unique": 14,
+    "mapping": [
+      {
+        "raw_value": 7.0,
+        "bins": [
+          0
+        ],
+        "offsets": [
+          0.0
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 9.0,
+        "bins": [
+          51
+        ],
+        "offsets": [
+          0.20000000298023224
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 10.0,
+        "bins": [
+          76
+        ],
+        "offsets": [
+          0.800000011920929
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 17.0,
+        "bins": [
+          256
+        ],
+        "offsets": [
+          0.0
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 18.0,
+        "bins": [
+          281
+        ],
+        "offsets": [
+          0.6000000238418579
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 19.0,
+        "bins": [
+          307
+        ],
+        "offsets": [
+          0.20000000298023224
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 20.0,
+        "bins": [
+          332
+        ],
+        "offsets": [
+          0.800000011920929
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 21.0,
+        "bins": [
+          358
+        ],
+        "offsets": [
+          0.4000000059604645
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 22.0,
+        "bins": [
+          384
+        ],
+        "offsets": [
+          0.0
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 23.0,
+        "bins": [
+          409
+        ],
+        "offsets": [
+          0.6000000238418579
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 24.0,
+        "bins": [
+          435
+        ],
+        "offsets": [
+          0.20000000298023224
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 25.0,
+        "bins": [
+          460
+        ],
+        "offsets": [
+          0.800000011920929
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 26.0,
+        "bins": [
+          486
+        ],
+        "offsets": [
+          0.4000000059604645
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 27.0,
+        "bins": [
+          511
+        ],
+        "offsets": [
+          1.0
+        ],
+        "n_offsets": 1
+      }
+    ]
+  },
+  "A_K512_current_mixed::svcscan.interactive_process_services": {
+    "policy": "A_K512_current_mixed",
+    "feature": "svcscan.interactive_process_services",
+    "raw_unique": 1,
+    "mapping": [
+      {
+        "raw_value": 0.0,
+        "bins": [
+          0
+        ],
+        "offsets": [
+          0.5
+        ],
+        "n_offsets": 1
+      }
+    ]
+  },
+  "A_K512_current_mixed::callbacks.ncallbacks": {
+    "policy": "A_K512_current_mixed",
+    "feature": "callbacks.ncallbacks",
+    "raw_unique": 13,
+    "mapping": [
+      {
+        "raw_value": 50.0,
+        "bins": [
+          0
+        ],
+        "offsets": [
+          0.0
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 51.0,
+        "bins": [
+          13
+        ],
+        "offsets": [
+          0.1282053142786026
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 52.0,
+        "bins": [
+          26
+        ],
+        "offsets": [
+          0.2564106285572052
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 53.0,
+        "bins": [
+          39
+        ],
+        "offsets": [
+          0.3846169710159302
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 54.0,
+        "bins": [
+          52
+        ],
+        "offsets": [
+          0.5128212571144104
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 55.0,
+        "bins": [
+          65
+        ],
+        "offsets": [
+          0.6410316824913025
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 56.0,
+        "bins": [
+          78
+        ],
+        "offsets": [
+          0.7692339420318604
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 57.0,
+        "bins": [
+          91
+        ],
+        "offsets": [
+          0.8974361419677734
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 85.0,
+        "bins": [
+          459
+        ],
+        "offsets": [
+          0.48718079924583435
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 86.0,
+        "bins": [
+          472
+        ],
+        "offsets": [
+          0.6153727769851685
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 87.0,
+        "bins": [
+          485
+        ],
+        "offsets": [
+          0.7435904145240784
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 88.0,
+        "bins": [
+          498
+        ],
+        "offsets": [
+          0.8718079924583435
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 89.0,
+        "bins": [
+          511
+        ],
+        "offsets": [
+          1.0
+        ],
+        "n_offsets": 1
+      }
+    ]
+  },
+  "A_K512_current_mixed::callbacks.nanonymous": {
+    "policy": "A_K512_current_mixed",
+    "feature": "callbacks.nanonymous",
+    "raw_unique": 2,
+    "mapping": [
+      {
+        "raw_value": 0.0,
+        "bins": [
+          0
+        ],
+        "offsets": [
+          0.0
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 1.0,
+        "bins": [
+          511
+        ],
+        "offsets": [
+          1.0
+        ],
+        "n_offsets": 1
+      }
+    ]
+  },
+  "A_K512_current_mixed::callbacks.ngeneric": {
+    "policy": "A_K512_current_mixed",
+    "feature": "callbacks.ngeneric",
+    "raw_unique": 2,
+    "mapping": [
+      {
+        "raw_value": 7.0,
+        "bins": [
+          0
+        ],
+        "offsets": [
+          0.0
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 8.0,
+        "bins": [
+          511
+        ],
+        "offsets": [
+          1.0
+        ],
+        "n_offsets": 1
+      }
+    ]
+  },
+  "B_K512_rank_uniform_all::pslist.nprocs64bit": {
+    "policy": "B_K512_rank_uniform_all",
+    "feature": "pslist.nprocs64bit",
+    "raw_unique": 1,
+    "mapping": [
+      {
+        "raw_value": 0.0,
+        "bins": [
+          0
+        ],
+        "offsets": [
+          0.0
+        ],
+        "n_offsets": 1
+      }
+    ]
+  },
+  "B_K512_rank_uniform_all::handles.nport": {
+    "policy": "B_K512_rank_uniform_all",
+    "feature": "handles.nport",
+    "raw_unique": 1,
+    "mapping": [
+      {
+        "raw_value": 0.0,
+        "bins": [
+          0
+        ],
+        "offsets": [
+          0.0
+        ],
+        "n_offsets": 1
+      }
+    ]
+  },
+  "B_K512_rank_uniform_all::psxview.not_in_eprocess_pool": {
+    "policy": "B_K512_rank_uniform_all",
+    "feature": "psxview.not_in_eprocess_pool",
+    "raw_unique": 2,
+    "mapping": [
+      {
+        "raw_value": 0.0,
+        "bins": [
+          0
+        ],
+        "offsets": [
+          0.0
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 1.0,
+        "bins": [
+          511
+        ],
+        "offsets": [
+          1.0
+        ],
+        "n_offsets": 1
+      }
+    ]
+  },
+  "B_K512_rank_uniform_all::modules.nmodules": {
+    "policy": "B_K512_rank_uniform_all",
+    "feature": "modules.nmodules",
+    "raw_unique": 3,
+    "mapping": [
+      {
+        "raw_value": 126.0,
+        "bins": [
+          0
+        ],
+        "offsets": [
+          0.0
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 137.0,
+        "bins": [
+          256
+        ],
+        "offsets": [
+          0.0
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 138.0,
+        "bins": [
+          511
+        ],
+        "offsets": [
+          1.0
+        ],
+        "n_offsets": 1
+      }
+    ]
+  },
+  "B_K512_rank_uniform_all::svcscan.kernel_drivers": {
+    "policy": "B_K512_rank_uniform_all",
+    "feature": "svcscan.kernel_drivers",
+    "raw_unique": 19,
+    "mapping": [
+      {
+        "raw_value": 55.0,
+        "bins": [
+          0
+        ],
+        "offsets": [
+          0.0
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 58.0,
+        "bins": [
+          28
+        ],
+        "offsets": [
+          0.4444444477558136
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 59.0,
+        "bins": [
+          56
+        ],
+        "offsets": [
+          0.8888888955116272
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 107.0,
+        "bins": [
+          85
+        ],
+        "offsets": [
+          0.3333333432674408
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 108.0,
+        "bins": [
+          113
+        ],
+        "offsets": [
+          0.7777777910232544
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 150.0,
+        "bins": [
+          142
+        ],
+        "offsets": [
+          0.2222222238779068
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 172.0,
+        "bins": [
+          170
+        ],
+        "offsets": [
+          0.6666666865348816
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 174.0,
+        "bins": [
+          199
+        ],
+        "offsets": [
+          0.1111111119389534
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 175.0,
+        "bins": [
+          227
+        ],
+        "offsets": [
+          0.5555555820465088
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 176.0,
+        "bins": [
+          256
+        ],
+        "offsets": [
+          0.0
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 178.0,
+        "bins": [
+          284
+        ],
+        "offsets": [
+          0.4444444477558136
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 181.0,
+        "bins": [
+          312
+        ],
+        "offsets": [
+          0.8888888955116272
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 189.0,
+        "bins": [
+          341
+        ],
+        "offsets": [
+          0.3333333432674408
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 197.0,
+        "bins": [
+          369
+        ],
+        "offsets": [
+          0.7777777910232544
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 200.0,
+        "bins": [
+          398
+        ],
+        "offsets": [
+          0.2222222238779068
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 219.0,
+        "bins": [
+          426
+        ],
+        "offsets": [
+          0.6666666865348816
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 220.0,
+        "bins": [
+          455
+        ],
+        "offsets": [
+          0.1111111119389534
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 221.0,
+        "bins": [
+          483
+        ],
+        "offsets": [
+          0.5555555820465088
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 222.0,
+        "bins": [
+          511
+        ],
+        "offsets": [
+          1.0
+        ],
+        "n_offsets": 1
+      }
+    ]
+  },
+  "B_K512_rank_uniform_all::svcscan.fs_drivers": {
+    "policy": "B_K512_rank_uniform_all",
+    "feature": "svcscan.fs_drivers",
+    "raw_unique": 10,
+    "mapping": [
+      {
+        "raw_value": 6.0,
+        "bins": [
+          0
+        ],
+        "offsets": [
+          0.0
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 9.0,
+        "bins": [
+          56
+        ],
+        "offsets": [
+          0.8888888955116272
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 10.0,
+        "bins": [
+          113
+        ],
+        "offsets": [
+          0.7777777910232544
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 11.0,
+        "bins": [
+          170
+        ],
+        "offsets": [
+          0.6666666865348816
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 13.0,
+        "bins": [
+          227
+        ],
+        "offsets": [
+          0.5555555820465088
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 22.0,
+        "bins": [
+          284
+        ],
+        "offsets": [
+          0.4444444477558136
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 23.0,
+        "bins": [
+          341
+        ],
+        "offsets": [
+          0.3333333432674408
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 24.0,
+        "bins": [
+          398
+        ],
+        "offsets": [
+          0.2222222238779068
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 25.0,
+        "bins": [
+          455
+        ],
+        "offsets": [
+          0.1111111119389534
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 26.0,
+        "bins": [
+          511
+        ],
+        "offsets": [
+          1.0
+        ],
+        "n_offsets": 1
+      }
+    ]
+  },
+  "B_K512_rank_uniform_all::svcscan.process_services": {
+    "policy": "B_K512_rank_uniform_all",
+    "feature": "svcscan.process_services",
+    "raw_unique": 14,
+    "mapping": [
+      {
+        "raw_value": 7.0,
+        "bins": [
+          0
+        ],
+        "offsets": [
+          0.0
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 9.0,
+        "bins": [
+          39
+        ],
+        "offsets": [
+          0.38461539149284363
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 10.0,
+        "bins": [
+          78
+        ],
+        "offsets": [
+          0.7692307829856873
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 17.0,
+        "bins": [
+          118
+        ],
+        "offsets": [
+          0.1538461595773697
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 18.0,
+        "bins": [
+          157
+        ],
+        "offsets": [
+          0.5384615659713745
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 19.0,
+        "bins": [
+          196
+        ],
+        "offsets": [
+          0.9230769276618958
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 20.0,
+        "bins": [
+          236
+        ],
+        "offsets": [
+          0.3076923191547394
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 21.0,
+        "bins": [
+          275
+        ],
+        "offsets": [
+          0.692307710647583
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 22.0,
+        "bins": [
+          315
+        ],
+        "offsets": [
+          0.07692307978868484
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 23.0,
+        "bins": [
+          354
+        ],
+        "offsets": [
+          0.4615384638309479
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 24.0,
+        "bins": [
+          393
+        ],
+        "offsets": [
+          0.8461538553237915
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 25.0,
+        "bins": [
+          433
+        ],
+        "offsets": [
+          0.23076923191547394
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 26.0,
+        "bins": [
+          472
+        ],
+        "offsets": [
+          0.6153846383094788
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 27.0,
+        "bins": [
+          511
+        ],
+        "offsets": [
+          1.0
+        ],
+        "n_offsets": 1
+      }
+    ]
+  },
+  "B_K512_rank_uniform_all::svcscan.interactive_process_services": {
+    "policy": "B_K512_rank_uniform_all",
+    "feature": "svcscan.interactive_process_services",
+    "raw_unique": 1,
+    "mapping": [
+      {
+        "raw_value": 0.0,
+        "bins": [
+          0
+        ],
+        "offsets": [
+          0.0
+        ],
+        "n_offsets": 1
+      }
+    ]
+  },
+  "B_K512_rank_uniform_all::callbacks.ncallbacks": {
+    "policy": "B_K512_rank_uniform_all",
+    "feature": "callbacks.ncallbacks",
+    "raw_unique": 13,
+    "mapping": [
+      {
+        "raw_value": 50.0,
+        "bins": [
+          0
+        ],
+        "offsets": [
+          0.0
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 51.0,
+        "bins": [
+          42
+        ],
+        "offsets": [
+          0.6666666865348816
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 52.0,
+        "bins": [
+          85
+        ],
+        "offsets": [
+          0.3333333432674408
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 53.0,
+        "bins": [
+          128
+        ],
+        "offsets": [
+          0.0
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 54.0,
+        "bins": [
+          170
+        ],
+        "offsets": [
+          0.6666666865348816
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 55.0,
+        "bins": [
+          213
+        ],
+        "offsets": [
+          0.3333333432674408
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 56.0,
+        "bins": [
+          256
+        ],
+        "offsets": [
+          0.0
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 57.0,
+        "bins": [
+          298
+        ],
+        "offsets": [
+          0.6666666865348816
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 85.0,
+        "bins": [
+          341
+        ],
+        "offsets": [
+          0.3333333432674408
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 86.0,
+        "bins": [
+          384
+        ],
+        "offsets": [
+          0.0
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 87.0,
+        "bins": [
+          426
+        ],
+        "offsets": [
+          0.6666666865348816
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 88.0,
+        "bins": [
+          469
+        ],
+        "offsets": [
+          0.3333333432674408
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 89.0,
+        "bins": [
+          511
+        ],
+        "offsets": [
+          1.0
+        ],
+        "n_offsets": 1
+      }
+    ]
+  },
+  "B_K512_rank_uniform_all::callbacks.nanonymous": {
+    "policy": "B_K512_rank_uniform_all",
+    "feature": "callbacks.nanonymous",
+    "raw_unique": 2,
+    "mapping": [
+      {
+        "raw_value": 0.0,
+        "bins": [
+          0
+        ],
+        "offsets": [
+          0.0
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 1.0,
+        "bins": [
+          511
+        ],
+        "offsets": [
+          1.0
+        ],
+        "n_offsets": 1
+      }
+    ]
+  },
+  "B_K512_rank_uniform_all::callbacks.ngeneric": {
+    "policy": "B_K512_rank_uniform_all",
+    "feature": "callbacks.ngeneric",
+    "raw_unique": 2,
+    "mapping": [
+      {
+        "raw_value": 7.0,
+        "bins": [
+          0
+        ],
+        "offsets": [
+          0.0
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 8.0,
+        "bins": [
+          511
+        ],
+        "offsets": [
+          1.0
+        ],
+        "n_offsets": 1
+      }
+    ]
+  },
+  "C1_K512_selective_rank_current::pslist.nprocs64bit": {
+    "policy": "C1_K512_selective_rank_current",
+    "feature": "pslist.nprocs64bit",
+    "raw_unique": 1,
+    "mapping": [
+      {
+        "raw_value": 0.0,
+        "bins": [
+          0
+        ],
+        "offsets": [
+          0.5
+        ],
+        "n_offsets": 1
+      }
+    ]
+  },
+  "C1_K512_selective_rank_current::handles.nport": {
+    "policy": "C1_K512_selective_rank_current",
+    "feature": "handles.nport",
+    "raw_unique": 1,
+    "mapping": [
+      {
+        "raw_value": 0.0,
+        "bins": [
+          0
+        ],
+        "offsets": [
+          0.5
+        ],
+        "n_offsets": 1
+      }
+    ]
+  },
+  "C1_K512_selective_rank_current::psxview.not_in_eprocess_pool": {
+    "policy": "C1_K512_selective_rank_current",
+    "feature": "psxview.not_in_eprocess_pool",
+    "raw_unique": 2,
+    "mapping": [
+      {
+        "raw_value": 0.0,
+        "bins": [
+          0
+        ],
+        "offsets": [
+          0.0
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 1.0,
+        "bins": [
+          511
+        ],
+        "offsets": [
+          1.0
+        ],
+        "n_offsets": 1
+      }
+    ]
+  },
+  "C1_K512_selective_rank_current::modules.nmodules": {
+    "policy": "C1_K512_selective_rank_current",
+    "feature": "modules.nmodules",
+    "raw_unique": 3,
+    "mapping": [
+      {
+        "raw_value": 126.0,
+        "bins": [
+          0
+        ],
+        "offsets": [
+          0.0
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 137.0,
+        "bins": [
+          469
+        ],
+        "offsets": [
+          0.33335039019584656
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 138.0,
+        "bins": [
+          511
+        ],
+        "offsets": [
+          1.0
+        ],
+        "n_offsets": 1
+      }
+    ]
+  },
+  "C1_K512_selective_rank_current::svcscan.kernel_drivers": {
+    "policy": "C1_K512_selective_rank_current",
+    "feature": "svcscan.kernel_drivers",
+    "raw_unique": 19,
+    "mapping": [
+      {
+        "raw_value": 55.0,
+        "bins": [
+          0
+        ],
+        "offsets": [
+          0.0
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 58.0,
+        "bins": [
+          9
+        ],
+        "offsets": [
+          0.19760537147521973
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 59.0,
+        "bins": [
+          12
+        ],
+        "offsets": [
+          0.26347365975379944
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 107.0,
+        "bins": [
+          159
+        ],
+        "offsets": [
+          0.4251571297645569
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 108.0,
+        "bins": [
+          162
+        ],
+        "offsets": [
+          0.4910131096839905
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 150.0,
+        "bins": [
+          291
+        ],
+        "offsets": [
+          0.25747713446617126
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 172.0,
+        "bins": [
+          358
+        ],
+        "offsets": [
+          0.7065855860710144
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 174.0,
+        "bins": [
+          364
+        ],
+        "offsets": [
+          0.8383181095123291
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 175.0,
+        "bins": [
+          367
+        ],
+        "offsets": [
+          0.904204785823822
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 176.0,
+        "bins": [
+          370
+        ],
+        "offsets": [
+          0.9700608253479004
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 178.0,
+        "bins": [
+          377
+        ],
+        "offsets": [
+          0.10180863738059998
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 181.0,
+        "bins": [
+          386
+        ],
+        "offsets": [
+          0.29940736293792725
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 189.0,
+        "bins": [
+          410
+        ],
+        "offsets": [
+          0.8263424038887024
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 197.0,
+        "bins": [
+          435
+        ],
+        "offsets": [
+          0.3532927930355072
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 200.0,
+        "bins": [
+          444
+        ],
+        "offsets": [
+          0.5509120225906372
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 219.0,
+        "bins": [
+          502
+        ],
+        "offsets": [
+          0.8023961782455444
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 220.0,
+        "bins": [
+          505
+        ],
+        "offsets": [
+          0.8682572841644287
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 221.0,
+        "bins": [
+          508
+        ],
+        "offsets": [
+          0.9341440200805664
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 222.0,
+        "bins": [
+          511
+        ],
+        "offsets": [
+          1.0
+        ],
+        "n_offsets": 1
+      }
+    ]
+  },
+  "C1_K512_selective_rank_current::svcscan.fs_drivers": {
+    "policy": "C1_K512_selective_rank_current",
+    "feature": "svcscan.fs_drivers",
+    "raw_unique": 10,
+    "mapping": [
+      {
+        "raw_value": 6.0,
+        "bins": [
+          0
+        ],
+        "offsets": [
+          0.0
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 9.0,
+        "bins": [
+          76
+        ],
+        "offsets": [
+          0.800000011920929
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 10.0,
+        "bins": [
+          102
+        ],
+        "offsets": [
+          0.4000000059604645
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 11.0,
+        "bins": [
+          128
+        ],
+        "offsets": [
+          0.0
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 13.0,
+        "bins": [
+          179
+        ],
+        "offsets": [
+          0.20000000298023224
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 22.0,
+        "bins": [
+          409
+        ],
+        "offsets": [
+          0.6000000238418579
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 23.0,
+        "bins": [
+          435
+        ],
+        "offsets": [
+          0.20000000298023224
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 24.0,
+        "bins": [
+          460
+        ],
+        "offsets": [
+          0.800000011920929
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 25.0,
+        "bins": [
+          486
+        ],
+        "offsets": [
+          0.4000000059604645
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 26.0,
+        "bins": [
+          511
+        ],
+        "offsets": [
+          1.0
+        ],
+        "n_offsets": 1
+      }
+    ]
+  },
+  "C1_K512_selective_rank_current::svcscan.process_services": {
+    "policy": "C1_K512_selective_rank_current",
+    "feature": "svcscan.process_services",
+    "raw_unique": 14,
+    "mapping": [
+      {
+        "raw_value": 7.0,
+        "bins": [
+          0
+        ],
+        "offsets": [
+          0.0
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 9.0,
+        "bins": [
+          51
+        ],
+        "offsets": [
+          0.20000000298023224
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 10.0,
+        "bins": [
+          76
+        ],
+        "offsets": [
+          0.800000011920929
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 17.0,
+        "bins": [
+          256
+        ],
+        "offsets": [
+          0.0
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 18.0,
+        "bins": [
+          281
+        ],
+        "offsets": [
+          0.6000000238418579
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 19.0,
+        "bins": [
+          307
+        ],
+        "offsets": [
+          0.20000000298023224
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 20.0,
+        "bins": [
+          332
+        ],
+        "offsets": [
+          0.800000011920929
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 21.0,
+        "bins": [
+          358
+        ],
+        "offsets": [
+          0.4000000059604645
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 22.0,
+        "bins": [
+          384
+        ],
+        "offsets": [
+          0.0
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 23.0,
+        "bins": [
+          409
+        ],
+        "offsets": [
+          0.6000000238418579
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 24.0,
+        "bins": [
+          435
+        ],
+        "offsets": [
+          0.20000000298023224
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 25.0,
+        "bins": [
+          460
+        ],
+        "offsets": [
+          0.800000011920929
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 26.0,
+        "bins": [
+          486
+        ],
+        "offsets": [
+          0.4000000059604645
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 27.0,
+        "bins": [
+          511
+        ],
+        "offsets": [
+          1.0
+        ],
+        "n_offsets": 1
+      }
+    ]
+  },
+  "C1_K512_selective_rank_current::svcscan.interactive_process_services": {
+    "policy": "C1_K512_selective_rank_current",
+    "feature": "svcscan.interactive_process_services",
+    "raw_unique": 1,
+    "mapping": [
+      {
+        "raw_value": 0.0,
+        "bins": [
+          0
+        ],
+        "offsets": [
+          0.5
+        ],
+        "n_offsets": 1
+      }
+    ]
+  },
+  "C1_K512_selective_rank_current::callbacks.ncallbacks": {
+    "policy": "C1_K512_selective_rank_current",
+    "feature": "callbacks.ncallbacks",
+    "raw_unique": 13,
+    "mapping": [
+      {
+        "raw_value": 50.0,
+        "bins": [
+          0
+        ],
+        "offsets": [
+          0.0
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 51.0,
+        "bins": [
+          13
+        ],
+        "offsets": [
+          0.1282053142786026
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 52.0,
+        "bins": [
+          26
+        ],
+        "offsets": [
+          0.2564106285572052
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 53.0,
+        "bins": [
+          39
+        ],
+        "offsets": [
+          0.3846169710159302
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 54.0,
+        "bins": [
+          52
+        ],
+        "offsets": [
+          0.5128212571144104
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 55.0,
+        "bins": [
+          65
+        ],
+        "offsets": [
+          0.6410316824913025
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 56.0,
+        "bins": [
+          78
+        ],
+        "offsets": [
+          0.7692339420318604
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 57.0,
+        "bins": [
+          91
+        ],
+        "offsets": [
+          0.8974361419677734
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 85.0,
+        "bins": [
+          459
+        ],
+        "offsets": [
+          0.48718079924583435
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 86.0,
+        "bins": [
+          472
+        ],
+        "offsets": [
+          0.6153727769851685
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 87.0,
+        "bins": [
+          485
+        ],
+        "offsets": [
+          0.7435904145240784
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 88.0,
+        "bins": [
+          498
+        ],
+        "offsets": [
+          0.8718079924583435
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 89.0,
+        "bins": [
+          511
+        ],
+        "offsets": [
+          1.0
+        ],
+        "n_offsets": 1
+      }
+    ]
+  },
+  "C1_K512_selective_rank_current::callbacks.nanonymous": {
+    "policy": "C1_K512_selective_rank_current",
+    "feature": "callbacks.nanonymous",
+    "raw_unique": 2,
+    "mapping": [
+      {
+        "raw_value": 0.0,
+        "bins": [
+          0
+        ],
+        "offsets": [
+          0.0
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 1.0,
+        "bins": [
+          511
+        ],
+        "offsets": [
+          1.0
+        ],
+        "n_offsets": 1
+      }
+    ]
+  },
+  "C1_K512_selective_rank_current::callbacks.ngeneric": {
+    "policy": "C1_K512_selective_rank_current",
+    "feature": "callbacks.ngeneric",
+    "raw_unique": 2,
+    "mapping": [
+      {
+        "raw_value": 7.0,
+        "bins": [
+          0
+        ],
+        "offsets": [
+          0.0
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 8.0,
+        "bins": [
+          511
+        ],
+        "offsets": [
+          1.0
+        ],
+        "n_offsets": 1
+      }
+    ]
+  },
+  "C2_K512_selective_rank_discrete_compact::pslist.nprocs64bit": {
+    "policy": "C2_K512_selective_rank_discrete_compact",
+    "feature": "pslist.nprocs64bit",
+    "raw_unique": 1,
+    "mapping": [
+      {
+        "raw_value": 0.0,
+        "bins": [
+          0
+        ],
+        "offsets": [
+          0.5
+        ],
+        "n_offsets": 1
+      }
+    ]
+  },
+  "C2_K512_selective_rank_discrete_compact::handles.nport": {
+    "policy": "C2_K512_selective_rank_discrete_compact",
+    "feature": "handles.nport",
+    "raw_unique": 1,
+    "mapping": [
+      {
+        "raw_value": 0.0,
+        "bins": [
+          0
+        ],
+        "offsets": [
+          0.5
+        ],
+        "n_offsets": 1
+      }
+    ]
+  },
+  "C2_K512_selective_rank_discrete_compact::psxview.not_in_eprocess_pool": {
+    "policy": "C2_K512_selective_rank_discrete_compact",
+    "feature": "psxview.not_in_eprocess_pool",
+    "raw_unique": 2,
+    "mapping": [
+      {
+        "raw_value": 0.0,
+        "bins": [
+          0
+        ],
+        "offsets": [
+          0.0
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 1.0,
+        "bins": [
+          1
+        ],
+        "offsets": [
+          0.0
+        ],
+        "n_offsets": 1
+      }
+    ]
+  },
+  "C2_K512_selective_rank_discrete_compact::modules.nmodules": {
+    "policy": "C2_K512_selective_rank_discrete_compact",
+    "feature": "modules.nmodules",
+    "raw_unique": 3,
+    "mapping": [
+      {
+        "raw_value": 126.0,
+        "bins": [
+          0
+        ],
+        "offsets": [
+          0.0
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 137.0,
+        "bins": [
+          1
+        ],
+        "offsets": [
+          0.0
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 138.0,
+        "bins": [
+          2
+        ],
+        "offsets": [
+          0.0
+        ],
+        "n_offsets": 1
+      }
+    ]
+  },
+  "C2_K512_selective_rank_discrete_compact::svcscan.kernel_drivers": {
+    "policy": "C2_K512_selective_rank_discrete_compact",
+    "feature": "svcscan.kernel_drivers",
+    "raw_unique": 19,
+    "mapping": [
+      {
+        "raw_value": 55.0,
+        "bins": [
+          0
+        ],
+        "offsets": [
+          0.0
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 58.0,
+        "bins": [
+          1
+        ],
+        "offsets": [
+          0.0
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 59.0,
+        "bins": [
+          2
+        ],
+        "offsets": [
+          0.0
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 107.0,
+        "bins": [
+          3
+        ],
+        "offsets": [
+          0.0
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 108.0,
+        "bins": [
+          4
+        ],
+        "offsets": [
+          0.0
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 150.0,
+        "bins": [
+          5
+        ],
+        "offsets": [
+          0.0
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 172.0,
+        "bins": [
+          6
+        ],
+        "offsets": [
+          0.0
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 174.0,
+        "bins": [
+          7
+        ],
+        "offsets": [
+          0.0
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 175.0,
+        "bins": [
+          8
+        ],
+        "offsets": [
+          0.0
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 176.0,
+        "bins": [
+          9
+        ],
+        "offsets": [
+          0.0
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 178.0,
+        "bins": [
+          10
+        ],
+        "offsets": [
+          0.0
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 181.0,
+        "bins": [
+          11
+        ],
+        "offsets": [
+          0.0
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 189.0,
+        "bins": [
+          12
+        ],
+        "offsets": [
+          0.0
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 197.0,
+        "bins": [
+          13
+        ],
+        "offsets": [
+          0.0
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 200.0,
+        "bins": [
+          14
+        ],
+        "offsets": [
+          0.0
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 219.0,
+        "bins": [
+          15
+        ],
+        "offsets": [
+          0.0
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 220.0,
+        "bins": [
+          16
+        ],
+        "offsets": [
+          0.0
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 221.0,
+        "bins": [
+          17
+        ],
+        "offsets": [
+          0.0
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 222.0,
+        "bins": [
+          18
+        ],
+        "offsets": [
+          0.0
+        ],
+        "n_offsets": 1
+      }
+    ]
+  },
+  "C2_K512_selective_rank_discrete_compact::svcscan.fs_drivers": {
+    "policy": "C2_K512_selective_rank_discrete_compact",
+    "feature": "svcscan.fs_drivers",
+    "raw_unique": 10,
+    "mapping": [
+      {
+        "raw_value": 6.0,
+        "bins": [
+          0
+        ],
+        "offsets": [
+          0.0
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 9.0,
+        "bins": [
+          1
+        ],
+        "offsets": [
+          0.0
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 10.0,
+        "bins": [
+          2
+        ],
+        "offsets": [
+          0.0
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 11.0,
+        "bins": [
+          3
+        ],
+        "offsets": [
+          0.0
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 13.0,
+        "bins": [
+          4
+        ],
+        "offsets": [
+          0.0
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 22.0,
+        "bins": [
+          5
+        ],
+        "offsets": [
+          0.0
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 23.0,
+        "bins": [
+          6
+        ],
+        "offsets": [
+          0.0
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 24.0,
+        "bins": [
+          7
+        ],
+        "offsets": [
+          0.0
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 25.0,
+        "bins": [
+          8
+        ],
+        "offsets": [
+          0.0
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 26.0,
+        "bins": [
+          9
+        ],
+        "offsets": [
+          0.0
+        ],
+        "n_offsets": 1
+      }
+    ]
+  },
+  "C2_K512_selective_rank_discrete_compact::svcscan.process_services": {
+    "policy": "C2_K512_selective_rank_discrete_compact",
+    "feature": "svcscan.process_services",
+    "raw_unique": 14,
+    "mapping": [
+      {
+        "raw_value": 7.0,
+        "bins": [
+          0
+        ],
+        "offsets": [
+          0.0
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 9.0,
+        "bins": [
+          1
+        ],
+        "offsets": [
+          0.0
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 10.0,
+        "bins": [
+          2
+        ],
+        "offsets": [
+          0.0
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 17.0,
+        "bins": [
+          3
+        ],
+        "offsets": [
+          0.0
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 18.0,
+        "bins": [
+          4
+        ],
+        "offsets": [
+          0.0
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 19.0,
+        "bins": [
+          5
+        ],
+        "offsets": [
+          0.0
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 20.0,
+        "bins": [
+          6
+        ],
+        "offsets": [
+          0.0
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 21.0,
+        "bins": [
+          7
+        ],
+        "offsets": [
+          0.0
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 22.0,
+        "bins": [
+          8
+        ],
+        "offsets": [
+          0.0
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 23.0,
+        "bins": [
+          9
+        ],
+        "offsets": [
+          0.0
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 24.0,
+        "bins": [
+          10
+        ],
+        "offsets": [
+          0.0
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 25.0,
+        "bins": [
+          11
+        ],
+        "offsets": [
+          0.0
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 26.0,
+        "bins": [
+          12
+        ],
+        "offsets": [
+          0.0
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 27.0,
+        "bins": [
+          13
+        ],
+        "offsets": [
+          0.0
+        ],
+        "n_offsets": 1
+      }
+    ]
+  },
+  "C2_K512_selective_rank_discrete_compact::svcscan.interactive_process_services": {
+    "policy": "C2_K512_selective_rank_discrete_compact",
+    "feature": "svcscan.interactive_process_services",
+    "raw_unique": 1,
+    "mapping": [
+      {
+        "raw_value": 0.0,
+        "bins": [
+          0
+        ],
+        "offsets": [
+          0.5
+        ],
+        "n_offsets": 1
+      }
+    ]
+  },
+  "C2_K512_selective_rank_discrete_compact::callbacks.ncallbacks": {
+    "policy": "C2_K512_selective_rank_discrete_compact",
+    "feature": "callbacks.ncallbacks",
+    "raw_unique": 13,
+    "mapping": [
+      {
+        "raw_value": 50.0,
+        "bins": [
+          0
+        ],
+        "offsets": [
+          0.0
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 51.0,
+        "bins": [
+          1
+        ],
+        "offsets": [
+          0.0
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 52.0,
+        "bins": [
+          2
+        ],
+        "offsets": [
+          0.0
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 53.0,
+        "bins": [
+          3
+        ],
+        "offsets": [
+          0.0
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 54.0,
+        "bins": [
+          4
+        ],
+        "offsets": [
+          0.0
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 55.0,
+        "bins": [
+          5
+        ],
+        "offsets": [
+          0.0
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 56.0,
+        "bins": [
+          6
+        ],
+        "offsets": [
+          0.0
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 57.0,
+        "bins": [
+          7
+        ],
+        "offsets": [
+          0.0
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 85.0,
+        "bins": [
+          8
+        ],
+        "offsets": [
+          0.0
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 86.0,
+        "bins": [
+          9
+        ],
+        "offsets": [
+          0.0
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 87.0,
+        "bins": [
+          10
+        ],
+        "offsets": [
+          0.0
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 88.0,
+        "bins": [
+          11
+        ],
+        "offsets": [
+          0.0
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 89.0,
+        "bins": [
+          12
+        ],
+        "offsets": [
+          0.0
+        ],
+        "n_offsets": 1
+      }
+    ]
+  },
+  "C2_K512_selective_rank_discrete_compact::callbacks.nanonymous": {
+    "policy": "C2_K512_selective_rank_discrete_compact",
+    "feature": "callbacks.nanonymous",
+    "raw_unique": 2,
+    "mapping": [
+      {
+        "raw_value": 0.0,
+        "bins": [
+          0
+        ],
+        "offsets": [
+          0.0
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 1.0,
+        "bins": [
+          1
+        ],
+        "offsets": [
+          0.0
+        ],
+        "n_offsets": 1
+      }
+    ]
+  },
+  "C2_K512_selective_rank_discrete_compact::callbacks.ngeneric": {
+    "policy": "C2_K512_selective_rank_discrete_compact",
+    "feature": "callbacks.ngeneric",
+    "raw_unique": 2,
+    "mapping": [
+      {
+        "raw_value": 7.0,
+        "bins": [
+          0
+        ],
+        "offsets": [
+          0.0
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 8.0,
+        "bins": [
+          1
+        ],
+        "offsets": [
+          0.0
+        ],
+        "n_offsets": 1
+      }
+    ]
+  },
+  "K256_current_mixed::pslist.nprocs64bit": {
+    "policy": "K256_current_mixed",
+    "feature": "pslist.nprocs64bit",
+    "raw_unique": 1,
+    "mapping": [
+      {
+        "raw_value": 0.0,
+        "bins": [
+          0
+        ],
+        "offsets": [
+          0.5
+        ],
+        "n_offsets": 1
+      }
+    ]
+  },
+  "K256_current_mixed::handles.nport": {
+    "policy": "K256_current_mixed",
+    "feature": "handles.nport",
+    "raw_unique": 1,
+    "mapping": [
+      {
+        "raw_value": 0.0,
+        "bins": [
+          0
+        ],
+        "offsets": [
+          0.5
+        ],
+        "n_offsets": 1
+      }
+    ]
+  },
+  "K256_current_mixed::psxview.not_in_eprocess_pool": {
+    "policy": "K256_current_mixed",
+    "feature": "psxview.not_in_eprocess_pool",
+    "raw_unique": 2,
+    "mapping": [
+      {
+        "raw_value": 0.0,
+        "bins": [
+          0
+        ],
+        "offsets": [
+          0.0
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 1.0,
+        "bins": [
+          255
+        ],
+        "offsets": [
+          1.0
+        ],
+        "n_offsets": 1
+      }
+    ]
+  },
+  "K256_current_mixed::modules.nmodules": {
+    "policy": "K256_current_mixed",
+    "feature": "modules.nmodules",
+    "raw_unique": 3,
+    "mapping": [
+      {
+        "raw_value": 126.0,
+        "bins": [
+          0
+        ],
+        "offsets": [
+          0.0
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 137.0,
+        "bins": [
+          234
+        ],
+        "offsets": [
+          0.6666752099990845
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 138.0,
+        "bins": [
+          255
+        ],
+        "offsets": [
+          1.0
+        ],
+        "n_offsets": 1
+      }
+    ]
+  },
+  "K256_current_mixed::svcscan.kernel_drivers": {
+    "policy": "K256_current_mixed",
+    "feature": "svcscan.kernel_drivers",
+    "raw_unique": 19,
+    "mapping": [
+      {
+        "raw_value": 55.0,
+        "bins": [
+          0
+        ],
+        "offsets": [
+          0.0
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 58.0,
+        "bins": [
+          4
+        ],
+        "offsets": [
+          0.5988026857376099
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 59.0,
+        "bins": [
+          6
+        ],
+        "offsets": [
+          0.13173682987689972
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 107.0,
+        "bins": [
+          79
+        ],
+        "offsets": [
+          0.712578535079956
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 108.0,
+        "bins": [
+          81
+        ],
+        "offsets": [
+          0.24550655484199524
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 150.0,
+        "bins": [
+          145
+        ],
+        "offsets": [
+          0.6287385821342468
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 172.0,
+        "bins": [
+          179
+        ],
+        "offsets": [
+          0.3532927930355072
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 174.0,
+        "bins": [
+          182
+        ],
+        "offsets": [
+          0.41915905475616455
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 175.0,
+        "bins": [
+          183
+        ],
+        "offsets": [
+          0.9521024227142334
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 176.0,
+        "bins": [
+          185
+        ],
+        "offsets": [
+          0.4850304126739502
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 178.0,
+        "bins": [
+          188
+        ],
+        "offsets": [
+          0.5509043335914612
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 181.0,
+        "bins": [
+          193
+        ],
+        "offsets": [
+          0.14970368146896362
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 189.0,
+        "bins": [
+          205
+        ],
+        "offsets": [
+          0.4131712019443512
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 197.0,
+        "bins": [
+          217
+        ],
+        "offsets": [
+          0.6766464114189148
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 200.0,
+        "bins": [
+          222
+        ],
+        "offsets": [
+          0.2754560112953186
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 219.0,
+        "bins": [
+          251
+        ],
+        "offsets": [
+          0.4011980891227722
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 220.0,
+        "bins": [
+          252
+        ],
+        "offsets": [
+          0.9341286420822144
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 221.0,
+        "bins": [
+          254
+        ],
+        "offsets": [
+          0.4670720100402832
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 222.0,
+        "bins": [
+          255
+        ],
+        "offsets": [
+          1.0
+        ],
+        "n_offsets": 1
+      }
+    ]
+  },
+  "K256_current_mixed::svcscan.fs_drivers": {
+    "policy": "K256_current_mixed",
+    "feature": "svcscan.fs_drivers",
+    "raw_unique": 10,
+    "mapping": [
+      {
+        "raw_value": 6.0,
+        "bins": [
+          0
+        ],
+        "offsets": [
+          0.0
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 9.0,
+        "bins": [
+          38
+        ],
+        "offsets": [
+          0.4000000059604645
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 10.0,
+        "bins": [
+          51
+        ],
+        "offsets": [
+          0.20000000298023224
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 11.0,
+        "bins": [
+          64
+        ],
+        "offsets": [
+          0.0
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 13.0,
+        "bins": [
+          89
+        ],
+        "offsets": [
+          0.6000000238418579
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 22.0,
+        "bins": [
+          204
+        ],
+        "offsets": [
+          0.800000011920929
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 23.0,
+        "bins": [
+          217
+        ],
+        "offsets": [
+          0.6000000238418579
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 24.0,
+        "bins": [
+          230
+        ],
+        "offsets": [
+          0.4000000059604645
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 25.0,
+        "bins": [
+          243
+        ],
+        "offsets": [
+          0.20000000298023224
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 26.0,
+        "bins": [
+          255
+        ],
+        "offsets": [
+          1.0
+        ],
+        "n_offsets": 1
+      }
+    ]
+  },
+  "K256_current_mixed::svcscan.process_services": {
+    "policy": "K256_current_mixed",
+    "feature": "svcscan.process_services",
+    "raw_unique": 14,
+    "mapping": [
+      {
+        "raw_value": 7.0,
+        "bins": [
+          0
+        ],
+        "offsets": [
+          0.0
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 9.0,
+        "bins": [
+          25
+        ],
+        "offsets": [
+          0.6000000238418579
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 10.0,
+        "bins": [
+          38
+        ],
+        "offsets": [
+          0.4000000059604645
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 17.0,
+        "bins": [
+          128
+        ],
+        "offsets": [
+          0.0
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 18.0,
+        "bins": [
+          140
+        ],
+        "offsets": [
+          0.800000011920929
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 19.0,
+        "bins": [
+          153
+        ],
+        "offsets": [
+          0.6000000238418579
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 20.0,
+        "bins": [
+          166
+        ],
+        "offsets": [
+          0.4000000059604645
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 21.0,
+        "bins": [
+          179
+        ],
+        "offsets": [
+          0.20000000298023224
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 22.0,
+        "bins": [
+          192
+        ],
+        "offsets": [
+          0.0
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 23.0,
+        "bins": [
+          204
+        ],
+        "offsets": [
+          0.800000011920929
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 24.0,
+        "bins": [
+          217
+        ],
+        "offsets": [
+          0.6000000238418579
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 25.0,
+        "bins": [
+          230
+        ],
+        "offsets": [
+          0.4000000059604645
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 26.0,
+        "bins": [
+          243
+        ],
+        "offsets": [
+          0.20000000298023224
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 27.0,
+        "bins": [
+          255
+        ],
+        "offsets": [
+          1.0
+        ],
+        "n_offsets": 1
+      }
+    ]
+  },
+  "K256_current_mixed::svcscan.interactive_process_services": {
+    "policy": "K256_current_mixed",
+    "feature": "svcscan.interactive_process_services",
+    "raw_unique": 1,
+    "mapping": [
+      {
+        "raw_value": 0.0,
+        "bins": [
+          0
+        ],
+        "offsets": [
+          0.5
+        ],
+        "n_offsets": 1
+      }
+    ]
+  },
+  "K256_current_mixed::callbacks.ncallbacks": {
+    "policy": "K256_current_mixed",
+    "feature": "callbacks.ncallbacks",
+    "raw_unique": 13,
+    "mapping": [
+      {
+        "raw_value": 50.0,
+        "bins": [
+          0
+        ],
+        "offsets": [
+          0.0
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 51.0,
+        "bins": [
+          6
+        ],
+        "offsets": [
+          0.5641026496887207
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 52.0,
+        "bins": [
+          13
+        ],
+        "offsets": [
+          0.1282053142786026
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 53.0,
+        "bins": [
+          19
+        ],
+        "offsets": [
+          0.6923084855079651
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 54.0,
+        "bins": [
+          26
+        ],
+        "offsets": [
+          0.2564106285572052
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 55.0,
+        "bins": [
+          32
+        ],
+        "offsets": [
+          0.8205158114433289
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 56.0,
+        "bins": [
+          39
+        ],
+        "offsets": [
+          0.3846169710159302
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 57.0,
+        "bins": [
+          45
+        ],
+        "offsets": [
+          0.9487180709838867
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 85.0,
+        "bins": [
+          229
+        ],
+        "offsets": [
+          0.7435904145240784
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 86.0,
+        "bins": [
+          236
+        ],
+        "offsets": [
+          0.30768638849258423
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 87.0,
+        "bins": [
+          242
+        ],
+        "offsets": [
+          0.8717951774597168
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 88.0,
+        "bins": [
+          249
+        ],
+        "offsets": [
+          0.43590399622917175
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 89.0,
+        "bins": [
+          255
+        ],
+        "offsets": [
+          1.0
+        ],
+        "n_offsets": 1
+      }
+    ]
+  },
+  "K256_current_mixed::callbacks.nanonymous": {
+    "policy": "K256_current_mixed",
+    "feature": "callbacks.nanonymous",
+    "raw_unique": 2,
+    "mapping": [
+      {
+        "raw_value": 0.0,
+        "bins": [
+          0
+        ],
+        "offsets": [
+          0.0
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 1.0,
+        "bins": [
+          255
+        ],
+        "offsets": [
+          1.0
+        ],
+        "n_offsets": 1
+      }
+    ]
+  },
+  "K256_current_mixed::callbacks.ngeneric": {
+    "policy": "K256_current_mixed",
+    "feature": "callbacks.ngeneric",
+    "raw_unique": 2,
+    "mapping": [
+      {
+        "raw_value": 7.0,
+        "bins": [
+          0
+        ],
+        "offsets": [
+          0.0
+        ],
+        "n_offsets": 1
+      },
+      {
+        "raw_value": 8.0,
+        "bins": [
+          255
+        ],
+        "offsets": [
+          1.0
+        ],
+        "n_offsets": 1
+      }
+    ]
+  }
+}

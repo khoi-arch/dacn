@@ -1,0 +1,38 @@
+{
+  "C2_source": "03_outputs/build_mixed_quantile_offset/K512_B512_C2_selective_rank_discrete_compact",
+  "C3a_bad_current_compact": "03_outputs/build_mixed_quantile_offset/K512_B512_C3a_bad_current_compact",
+  "C3b_bad_current_offset_off": "03_outputs/build_mixed_quantile_offset/K512_B512_C3b_bad_current_offset_off",
+  "summary": {
+    "K": 512,
+    "num_bins": 512,
+    "source_C2": "03_outputs/build_mixed_quantile_offset/K512_B512_C2_selective_rank_discrete_compact",
+    "bad_current_rule": {
+      "strategy": "keep_current",
+      "max_raw_unique_per_bin": "<= 1",
+      "rare_used_bin_ratio_le5": ">= 0.30",
+      "dominant_bin_ratio": ">= 0.20",
+      "raw_unique_guard": "<= num_bins",
+      "logic": "all conditions are simultaneous AND"
+    },
+    "bad_current_features": [
+      "malfind.commitCharge",
+      "malfind.protection",
+      "psxview.not_in_eprocess_pool_false_avg"
+    ],
+    "n_bad_current_features": 3,
+    "C3a_strategy_counts": {
+      "discrete_compact_offset0": 23,
+      "rank_uniform_offset": 15,
+      "constant": 3,
+      "keep_current": 11,
+      "bad_current_discrete_compact_offset0": 3
+    },
+    "C3b_strategy_counts": {
+      "discrete_compact_offset0": 23,
+      "rank_uniform_offset": 15,
+      "constant": 3,
+      "keep_current": 11,
+      "bad_current_offset_off": 3
+    }
+  }
+}
