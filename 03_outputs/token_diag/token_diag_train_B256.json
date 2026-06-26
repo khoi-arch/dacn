@@ -1,0 +1,3378 @@
+{
+  "metadata": {
+    "stage": "token_diag",
+    "input_split": "train_only",
+    "train_csv": "/home/pak/Documents/dacn/01_split/train_raw.csv",
+    "K": 256,
+    "effective_num_bins": 256,
+    "n_rows": 46876,
+    "n_features": 55,
+    "excluded_target_cols": [
+      "label_L1",
+      "label_L2",
+      "label_L3",
+      "Class",
+      "Category"
+    ],
+    "drop_cols": [],
+    "token_rule": "train-only MinMax; z=(x-min)/(max-min); clipped [0,1]; token=floor(K*z); clipped [0,K-1]; exactly K bins",
+    "core_metrics": {
+      "preserve_ratio": "bins_used / min(raw_unique, K)",
+      "compression_factor": "raw_unique / max(bins_used, 1)",
+      "entropy_norm": "-sum(p_i log p_i) / log(bins_used), computed over used token bins only"
+    },
+    "decision_rule": {
+      "drop": "raw_unique <= 1",
+      "transform": "preserve_ratio < preserve_threshold OR compression_factor > compression_threshold OR (raw_unique > K AND entropy_norm < entropy_threshold)",
+      "keep": "otherwise"
+    },
+    "thresholds": {
+      "preserve_threshold": 0.95,
+      "compression_threshold": 8.0,
+      "entropy_threshold": 0.75,
+      "entropy_trigger_requires_raw_unique_gt_K": true
+    },
+    "decision_counts": {
+      "transform": 28,
+      "keep": 24,
+      "drop": 3
+    }
+  },
+  "features": [
+    {
+      "feature": "pslist.nproc",
+      "n": 46876,
+      "K": 256,
+      "effective_num_bins": 256,
+      "raw": {
+        "train_min": 21.0,
+        "train_max": 240.0,
+        "train_range": 219.0,
+        "num_unique": 105,
+        "zero_ratio": 0.0,
+        "is_constant": false
+      },
+      "token": {
+        "num_tokens_used": 105,
+        "bins_used": 105,
+        "possible_unique": 105,
+        "preserve_ratio": 1.0,
+        "unique_preserve_ratio": 1.0,
+        "compression_factor": 1.0,
+        "entropy_norm": 0.5634949111344502,
+        "quantiles": {
+          "min": 0,
+          "q1": 7,
+          "q5": 16,
+          "q10": 18,
+          "q15": 19,
+          "q20": 21,
+          "q25": 22,
+          "q30": 22,
+          "q35": 22,
+          "q40": 23,
+          "q45": 23,
+          "q50": 23,
+          "q55": 23,
+          "q60": 24,
+          "q65": 24,
+          "q70": 24,
+          "q75": 25,
+          "q80": 26,
+          "q85": 26,
+          "q90": 28,
+          "q95": 31,
+          "q99": 47,
+          "max": 255
+        }
+      },
+      "decision": {
+        "label": "keep",
+        "reasons": [
+          "metrics_within_thresholds"
+        ],
+        "thresholds": {
+          "preserve_threshold": 0.95,
+          "compression_threshold": 8.0,
+          "entropy_threshold": 0.75,
+          "entropy_trigger_requires_raw_unique_gt_K": true
+        }
+      }
+    },
+    {
+      "feature": "pslist.nppid",
+      "n": 46876,
+      "K": 256,
+      "effective_num_bins": 256,
+      "raw": {
+        "train_min": 8.0,
+        "train_max": 66.0,
+        "train_range": 58.0,
+        "num_unique": 48,
+        "zero_ratio": 0.0,
+        "is_constant": false
+      },
+      "token": {
+        "num_tokens_used": 48,
+        "bins_used": 48,
+        "possible_unique": 48,
+        "preserve_ratio": 1.0,
+        "unique_preserve_ratio": 1.0,
+        "compression_factor": 1.0,
+        "entropy_norm": 0.5190073123050564,
+        "quantiles": {
+          "min": 0,
+          "q1": 4,
+          "q5": 17,
+          "q10": 17,
+          "q15": 17,
+          "q20": 17,
+          "q25": 17,
+          "q30": 17,
+          "q35": 22,
+          "q40": 26,
+          "q45": 30,
+          "q50": 30,
+          "q55": 30,
+          "q60": 35,
+          "q65": 35,
+          "q70": 35,
+          "q75": 35,
+          "q80": 39,
+          "q85": 39,
+          "q90": 39,
+          "q95": 44,
+          "q99": 57,
+          "max": 255
+        }
+      },
+      "decision": {
+        "label": "keep",
+        "reasons": [
+          "metrics_within_thresholds"
+        ],
+        "thresholds": {
+          "preserve_threshold": 0.95,
+          "compression_threshold": 8.0,
+          "entropy_threshold": 0.75,
+          "entropy_trigger_requires_raw_unique_gt_K": true
+        }
+      }
+    },
+    {
+      "feature": "pslist.avg_threads",
+      "n": 46876,
+      "K": 256,
+      "effective_num_bins": 256,
+      "raw": {
+        "train_min": 1.65,
+        "train_max": 16.81818182,
+        "train_range": 15.16818182,
+        "num_unique": 22592,
+        "zero_ratio": 0.0,
+        "is_constant": false
+      },
+      "token": {
+        "num_tokens_used": 226,
+        "bins_used": 226,
+        "possible_unique": 256,
+        "preserve_ratio": 0.8828125,
+        "unique_preserve_ratio": 0.8828125,
+        "compression_factor": 99.96460176991151,
+        "entropy_norm": 0.8005512809888924,
+        "quantiles": {
+          "min": 0,
+          "q1": 125,
+          "q5": 130,
+          "q10": 133,
+          "q15": 135,
+          "q20": 138,
+          "q25": 140,
+          "q30": 142,
+          "q35": 143,
+          "q40": 146,
+          "q45": 153,
+          "q50": 157,
+          "q55": 163,
+          "q60": 171,
+          "q65": 183,
+          "q70": 186,
+          "q75": 189,
+          "q80": 192,
+          "q85": 195,
+          "q90": 197,
+          "q95": 202,
+          "q99": 210,
+          "max": 255
+        }
+      },
+      "decision": {
+        "label": "transform",
+        "reasons": [
+          "low_preserve_ratio",
+          "high_compression_factor"
+        ],
+        "thresholds": {
+          "preserve_threshold": 0.95,
+          "compression_threshold": 8.0,
+          "entropy_threshold": 0.75,
+          "entropy_trigger_requires_raw_unique_gt_K": true
+        }
+      }
+    },
+    {
+      "feature": "pslist.nprocs64bit",
+      "n": 46876,
+      "K": 256,
+      "effective_num_bins": 256,
+      "raw": {
+        "train_min": 0.0,
+        "train_max": 0.0,
+        "train_range": 0.0,
+        "num_unique": 1,
+        "zero_ratio": 1.0,
+        "is_constant": true
+      },
+      "token": {
+        "num_tokens_used": 1,
+        "bins_used": 1,
+        "possible_unique": 1,
+        "preserve_ratio": 1.0,
+        "unique_preserve_ratio": 1.0,
+        "compression_factor": 1.0,
+        "entropy_norm": 1.0,
+        "quantiles": {
+          "min": 0,
+          "q1": 0,
+          "q5": 0,
+          "q10": 0,
+          "q15": 0,
+          "q20": 0,
+          "q25": 0,
+          "q30": 0,
+          "q35": 0,
+          "q40": 0,
+          "q45": 0,
+          "q50": 0,
+          "q55": 0,
+          "q60": 0,
+          "q65": 0,
+          "q70": 0,
+          "q75": 0,
+          "q80": 0,
+          "q85": 0,
+          "q90": 0,
+          "q95": 0,
+          "q99": 0,
+          "max": 0
+        }
+      },
+      "decision": {
+        "label": "drop",
+        "reasons": [
+          "constant_feature"
+        ],
+        "thresholds": {
+          "preserve_threshold": 0.95,
+          "compression_threshold": 8.0,
+          "entropy_threshold": 0.75,
+          "entropy_trigger_requires_raw_unique_gt_K": true
+        }
+      }
+    },
+    {
+      "feature": "pslist.avg_handlers",
+      "n": 46876,
+      "K": 256,
+      "effective_num_bins": 256,
+      "raw": {
+        "train_min": 34.9625,
+        "train_max": 1174.536585,
+        "train_range": 1139.574085,
+        "num_unique": 30009,
+        "zero_ratio": 0.0,
+        "is_constant": false
+      },
+      "token": {
+        "num_tokens_used": 135,
+        "bins_used": 135,
+        "possible_unique": 256,
+        "preserve_ratio": 0.52734375,
+        "unique_preserve_ratio": 0.52734375,
+        "compression_factor": 222.2888888888889,
+        "entropy_norm": 0.6339580206542398,
+        "quantiles": {
+          "min": 0,
+          "q1": 31,
+          "q5": 36,
+          "q10": 37,
+          "q15": 37,
+          "q20": 38,
+          "q25": 39,
+          "q30": 39,
+          "q35": 40,
+          "q40": 40,
+          "q45": 40,
+          "q50": 46,
+          "q55": 49,
+          "q60": 51,
+          "q65": 54,
+          "q70": 56,
+          "q75": 57,
+          "q80": 57,
+          "q85": 59,
+          "q90": 60,
+          "q95": 60,
+          "q99": 62,
+          "max": 255
+        }
+      },
+      "decision": {
+        "label": "transform",
+        "reasons": [
+          "low_preserve_ratio",
+          "high_compression_factor",
+          "low_entropy_norm_high_unique"
+        ],
+        "thresholds": {
+          "preserve_threshold": 0.95,
+          "compression_threshold": 8.0,
+          "entropy_threshold": 0.75,
+          "entropy_trigger_requires_raw_unique_gt_K": true
+        }
+      }
+    },
+    {
+      "feature": "dlllist.ndlls",
+      "n": 46876,
+      "K": 256,
+      "effective_num_bins": 256,
+      "raw": {
+        "train_min": 670.0,
+        "train_max": 3363.0,
+        "train_range": 2693.0,
+        "num_unique": 1774,
+        "zero_ratio": 0.0,
+        "is_constant": false
+      },
+      "token": {
+        "num_tokens_used": 225,
+        "bins_used": 225,
+        "possible_unique": 256,
+        "preserve_ratio": 0.87890625,
+        "unique_preserve_ratio": 0.87890625,
+        "compression_factor": 7.884444444444444,
+        "entropy_norm": 0.8065937039483971,
+        "quantiles": {
+          "min": 0,
+          "q1": 47,
+          "q5": 67,
+          "q10": 73,
+          "q15": 78,
+          "q20": 81,
+          "q25": 84,
+          "q30": 85,
+          "q35": 89,
+          "q40": 90,
+          "q45": 94,
+          "q50": 100,
+          "q55": 115,
+          "q60": 125,
+          "q65": 128,
+          "q70": 132,
+          "q75": 134,
+          "q80": 137,
+          "q85": 140,
+          "q90": 142,
+          "q95": 149,
+          "q99": 188,
+          "max": 255
+        }
+      },
+      "decision": {
+        "label": "transform",
+        "reasons": [
+          "low_preserve_ratio"
+        ],
+        "thresholds": {
+          "preserve_threshold": 0.95,
+          "compression_threshold": 8.0,
+          "entropy_threshold": 0.75,
+          "entropy_trigger_requires_raw_unique_gt_K": true
+        }
+      }
+    },
+    {
+      "feature": "dlllist.avg_dlls_per_proc",
+      "n": 46876,
+      "K": 256,
+      "effective_num_bins": 256,
+      "raw": {
+        "train_min": 7.333333333,
+        "train_max": 53.17073171,
+        "train_range": 45.837398377,
+        "num_unique": 13330,
+        "zero_ratio": 0.0,
+        "is_constant": false
+      },
+      "token": {
+        "num_tokens_used": 212,
+        "bins_used": 212,
+        "possible_unique": 256,
+        "preserve_ratio": 0.828125,
+        "unique_preserve_ratio": 0.828125,
+        "compression_factor": 62.87735849056604,
+        "entropy_norm": 0.7664649340473797,
+        "quantiles": {
+          "min": 0,
+          "q1": 154,
+          "q5": 166,
+          "q10": 169,
+          "q15": 171,
+          "q20": 173,
+          "q25": 175,
+          "q30": 177,
+          "q35": 177,
+          "q40": 178,
+          "q45": 180,
+          "q50": 198,
+          "q55": 207,
+          "q60": 217,
+          "q65": 229,
+          "q70": 232,
+          "q75": 236,
+          "q80": 237,
+          "q85": 240,
+          "q90": 246,
+          "q95": 250,
+          "q99": 251,
+          "max": 255
+        }
+      },
+      "decision": {
+        "label": "transform",
+        "reasons": [
+          "low_preserve_ratio",
+          "high_compression_factor"
+        ],
+        "thresholds": {
+          "preserve_threshold": 0.95,
+          "compression_threshold": 8.0,
+          "entropy_threshold": 0.75,
+          "entropy_trigger_requires_raw_unique_gt_K": true
+        }
+      }
+    },
+    {
+      "feature": "handles.nhandles",
+      "n": 46876,
+      "K": 256,
+      "effective_num_bins": 256,
+      "raw": {
+        "train_min": 3514.0,
+        "train_max": 48156.0,
+        "train_range": 44642.0,
+        "num_unique": 7189,
+        "zero_ratio": 0.0,
+        "is_constant": false
+      },
+      "token": {
+        "num_tokens_used": 137,
+        "bins_used": 137,
+        "possible_unique": 256,
+        "preserve_ratio": 0.53515625,
+        "unique_preserve_ratio": 0.53515625,
+        "compression_factor": 52.47445255474452,
+        "entropy_norm": 0.6988411015545455,
+        "quantiles": {
+          "min": 0,
+          "q1": 13,
+          "q5": 22,
+          "q10": 25,
+          "q15": 26,
+          "q20": 27,
+          "q25": 27,
+          "q30": 28,
+          "q35": 29,
+          "q40": 29,
+          "q45": 30,
+          "q50": 33,
+          "q55": 42,
+          "q60": 46,
+          "q65": 47,
+          "q70": 48,
+          "q75": 49,
+          "q80": 50,
+          "q85": 51,
+          "q90": 52,
+          "q95": 54,
+          "q99": 68,
+          "max": 255
+        }
+      },
+      "decision": {
+        "label": "transform",
+        "reasons": [
+          "low_preserve_ratio",
+          "high_compression_factor",
+          "low_entropy_norm_high_unique"
+        ],
+        "thresholds": {
+          "preserve_threshold": 0.95,
+          "compression_threshold": 8.0,
+          "entropy_threshold": 0.75,
+          "entropy_trigger_requires_raw_unique_gt_K": true
+        }
+      }
+    },
+    {
+      "feature": "handles.avg_handles_per_proc",
+      "n": 46876,
+      "K": 256,
+      "effective_num_bins": 256,
+      "raw": {
+        "train_min": 71.13924051,
+        "train_max": 1174.536585,
+        "train_range": 1103.39734449,
+        "num_unique": 29752,
+        "zero_ratio": 0.0,
+        "is_constant": false
+      },
+      "token": {
+        "num_tokens_used": 119,
+        "bins_used": 119,
+        "possible_unique": 256,
+        "preserve_ratio": 0.46484375,
+        "unique_preserve_ratio": 0.46484375,
+        "compression_factor": 250.01680672268907,
+        "entropy_norm": 0.6453679392866846,
+        "quantiles": {
+          "min": 0,
+          "q1": 25,
+          "q5": 29,
+          "q10": 30,
+          "q15": 30,
+          "q20": 31,
+          "q25": 32,
+          "q30": 32,
+          "q35": 33,
+          "q40": 33,
+          "q45": 34,
+          "q50": 40,
+          "q55": 43,
+          "q60": 46,
+          "q65": 48,
+          "q70": 49,
+          "q75": 51,
+          "q80": 51,
+          "q85": 52,
+          "q90": 53,
+          "q95": 54,
+          "q99": 55,
+          "max": 255
+        }
+      },
+      "decision": {
+        "label": "transform",
+        "reasons": [
+          "low_preserve_ratio",
+          "high_compression_factor",
+          "low_entropy_norm_high_unique"
+        ],
+        "thresholds": {
+          "preserve_threshold": 0.95,
+          "compression_threshold": 8.0,
+          "entropy_threshold": 0.75,
+          "entropy_trigger_requires_raw_unique_gt_K": true
+        }
+      }
+    },
+    {
+      "feature": "handles.nport",
+      "n": 46876,
+      "K": 256,
+      "effective_num_bins": 256,
+      "raw": {
+        "train_min": 0.0,
+        "train_max": 0.0,
+        "train_range": 0.0,
+        "num_unique": 1,
+        "zero_ratio": 1.0,
+        "is_constant": true
+      },
+      "token": {
+        "num_tokens_used": 1,
+        "bins_used": 1,
+        "possible_unique": 1,
+        "preserve_ratio": 1.0,
+        "unique_preserve_ratio": 1.0,
+        "compression_factor": 1.0,
+        "entropy_norm": 1.0,
+        "quantiles": {
+          "min": 0,
+          "q1": 0,
+          "q5": 0,
+          "q10": 0,
+          "q15": 0,
+          "q20": 0,
+          "q25": 0,
+          "q30": 0,
+          "q35": 0,
+          "q40": 0,
+          "q45": 0,
+          "q50": 0,
+          "q55": 0,
+          "q60": 0,
+          "q65": 0,
+          "q70": 0,
+          "q75": 0,
+          "q80": 0,
+          "q85": 0,
+          "q90": 0,
+          "q95": 0,
+          "q99": 0,
+          "max": 0
+        }
+      },
+      "decision": {
+        "label": "drop",
+        "reasons": [
+          "constant_feature"
+        ],
+        "thresholds": {
+          "preserve_threshold": 0.95,
+          "compression_threshold": 8.0,
+          "entropy_threshold": 0.75,
+          "entropy_trigger_requires_raw_unique_gt_K": true
+        }
+      }
+    },
+    {
+      "feature": "handles.nfile",
+      "n": 46876,
+      "K": 256,
+      "effective_num_bins": 256,
+      "raw": {
+        "train_min": 266.0,
+        "train_max": 40605.0,
+        "train_range": 40339.0,
+        "num_unique": 1093,
+        "zero_ratio": 0.0,
+        "is_constant": false
+      },
+      "token": {
+        "num_tokens_used": 82,
+        "bins_used": 82,
+        "possible_unique": 256,
+        "preserve_ratio": 0.3203125,
+        "unique_preserve_ratio": 0.3203125,
+        "compression_factor": 13.329268292682928,
+        "entropy_norm": 0.3212909244338853,
+        "quantiles": {
+          "min": 0,
+          "q1": 1,
+          "q5": 2,
+          "q10": 2,
+          "q15": 2,
+          "q20": 2,
+          "q25": 2,
+          "q30": 2,
+          "q35": 2,
+          "q40": 2,
+          "q45": 2,
+          "q50": 3,
+          "q55": 3,
+          "q60": 4,
+          "q65": 4,
+          "q70": 5,
+          "q75": 5,
+          "q80": 5,
+          "q85": 5,
+          "q90": 5,
+          "q95": 5,
+          "q99": 6,
+          "max": 255
+        }
+      },
+      "decision": {
+        "label": "transform",
+        "reasons": [
+          "low_preserve_ratio",
+          "high_compression_factor",
+          "low_entropy_norm_high_unique"
+        ],
+        "thresholds": {
+          "preserve_threshold": 0.95,
+          "compression_threshold": 8.0,
+          "entropy_threshold": 0.75,
+          "entropy_trigger_requires_raw_unique_gt_K": true
+        }
+      }
+    },
+    {
+      "feature": "handles.nevent",
+      "n": 46876,
+      "K": 256,
+      "effective_num_bins": 256,
+      "raw": {
+        "train_min": 966.0,
+        "train_max": 7892.0,
+        "train_range": 6926.0,
+        "num_unique": 3322,
+        "zero_ratio": 0.0,
+        "is_constant": false
+      },
+      "token": {
+        "num_tokens_used": 191,
+        "bins_used": 191,
+        "possible_unique": 256,
+        "preserve_ratio": 0.74609375,
+        "unique_preserve_ratio": 0.74609375,
+        "compression_factor": 17.392670157068064,
+        "entropy_norm": 0.7904600346253154,
+        "quantiles": {
+          "min": 0,
+          "q1": 32,
+          "q5": 61,
+          "q10": 68,
+          "q15": 69,
+          "q20": 71,
+          "q25": 72,
+          "q30": 73,
+          "q35": 75,
+          "q40": 76,
+          "q45": 77,
+          "q50": 80,
+          "q55": 102,
+          "q60": 112,
+          "q65": 116,
+          "q70": 121,
+          "q75": 124,
+          "q80": 126,
+          "q85": 129,
+          "q90": 133,
+          "q95": 137,
+          "q99": 158,
+          "max": 255
+        }
+      },
+      "decision": {
+        "label": "transform",
+        "reasons": [
+          "low_preserve_ratio",
+          "high_compression_factor"
+        ],
+        "thresholds": {
+          "preserve_threshold": 0.95,
+          "compression_threshold": 8.0,
+          "entropy_threshold": 0.75,
+          "entropy_trigger_requires_raw_unique_gt_K": true
+        }
+      }
+    },
+    {
+      "feature": "handles.ndesktop",
+      "n": 46876,
+      "K": 256,
+      "effective_num_bins": 256,
+      "raw": {
+        "train_min": 22.0,
+        "train_max": 159.0,
+        "train_range": 137.0,
+        "num_unique": 60,
+        "zero_ratio": 0.0,
+        "is_constant": false
+      },
+      "token": {
+        "num_tokens_used": 60,
+        "bins_used": 60,
+        "possible_unique": 60,
+        "preserve_ratio": 1.0,
+        "unique_preserve_ratio": 1.0,
+        "compression_factor": 1.0,
+        "entropy_norm": 0.6624280875547963,
+        "quantiles": {
+          "min": 0,
+          "q1": 14,
+          "q5": 28,
+          "q10": 33,
+          "q15": 35,
+          "q20": 37,
+          "q25": 39,
+          "q30": 39,
+          "q35": 41,
+          "q40": 41,
+          "q45": 41,
+          "q50": 42,
+          "q55": 42,
+          "q60": 42,
+          "q65": 42,
+          "q70": 44,
+          "q75": 44,
+          "q80": 46,
+          "q85": 48,
+          "q90": 48,
+          "q95": 54,
+          "q99": 74,
+          "max": 255
+        }
+      },
+      "decision": {
+        "label": "keep",
+        "reasons": [
+          "metrics_within_thresholds"
+        ],
+        "thresholds": {
+          "preserve_threshold": 0.95,
+          "compression_threshold": 8.0,
+          "entropy_threshold": 0.75,
+          "entropy_trigger_requires_raw_unique_gt_K": true
+        }
+      }
+    },
+    {
+      "feature": "handles.nkey",
+      "n": 46876,
+      "K": 256,
+      "effective_num_bins": 256,
+      "raw": {
+        "train_min": 284.0,
+        "train_max": 2668.0,
+        "train_range": 2384.0,
+        "num_unique": 1060,
+        "zero_ratio": 0.0,
+        "is_constant": false
+      },
+      "token": {
+        "num_tokens_used": 171,
+        "bins_used": 171,
+        "possible_unique": 256,
+        "preserve_ratio": 0.66796875,
+        "unique_preserve_ratio": 0.66796875,
+        "compression_factor": 6.1988304093567255,
+        "entropy_norm": 0.7349333318224938,
+        "quantiles": {
+          "min": 0,
+          "q1": 15,
+          "q5": 33,
+          "q10": 40,
+          "q15": 40,
+          "q20": 41,
+          "q25": 41,
+          "q30": 42,
+          "q35": 43,
+          "q40": 44,
+          "q45": 46,
+          "q50": 50,
+          "q55": 54,
+          "q60": 55,
+          "q65": 56,
+          "q70": 58,
+          "q75": 61,
+          "q80": 64,
+          "q85": 66,
+          "q90": 69,
+          "q95": 79,
+          "q99": 102,
+          "max": 255
+        }
+      },
+      "decision": {
+        "label": "transform",
+        "reasons": [
+          "low_preserve_ratio",
+          "low_entropy_norm_high_unique"
+        ],
+        "thresholds": {
+          "preserve_threshold": 0.95,
+          "compression_threshold": 8.0,
+          "entropy_threshold": 0.75,
+          "entropy_trigger_requires_raw_unique_gt_K": true
+        }
+      }
+    },
+    {
+      "feature": "handles.nthread",
+      "n": 46876,
+      "K": 256,
+      "effective_num_bins": 256,
+      "raw": {
+        "train_min": 388.0,
+        "train_max": 2026.0,
+        "train_range": 1638.0,
+        "num_unique": 1149,
+        "zero_ratio": 0.0,
+        "is_constant": false
+      },
+      "token": {
+        "num_tokens_used": 213,
+        "bins_used": 213,
+        "possible_unique": 256,
+        "preserve_ratio": 0.83203125,
+        "unique_preserve_ratio": 0.83203125,
+        "compression_factor": 5.394366197183099,
+        "entropy_norm": 0.8490998608072158,
+        "quantiles": {
+          "min": 0,
+          "q1": 25,
+          "q5": 40,
+          "q10": 43,
+          "q15": 45,
+          "q20": 47,
+          "q25": 49,
+          "q30": 52,
+          "q35": 57,
+          "q40": 61,
+          "q45": 67,
+          "q50": 71,
+          "q55": 80,
+          "q60": 104,
+          "q65": 114,
+          "q70": 119,
+          "q75": 122,
+          "q80": 124,
+          "q85": 127,
+          "q90": 130,
+          "q95": 135,
+          "q99": 156,
+          "max": 255
+        }
+      },
+      "decision": {
+        "label": "transform",
+        "reasons": [
+          "low_preserve_ratio"
+        ],
+        "thresholds": {
+          "preserve_threshold": 0.95,
+          "compression_threshold": 8.0,
+          "entropy_threshold": 0.75,
+          "entropy_trigger_requires_raw_unique_gt_K": true
+        }
+      }
+    },
+    {
+      "feature": "handles.ndirectory",
+      "n": 46876,
+      "K": 256,
+      "effective_num_bins": 256,
+      "raw": {
+        "train_min": 57.0,
+        "train_max": 310.0,
+        "train_range": 253.0,
+        "num_unique": 104,
+        "zero_ratio": 0.0,
+        "is_constant": false
+      },
+      "token": {
+        "num_tokens_used": 104,
+        "bins_used": 104,
+        "possible_unique": 104,
+        "preserve_ratio": 1.0,
+        "unique_preserve_ratio": 1.0,
+        "compression_factor": 1.0,
+        "entropy_norm": 0.7041268139450781,
+        "quantiles": {
+          "min": 0,
+          "q1": 14,
+          "q5": 31,
+          "q10": 35,
+          "q15": 38,
+          "q20": 41,
+          "q25": 42,
+          "q30": 43,
+          "q35": 44,
+          "q40": 44,
+          "q45": 45,
+          "q50": 46,
+          "q55": 46,
+          "q60": 47,
+          "q65": 48,
+          "q70": 49,
+          "q75": 50,
+          "q80": 51,
+          "q85": 52,
+          "q90": 52,
+          "q95": 58,
+          "q99": 75,
+          "max": 255
+        }
+      },
+      "decision": {
+        "label": "keep",
+        "reasons": [
+          "metrics_within_thresholds"
+        ],
+        "thresholds": {
+          "preserve_threshold": 0.95,
+          "compression_threshold": 8.0,
+          "entropy_threshold": 0.75,
+          "entropy_trigger_requires_raw_unique_gt_K": true
+        }
+      }
+    },
+    {
+      "feature": "handles.nsemaphore",
+      "n": 46876,
+      "K": 256,
+      "effective_num_bins": 256,
+      "raw": {
+        "train_min": 296.0,
+        "train_max": 1029.0,
+        "train_range": 733.0,
+        "num_unique": 624,
+        "zero_ratio": 0.0,
+        "is_constant": false
+      },
+      "token": {
+        "num_tokens_used": 229,
+        "bins_used": 229,
+        "possible_unique": 256,
+        "preserve_ratio": 0.89453125,
+        "unique_preserve_ratio": 0.89453125,
+        "compression_factor": 2.7248908296943233,
+        "entropy_norm": 0.791359453822131,
+        "quantiles": {
+          "min": 0,
+          "q1": 38,
+          "q5": 88,
+          "q10": 104,
+          "q15": 106,
+          "q20": 108,
+          "q25": 110,
+          "q30": 118,
+          "q35": 120,
+          "q40": 122,
+          "q45": 125,
+          "q50": 135,
+          "q55": 149,
+          "q60": 151,
+          "q65": 154,
+          "q70": 157,
+          "q75": 158,
+          "q80": 161,
+          "q85": 164,
+          "q90": 167,
+          "q95": 177,
+          "q99": 217,
+          "max": 255
+        }
+      },
+      "decision": {
+        "label": "transform",
+        "reasons": [
+          "low_preserve_ratio"
+        ],
+        "thresholds": {
+          "preserve_threshold": 0.95,
+          "compression_threshold": 8.0,
+          "entropy_threshold": 0.75,
+          "entropy_trigger_requires_raw_unique_gt_K": true
+        }
+      }
+    },
+    {
+      "feature": "handles.ntimer",
+      "n": 46876,
+      "K": 256,
+      "effective_num_bins": 256,
+      "raw": {
+        "train_min": 69.0,
+        "train_max": 222.0,
+        "train_range": 153.0,
+        "num_unique": 123,
+        "zero_ratio": 0.0,
+        "is_constant": false
+      },
+      "token": {
+        "num_tokens_used": 123,
+        "bins_used": 123,
+        "possible_unique": 123,
+        "preserve_ratio": 1.0,
+        "unique_preserve_ratio": 1.0,
+        "compression_factor": 1.0,
+        "entropy_norm": 0.7453838702889035,
+        "quantiles": {
+          "min": 0,
+          "q1": 38,
+          "q5": 63,
+          "q10": 73,
+          "q15": 78,
+          "q20": 83,
+          "q25": 85,
+          "q30": 87,
+          "q35": 90,
+          "q40": 95,
+          "q45": 95,
+          "q50": 103,
+          "q55": 110,
+          "q60": 115,
+          "q65": 118,
+          "q70": 120,
+          "q75": 122,
+          "q80": 123,
+          "q85": 127,
+          "q90": 128,
+          "q95": 137,
+          "q99": 155,
+          "max": 255
+        }
+      },
+      "decision": {
+        "label": "keep",
+        "reasons": [
+          "metrics_within_thresholds"
+        ],
+        "thresholds": {
+          "preserve_threshold": 0.95,
+          "compression_threshold": 8.0,
+          "entropy_threshold": 0.75,
+          "entropy_trigger_requires_raw_unique_gt_K": true
+        }
+      }
+    },
+    {
+      "feature": "handles.nsection",
+      "n": 46876,
+      "K": 256,
+      "effective_num_bins": 256,
+      "raw": {
+        "train_min": 50.0,
+        "train_max": 14687.0,
+        "train_range": 14637.0,
+        "num_unique": 612,
+        "zero_ratio": 0.0,
+        "is_constant": false
+      },
+      "token": {
+        "num_tokens_used": 21,
+        "bins_used": 21,
+        "possible_unique": 256,
+        "preserve_ratio": 0.08203125,
+        "unique_preserve_ratio": 0.08203125,
+        "compression_factor": 29.142857142857142,
+        "entropy_norm": 0.5870192327804363,
+        "quantiles": {
+          "min": 0,
+          "q1": 0,
+          "q5": 1,
+          "q10": 1,
+          "q15": 1,
+          "q20": 2,
+          "q25": 2,
+          "q30": 2,
+          "q35": 2,
+          "q40": 2,
+          "q45": 2,
+          "q50": 3,
+          "q55": 5,
+          "q60": 5,
+          "q65": 6,
+          "q70": 6,
+          "q75": 6,
+          "q80": 6,
+          "q85": 6,
+          "q90": 6,
+          "q95": 7,
+          "q99": 8,
+          "max": 255
+        }
+      },
+      "decision": {
+        "label": "transform",
+        "reasons": [
+          "low_preserve_ratio",
+          "high_compression_factor",
+          "low_entropy_norm_high_unique"
+        ],
+        "thresholds": {
+          "preserve_threshold": 0.95,
+          "compression_threshold": 8.0,
+          "entropy_threshold": 0.75,
+          "entropy_trigger_requires_raw_unique_gt_K": true
+        }
+      }
+    },
+    {
+      "feature": "handles.nmutant",
+      "n": 46876,
+      "K": 256,
+      "effective_num_bins": 256,
+      "raw": {
+        "train_min": 118.0,
+        "train_max": 583.0,
+        "train_range": 465.0,
+        "num_unique": 405,
+        "zero_ratio": 0.0,
+        "is_constant": false
+      },
+      "token": {
+        "num_tokens_used": 230,
+        "bins_used": 230,
+        "possible_unique": 256,
+        "preserve_ratio": 0.8984375,
+        "unique_preserve_ratio": 0.8984375,
+        "compression_factor": 1.7608695652173914,
+        "entropy_norm": 0.8332626876649724,
+        "quantiles": {
+          "min": 0,
+          "q1": 35,
+          "q5": 57,
+          "q10": 61,
+          "q15": 63,
+          "q20": 73,
+          "q25": 77,
+          "q30": 78,
+          "q35": 79,
+          "q40": 82,
+          "q45": 84,
+          "q50": 94,
+          "q55": 117,
+          "q60": 120,
+          "q65": 126,
+          "q70": 129,
+          "q75": 136,
+          "q80": 145,
+          "q85": 153,
+          "q90": 159,
+          "q95": 173,
+          "q99": 213,
+          "max": 255
+        }
+      },
+      "decision": {
+        "label": "transform",
+        "reasons": [
+          "low_preserve_ratio"
+        ],
+        "thresholds": {
+          "preserve_threshold": 0.95,
+          "compression_threshold": 8.0,
+          "entropy_threshold": 0.75,
+          "entropy_trigger_requires_raw_unique_gt_K": true
+        }
+      }
+    },
+    {
+      "feature": "ldrmodules.not_in_load",
+      "n": 46876,
+      "K": 256,
+      "effective_num_bins": 256,
+      "raw": {
+        "train_min": 6.0,
+        "train_max": 238.0,
+        "train_range": 232.0,
+        "num_unique": 145,
+        "zero_ratio": 0.0,
+        "is_constant": false
+      },
+      "token": {
+        "num_tokens_used": 145,
+        "bins_used": 145,
+        "possible_unique": 145,
+        "preserve_ratio": 1.0,
+        "unique_preserve_ratio": 1.0,
+        "compression_factor": 1.0,
+        "entropy_norm": 0.7895089801293358,
+        "quantiles": {
+          "min": 0,
+          "q1": 22,
+          "q5": 39,
+          "q10": 40,
+          "q15": 41,
+          "q20": 43,
+          "q25": 44,
+          "q30": 44,
+          "q35": 45,
+          "q40": 46,
+          "q45": 48,
+          "q50": 56,
+          "q55": 61,
+          "q60": 64,
+          "q65": 68,
+          "q70": 73,
+          "q75": 75,
+          "q80": 80,
+          "q85": 82,
+          "q90": 88,
+          "q95": 94,
+          "q99": 118,
+          "max": 255
+        }
+      },
+      "decision": {
+        "label": "keep",
+        "reasons": [
+          "metrics_within_thresholds"
+        ],
+        "thresholds": {
+          "preserve_threshold": 0.95,
+          "compression_threshold": 8.0,
+          "entropy_threshold": 0.75,
+          "entropy_trigger_requires_raw_unique_gt_K": true
+        }
+      }
+    },
+    {
+      "feature": "ldrmodules.not_in_init",
+      "n": 46876,
+      "K": 256,
+      "effective_num_bins": 256,
+      "raw": {
+        "train_min": 16.0,
+        "train_max": 262.0,
+        "train_range": 246.0,
+        "num_unique": 180,
+        "zero_ratio": 0.0,
+        "is_constant": false
+      },
+      "token": {
+        "num_tokens_used": 180,
+        "bins_used": 180,
+        "possible_unique": 180,
+        "preserve_ratio": 1.0,
+        "unique_preserve_ratio": 1.0,
+        "compression_factor": 1.0,
+        "entropy_norm": 0.8092464216910374,
+        "quantiles": {
+          "min": 0,
+          "q1": 34,
+          "q5": 62,
+          "q10": 65,
+          "q15": 67,
+          "q20": 69,
+          "q25": 71,
+          "q30": 72,
+          "q35": 73,
+          "q40": 75,
+          "q45": 79,
+          "q50": 84,
+          "q55": 86,
+          "q60": 89,
+          "q65": 94,
+          "q70": 99,
+          "q75": 103,
+          "q80": 105,
+          "q85": 108,
+          "q90": 114,
+          "q95": 124,
+          "q99": 155,
+          "max": 255
+        }
+      },
+      "decision": {
+        "label": "keep",
+        "reasons": [
+          "metrics_within_thresholds"
+        ],
+        "thresholds": {
+          "preserve_threshold": 0.95,
+          "compression_threshold": 8.0,
+          "entropy_threshold": 0.75,
+          "entropy_trigger_requires_raw_unique_gt_K": true
+        }
+      }
+    },
+    {
+      "feature": "ldrmodules.not_in_mem",
+      "n": 46876,
+      "K": 256,
+      "effective_num_bins": 256,
+      "raw": {
+        "train_min": 6.0,
+        "train_max": 238.0,
+        "train_range": 232.0,
+        "num_unique": 145,
+        "zero_ratio": 0.0,
+        "is_constant": false
+      },
+      "token": {
+        "num_tokens_used": 145,
+        "bins_used": 145,
+        "possible_unique": 145,
+        "preserve_ratio": 1.0,
+        "unique_preserve_ratio": 1.0,
+        "compression_factor": 1.0,
+        "entropy_norm": 0.7895867867854146,
+        "quantiles": {
+          "min": 0,
+          "q1": 22,
+          "q5": 39,
+          "q10": 40,
+          "q15": 41,
+          "q20": 43,
+          "q25": 44,
+          "q30": 44,
+          "q35": 45,
+          "q40": 46,
+          "q45": 48,
+          "q50": 56,
+          "q55": 61,
+          "q60": 64,
+          "q65": 68,
+          "q70": 73,
+          "q75": 75,
+          "q80": 80,
+          "q85": 82,
+          "q90": 88,
+          "q95": 94,
+          "q99": 118,
+          "max": 255
+        }
+      },
+      "decision": {
+        "label": "keep",
+        "reasons": [
+          "metrics_within_thresholds"
+        ],
+        "thresholds": {
+          "preserve_threshold": 0.95,
+          "compression_threshold": 8.0,
+          "entropy_threshold": 0.75,
+          "entropy_trigger_requires_raw_unique_gt_K": true
+        }
+      }
+    },
+    {
+      "feature": "ldrmodules.not_in_load_avg",
+      "n": 46876,
+      "K": 256,
+      "effective_num_bins": 256,
+      "raw": {
+        "train_min": 0.016176471,
+        "train_max": 0.531120332,
+        "train_range": 0.514943861,
+        "num_unique": 15444,
+        "zero_ratio": 0.0,
+        "is_constant": false
+      },
+      "token": {
+        "num_tokens_used": 84,
+        "bins_used": 84,
+        "possible_unique": 256,
+        "preserve_ratio": 0.328125,
+        "unique_preserve_ratio": 0.328125,
+        "compression_factor": 183.85714285714286,
+        "entropy_norm": 0.49857295897634485,
+        "quantiles": {
+          "min": 0,
+          "q1": 3,
+          "q5": 5,
+          "q10": 5,
+          "q15": 5,
+          "q20": 6,
+          "q25": 6,
+          "q30": 6,
+          "q35": 6,
+          "q40": 6,
+          "q45": 6,
+          "q50": 7,
+          "q55": 8,
+          "q60": 8,
+          "q65": 9,
+          "q70": 9,
+          "q75": 10,
+          "q80": 10,
+          "q85": 11,
+          "q90": 12,
+          "q95": 13,
+          "q99": 15,
+          "max": 255
+        }
+      },
+      "decision": {
+        "label": "transform",
+        "reasons": [
+          "low_preserve_ratio",
+          "high_compression_factor",
+          "low_entropy_norm_high_unique"
+        ],
+        "thresholds": {
+          "preserve_threshold": 0.95,
+          "compression_threshold": 8.0,
+          "entropy_threshold": 0.75,
+          "entropy_trigger_requires_raw_unique_gt_K": true
+        }
+      }
+    },
+    {
+      "feature": "ldrmodules.not_in_init_avg",
+      "n": 46876,
+      "K": 256,
+      "effective_num_bins": 256,
+      "raw": {
+        "train_min": 0.040525739,
+        "train_max": 0.585062241,
+        "train_range": 0.544536502,
+        "num_unique": 15577,
+        "zero_ratio": 0.0,
+        "is_constant": false
+      },
+      "token": {
+        "num_tokens_used": 99,
+        "bins_used": 99,
+        "possible_unique": 256,
+        "preserve_ratio": 0.38671875,
+        "unique_preserve_ratio": 0.38671875,
+        "compression_factor": 157.34343434343435,
+        "entropy_norm": 0.4240164111562972,
+        "quantiles": {
+          "min": 0,
+          "q1": 2,
+          "q5": 3,
+          "q10": 5,
+          "q15": 5,
+          "q20": 5,
+          "q25": 5,
+          "q30": 5,
+          "q35": 5,
+          "q40": 6,
+          "q45": 6,
+          "q50": 6,
+          "q55": 6,
+          "q60": 6,
+          "q65": 6,
+          "q70": 7,
+          "q75": 7,
+          "q80": 8,
+          "q85": 8,
+          "q90": 9,
+          "q95": 10,
+          "q99": 12,
+          "max": 255
+        }
+      },
+      "decision": {
+        "label": "transform",
+        "reasons": [
+          "low_preserve_ratio",
+          "high_compression_factor",
+          "low_entropy_norm_high_unique"
+        ],
+        "thresholds": {
+          "preserve_threshold": 0.95,
+          "compression_threshold": 8.0,
+          "entropy_threshold": 0.75,
+          "entropy_trigger_requires_raw_unique_gt_K": true
+        }
+      }
+    },
+    {
+      "feature": "ldrmodules.not_in_mem_avg",
+      "n": 46876,
+      "K": 256,
+      "effective_num_bins": 256,
+      "raw": {
+        "train_min": 0.016176471,
+        "train_max": 0.531120332,
+        "train_range": 0.514943861,
+        "num_unique": 15444,
+        "zero_ratio": 0.0,
+        "is_constant": false
+      },
+      "token": {
+        "num_tokens_used": 85,
+        "bins_used": 85,
+        "possible_unique": 256,
+        "preserve_ratio": 0.33203125,
+        "unique_preserve_ratio": 0.33203125,
+        "compression_factor": 181.69411764705882,
+        "entropy_norm": 0.4971472065927127,
+        "quantiles": {
+          "min": 0,
+          "q1": 3,
+          "q5": 5,
+          "q10": 5,
+          "q15": 6,
+          "q20": 6,
+          "q25": 6,
+          "q30": 6,
+          "q35": 6,
+          "q40": 6,
+          "q45": 6,
+          "q50": 7,
+          "q55": 8,
+          "q60": 8,
+          "q65": 9,
+          "q70": 9,
+          "q75": 10,
+          "q80": 10,
+          "q85": 11,
+          "q90": 12,
+          "q95": 13,
+          "q99": 15,
+          "max": 255
+        }
+      },
+      "decision": {
+        "label": "transform",
+        "reasons": [
+          "low_preserve_ratio",
+          "high_compression_factor",
+          "low_entropy_norm_high_unique"
+        ],
+        "thresholds": {
+          "preserve_threshold": 0.95,
+          "compression_threshold": 8.0,
+          "entropy_threshold": 0.75,
+          "entropy_trigger_requires_raw_unique_gt_K": true
+        }
+      }
+    },
+    {
+      "feature": "malfind.ninjections",
+      "n": 46876,
+      "K": 256,
+      "effective_num_bins": 256,
+      "raw": {
+        "train_min": 1.0,
+        "train_max": 627.0,
+        "train_range": 626.0,
+        "num_unique": 111,
+        "zero_ratio": 0.0,
+        "is_constant": false
+      },
+      "token": {
+        "num_tokens_used": 59,
+        "bins_used": 59,
+        "possible_unique": 111,
+        "preserve_ratio": 0.5315315315315315,
+        "unique_preserve_ratio": 0.5315315315315315,
+        "compression_factor": 1.88135593220339,
+        "entropy_norm": 0.33210654919564214,
+        "quantiles": {
+          "min": 0,
+          "q1": 0,
+          "q5": 0,
+          "q10": 0,
+          "q15": 0,
+          "q20": 0,
+          "q25": 0,
+          "q30": 0,
+          "q35": 0,
+          "q40": 0,
+          "q45": 0,
+          "q50": 1,
+          "q55": 1,
+          "q60": 1,
+          "q65": 1,
+          "q70": 1,
+          "q75": 1,
+          "q80": 1,
+          "q85": 2,
+          "q90": 2,
+          "q95": 5,
+          "q99": 24,
+          "max": 255
+        }
+      },
+      "decision": {
+        "label": "transform",
+        "reasons": [
+          "low_preserve_ratio"
+        ],
+        "thresholds": {
+          "preserve_threshold": 0.95,
+          "compression_threshold": 8.0,
+          "entropy_threshold": 0.75,
+          "entropy_trigger_requires_raw_unique_gt_K": true
+        }
+      }
+    },
+    {
+      "feature": "malfind.commitCharge",
+      "n": 46876,
+      "K": 256,
+      "effective_num_bins": 256,
+      "raw": {
+        "train_min": 1.0,
+        "train_max": 220850.0,
+        "train_range": 220849.0,
+        "num_unique": 488,
+        "zero_ratio": 0.0,
+        "is_constant": false
+      },
+      "token": {
+        "num_tokens_used": 72,
+        "bins_used": 72,
+        "possible_unique": 256,
+        "preserve_ratio": 0.28125,
+        "unique_preserve_ratio": 0.28125,
+        "compression_factor": 6.777777777777778,
+        "entropy_norm": 0.05766569818045938,
+        "quantiles": {
+          "min": 0,
+          "q1": 0,
+          "q5": 0,
+          "q10": 0,
+          "q15": 0,
+          "q20": 0,
+          "q25": 0,
+          "q30": 0,
+          "q35": 0,
+          "q40": 0,
+          "q45": 0,
+          "q50": 0,
+          "q55": 0,
+          "q60": 0,
+          "q65": 0,
+          "q70": 0,
+          "q75": 0,
+          "q80": 0,
+          "q85": 0,
+          "q90": 0,
+          "q95": 0,
+          "q99": 21,
+          "max": 255
+        }
+      },
+      "decision": {
+        "label": "transform",
+        "reasons": [
+          "low_preserve_ratio",
+          "low_entropy_norm_high_unique"
+        ],
+        "thresholds": {
+          "preserve_threshold": 0.95,
+          "compression_threshold": 8.0,
+          "entropy_threshold": 0.75,
+          "entropy_trigger_requires_raw_unique_gt_K": true
+        }
+      }
+    },
+    {
+      "feature": "malfind.protection",
+      "n": 46876,
+      "K": 256,
+      "effective_num_bins": 256,
+      "raw": {
+        "train_min": 6.0,
+        "train_max": 3762.0,
+        "train_range": 3756.0,
+        "num_unique": 203,
+        "zero_ratio": 0.0,
+        "is_constant": false
+      },
+      "token": {
+        "num_tokens_used": 59,
+        "bins_used": 59,
+        "possible_unique": 203,
+        "preserve_ratio": 0.29064039408866993,
+        "unique_preserve_ratio": 0.29064039408866993,
+        "compression_factor": 3.440677966101695,
+        "entropy_norm": 0.33414625516738317,
+        "quantiles": {
+          "min": 0,
+          "q1": 0,
+          "q5": 0,
+          "q10": 0,
+          "q15": 0,
+          "q20": 0,
+          "q25": 0,
+          "q30": 0,
+          "q35": 0,
+          "q40": 0,
+          "q45": 0,
+          "q50": 1,
+          "q55": 1,
+          "q60": 1,
+          "q65": 1,
+          "q70": 1,
+          "q75": 1,
+          "q80": 1,
+          "q85": 2,
+          "q90": 2,
+          "q95": 5,
+          "q99": 24,
+          "max": 255
+        }
+      },
+      "decision": {
+        "label": "transform",
+        "reasons": [
+          "low_preserve_ratio"
+        ],
+        "thresholds": {
+          "preserve_threshold": 0.95,
+          "compression_threshold": 8.0,
+          "entropy_threshold": 0.75,
+          "entropy_trigger_requires_raw_unique_gt_K": true
+        }
+      }
+    },
+    {
+      "feature": "malfind.uniqueInjections",
+      "n": 46876,
+      "K": 256,
+      "effective_num_bins": 256,
+      "raw": {
+        "train_min": 1.0,
+        "train_max": 90.66666667,
+        "train_range": 89.66666667,
+        "num_unique": 4452,
+        "zero_ratio": 0.0,
+        "is_constant": false
+      },
+      "token": {
+        "num_tokens_used": 67,
+        "bins_used": 67,
+        "possible_unique": 256,
+        "preserve_ratio": 0.26171875,
+        "unique_preserve_ratio": 0.26171875,
+        "compression_factor": 66.44776119402985,
+        "entropy_norm": 0.21678686446121384,
+        "quantiles": {
+          "min": 0,
+          "q1": 0,
+          "q5": 0,
+          "q10": 0,
+          "q15": 0,
+          "q20": 0,
+          "q25": 0,
+          "q30": 0,
+          "q35": 0,
+          "q40": 0,
+          "q45": 0,
+          "q50": 0,
+          "q55": 0,
+          "q60": 0,
+          "q65": 0,
+          "q70": 0,
+          "q75": 0,
+          "q80": 1,
+          "q85": 1,
+          "q90": 1,
+          "q95": 3,
+          "q99": 32,
+          "max": 255
+        }
+      },
+      "decision": {
+        "label": "transform",
+        "reasons": [
+          "low_preserve_ratio",
+          "high_compression_factor",
+          "low_entropy_norm_high_unique"
+        ],
+        "thresholds": {
+          "preserve_threshold": 0.95,
+          "compression_threshold": 8.0,
+          "entropy_threshold": 0.75,
+          "entropy_trigger_requires_raw_unique_gt_K": true
+        }
+      }
+    },
+    {
+      "feature": "psxview.not_in_pslist",
+      "n": 46876,
+      "K": 256,
+      "effective_num_bins": 256,
+      "raw": {
+        "train_min": 0.0,
+        "train_max": 43.0,
+        "train_range": 43.0,
+        "num_unique": 40,
+        "zero_ratio": 0.4979307108115027,
+        "is_constant": false
+      },
+      "token": {
+        "num_tokens_used": 40,
+        "bins_used": 40,
+        "possible_unique": 40,
+        "preserve_ratio": 1.0,
+        "unique_preserve_ratio": 1.0,
+        "compression_factor": 1.0,
+        "entropy_norm": 0.48112950986746617,
+        "quantiles": {
+          "min": 0,
+          "q1": 0,
+          "q5": 0,
+          "q10": 0,
+          "q15": 0,
+          "q20": 0,
+          "q25": 0,
+          "q30": 0,
+          "q35": 0,
+          "q40": 0,
+          "q45": 0,
+          "q50": 5,
+          "q55": 5,
+          "q60": 5,
+          "q65": 11,
+          "q70": 11,
+          "q75": 17,
+          "q80": 23,
+          "q85": 23,
+          "q90": 29,
+          "q95": 47,
+          "q99": 71,
+          "max": 255
+        }
+      },
+      "decision": {
+        "label": "keep",
+        "reasons": [
+          "metrics_within_thresholds"
+        ],
+        "thresholds": {
+          "preserve_threshold": 0.95,
+          "compression_threshold": 8.0,
+          "entropy_threshold": 0.75,
+          "entropy_trigger_requires_raw_unique_gt_K": true
+        }
+      }
+    },
+    {
+      "feature": "psxview.not_in_eprocess_pool",
+      "n": 46876,
+      "K": 256,
+      "effective_num_bins": 256,
+      "raw": {
+        "train_min": 0.0,
+        "train_max": 1.0,
+        "train_range": 1.0,
+        "num_unique": 2,
+        "zero_ratio": 0.9978027135421111,
+        "is_constant": false
+      },
+      "token": {
+        "num_tokens_used": 2,
+        "bins_used": 2,
+        "possible_unique": 2,
+        "preserve_ratio": 1.0,
+        "unique_preserve_ratio": 1.0,
+        "compression_factor": 1.0,
+        "entropy_norm": 0.022568703168667884,
+        "quantiles": {
+          "min": 0,
+          "q1": 0,
+          "q5": 0,
+          "q10": 0,
+          "q15": 0,
+          "q20": 0,
+          "q25": 0,
+          "q30": 0,
+          "q35": 0,
+          "q40": 0,
+          "q45": 0,
+          "q50": 0,
+          "q55": 0,
+          "q60": 0,
+          "q65": 0,
+          "q70": 0,
+          "q75": 0,
+          "q80": 0,
+          "q85": 0,
+          "q90": 0,
+          "q95": 0,
+          "q99": 0,
+          "max": 255
+        }
+      },
+      "decision": {
+        "label": "keep",
+        "reasons": [
+          "metrics_within_thresholds"
+        ],
+        "thresholds": {
+          "preserve_threshold": 0.95,
+          "compression_threshold": 8.0,
+          "entropy_threshold": 0.75,
+          "entropy_trigger_requires_raw_unique_gt_K": true
+        }
+      }
+    },
+    {
+      "feature": "psxview.not_in_ethread_pool",
+      "n": 46876,
+      "K": 256,
+      "effective_num_bins": 256,
+      "raw": {
+        "train_min": 0.0,
+        "train_max": 201.0,
+        "train_range": 201.0,
+        "num_unique": 78,
+        "zero_ratio": 0.43839064766618313,
+        "is_constant": false
+      },
+      "token": {
+        "num_tokens_used": 78,
+        "bins_used": 78,
+        "possible_unique": 78,
+        "preserve_ratio": 1.0,
+        "unique_preserve_ratio": 1.0,
+        "compression_factor": 1.0,
+        "entropy_norm": 0.4418943899437724,
+        "quantiles": {
+          "min": 0,
+          "q1": 0,
+          "q5": 0,
+          "q10": 0,
+          "q15": 0,
+          "q20": 0,
+          "q25": 0,
+          "q30": 0,
+          "q35": 0,
+          "q40": 0,
+          "q45": 1,
+          "q50": 1,
+          "q55": 1,
+          "q60": 1,
+          "q65": 2,
+          "q70": 2,
+          "q75": 3,
+          "q80": 5,
+          "q85": 6,
+          "q90": 7,
+          "q95": 11,
+          "q99": 17,
+          "max": 255
+        }
+      },
+      "decision": {
+        "label": "keep",
+        "reasons": [
+          "metrics_within_thresholds"
+        ],
+        "thresholds": {
+          "preserve_threshold": 0.95,
+          "compression_threshold": 8.0,
+          "entropy_threshold": 0.75,
+          "entropy_trigger_requires_raw_unique_gt_K": true
+        }
+      }
+    },
+    {
+      "feature": "psxview.not_in_pspcid_list",
+      "n": 46876,
+      "K": 256,
+      "effective_num_bins": 256,
+      "raw": {
+        "train_min": 0.0,
+        "train_max": 43.0,
+        "train_range": 43.0,
+        "num_unique": 40,
+        "zero_ratio": 0.4978667121768069,
+        "is_constant": false
+      },
+      "token": {
+        "num_tokens_used": 40,
+        "bins_used": 40,
+        "possible_unique": 40,
+        "preserve_ratio": 1.0,
+        "unique_preserve_ratio": 1.0,
+        "compression_factor": 1.0,
+        "entropy_norm": 0.48127220495434797,
+        "quantiles": {
+          "min": 0,
+          "q1": 0,
+          "q5": 0,
+          "q10": 0,
+          "q15": 0,
+          "q20": 0,
+          "q25": 0,
+          "q30": 0,
+          "q35": 0,
+          "q40": 0,
+          "q45": 0,
+          "q50": 5,
+          "q55": 5,
+          "q60": 5,
+          "q65": 11,
+          "q70": 11,
+          "q75": 17,
+          "q80": 23,
+          "q85": 23,
+          "q90": 29,
+          "q95": 47,
+          "q99": 71,
+          "max": 255
+        }
+      },
+      "decision": {
+        "label": "keep",
+        "reasons": [
+          "metrics_within_thresholds"
+        ],
+        "thresholds": {
+          "preserve_threshold": 0.95,
+          "compression_threshold": 8.0,
+          "entropy_threshold": 0.75,
+          "entropy_trigger_requires_raw_unique_gt_K": true
+        }
+      }
+    },
+    {
+      "feature": "psxview.not_in_csrss_handles",
+      "n": 46876,
+      "K": 256,
+      "effective_num_bins": 256,
+      "raw": {
+        "train_min": 4.0,
+        "train_max": 205.0,
+        "train_range": 201.0,
+        "num_unique": 78,
+        "zero_ratio": 0.0,
+        "is_constant": false
+      },
+      "token": {
+        "num_tokens_used": 78,
+        "bins_used": 78,
+        "possible_unique": 78,
+        "preserve_ratio": 1.0,
+        "unique_preserve_ratio": 1.0,
+        "compression_factor": 1.0,
+        "entropy_norm": 0.4422737565982476,
+        "quantiles": {
+          "min": 0,
+          "q1": 0,
+          "q5": 0,
+          "q10": 0,
+          "q15": 0,
+          "q20": 0,
+          "q25": 0,
+          "q30": 0,
+          "q35": 0,
+          "q40": 0,
+          "q45": 1,
+          "q50": 1,
+          "q55": 1,
+          "q60": 1,
+          "q65": 2,
+          "q70": 2,
+          "q75": 3,
+          "q80": 5,
+          "q85": 6,
+          "q90": 7,
+          "q95": 11,
+          "q99": 17,
+          "max": 255
+        }
+      },
+      "decision": {
+        "label": "keep",
+        "reasons": [
+          "metrics_within_thresholds"
+        ],
+        "thresholds": {
+          "preserve_threshold": 0.95,
+          "compression_threshold": 8.0,
+          "entropy_threshold": 0.75,
+          "entropy_trigger_requires_raw_unique_gt_K": true
+        }
+      }
+    },
+    {
+      "feature": "psxview.not_in_session",
+      "n": 46876,
+      "K": 256,
+      "effective_num_bins": 256,
+      "raw": {
+        "train_min": 2.0,
+        "train_max": 45.0,
+        "train_range": 43.0,
+        "num_unique": 40,
+        "zero_ratio": 0.0,
+        "is_constant": false
+      },
+      "token": {
+        "num_tokens_used": 40,
+        "bins_used": 40,
+        "possible_unique": 40,
+        "preserve_ratio": 1.0,
+        "unique_preserve_ratio": 1.0,
+        "compression_factor": 1.0,
+        "entropy_norm": 0.48106061802204303,
+        "quantiles": {
+          "min": 0,
+          "q1": 0,
+          "q5": 0,
+          "q10": 0,
+          "q15": 0,
+          "q20": 0,
+          "q25": 0,
+          "q30": 0,
+          "q35": 0,
+          "q40": 0,
+          "q45": 0,
+          "q50": 5,
+          "q55": 5,
+          "q60": 5,
+          "q65": 11,
+          "q70": 11,
+          "q75": 17,
+          "q80": 23,
+          "q85": 23,
+          "q90": 29,
+          "q95": 47,
+          "q99": 71,
+          "max": 255
+        }
+      },
+      "decision": {
+        "label": "keep",
+        "reasons": [
+          "metrics_within_thresholds"
+        ],
+        "thresholds": {
+          "preserve_threshold": 0.95,
+          "compression_threshold": 8.0,
+          "entropy_threshold": 0.75,
+          "entropy_trigger_requires_raw_unique_gt_K": true
+        }
+      }
+    },
+    {
+      "feature": "psxview.not_in_deskthrd",
+      "n": 46876,
+      "K": 256,
+      "effective_num_bins": 256,
+      "raw": {
+        "train_min": 4.0,
+        "train_max": 207.0,
+        "train_range": 203.0,
+        "num_unique": 82,
+        "zero_ratio": 0.0,
+        "is_constant": false
+      },
+      "token": {
+        "num_tokens_used": 82,
+        "bins_used": 82,
+        "possible_unique": 82,
+        "preserve_ratio": 1.0,
+        "unique_preserve_ratio": 1.0,
+        "compression_factor": 1.0,
+        "entropy_norm": 0.4825476873484649,
+        "quantiles": {
+          "min": 0,
+          "q1": 1,
+          "q5": 1,
+          "q10": 2,
+          "q15": 2,
+          "q20": 2,
+          "q25": 2,
+          "q30": 2,
+          "q35": 2,
+          "q40": 2,
+          "q45": 3,
+          "q50": 3,
+          "q55": 3,
+          "q60": 5,
+          "q65": 5,
+          "q70": 6,
+          "q75": 6,
+          "q80": 7,
+          "q85": 8,
+          "q90": 10,
+          "q95": 13,
+          "q99": 21,
+          "max": 255
+        }
+      },
+      "decision": {
+        "label": "keep",
+        "reasons": [
+          "metrics_within_thresholds"
+        ],
+        "thresholds": {
+          "preserve_threshold": 0.95,
+          "compression_threshold": 8.0,
+          "entropy_threshold": 0.75,
+          "entropy_trigger_requires_raw_unique_gt_K": true
+        }
+      }
+    },
+    {
+      "feature": "psxview.not_in_pslist_false_avg",
+      "n": 46876,
+      "K": 256,
+      "effective_num_bins": 256,
+      "raw": {
+        "train_min": 0.0,
+        "train_max": 0.551282051,
+        "train_range": 0.551282051,
+        "num_unique": 7781,
+        "zero_ratio": 0.44549449611741615,
+        "is_constant": false
+      },
+      "token": {
+        "num_tokens_used": 192,
+        "bins_used": 192,
+        "possible_unique": 256,
+        "preserve_ratio": 0.75,
+        "unique_preserve_ratio": 0.75,
+        "compression_factor": 40.526041666666664,
+        "entropy_norm": 0.5544275994173603,
+        "quantiles": {
+          "min": 0,
+          "q1": 0,
+          "q5": 0,
+          "q10": 0,
+          "q15": 0,
+          "q20": 0,
+          "q25": 0,
+          "q30": 0,
+          "q35": 0,
+          "q40": 0,
+          "q45": 0,
+          "q50": 9,
+          "q55": 10,
+          "q60": 11,
+          "q65": 20,
+          "q70": 22,
+          "q75": 31,
+          "q80": 38,
+          "q85": 43,
+          "q90": 55,
+          "q95": 75,
+          "q99": 108,
+          "max": 255
+        }
+      },
+      "decision": {
+        "label": "transform",
+        "reasons": [
+          "low_preserve_ratio",
+          "high_compression_factor",
+          "low_entropy_norm_high_unique"
+        ],
+        "thresholds": {
+          "preserve_threshold": 0.95,
+          "compression_threshold": 8.0,
+          "entropy_threshold": 0.75,
+          "entropy_trigger_requires_raw_unique_gt_K": true
+        }
+      }
+    },
+    {
+      "feature": "psxview.not_in_eprocess_pool_false_avg",
+      "n": 46876,
+      "K": 256,
+      "effective_num_bins": 256,
+      "raw": {
+        "train_min": 0.0,
+        "train_max": 0.043478261,
+        "train_range": 0.043478261,
+        "num_unique": 159,
+        "zero_ratio": 0.9949227749808004,
+        "is_constant": false
+      },
+      "token": {
+        "num_tokens_used": 101,
+        "bins_used": 101,
+        "possible_unique": 159,
+        "preserve_ratio": 0.6352201257861635,
+        "unique_preserve_ratio": 0.6352201257861635,
+        "compression_factor": 1.5742574257425743,
+        "entropy_norm": 0.011582502569435181,
+        "quantiles": {
+          "min": 0,
+          "q1": 0,
+          "q5": 0,
+          "q10": 0,
+          "q15": 0,
+          "q20": 0,
+          "q25": 0,
+          "q30": 0,
+          "q35": 0,
+          "q40": 0,
+          "q45": 0,
+          "q50": 0,
+          "q55": 0,
+          "q60": 0,
+          "q65": 0,
+          "q70": 0,
+          "q75": 0,
+          "q80": 0,
+          "q85": 0,
+          "q90": 0,
+          "q95": 0,
+          "q99": 0,
+          "max": 255
+        }
+      },
+      "decision": {
+        "label": "transform",
+        "reasons": [
+          "low_preserve_ratio"
+        ],
+        "thresholds": {
+          "preserve_threshold": 0.95,
+          "compression_threshold": 8.0,
+          "entropy_threshold": 0.75,
+          "entropy_trigger_requires_raw_unique_gt_K": true
+        }
+      }
+    },
+    {
+      "feature": "psxview.not_in_ethread_pool_false_avg",
+      "n": 46876,
+      "K": 256,
+      "effective_num_bins": 256,
+      "raw": {
+        "train_min": 0.0,
+        "train_max": 0.8375,
+        "train_range": 0.8375,
+        "num_unique": 8346,
+        "zero_ratio": 0.38751173308302755,
+        "is_constant": false
+      },
+      "token": {
+        "num_tokens_used": 184,
+        "bins_used": 184,
+        "possible_unique": 256,
+        "preserve_ratio": 0.71875,
+        "unique_preserve_ratio": 0.71875,
+        "compression_factor": 45.358695652173914,
+        "entropy_norm": 0.5602966575584899,
+        "quantiles": {
+          "min": 0,
+          "q1": 0,
+          "q5": 0,
+          "q10": 0,
+          "q15": 0,
+          "q20": 0,
+          "q25": 0,
+          "q30": 0,
+          "q35": 0,
+          "q40": 1,
+          "q45": 6,
+          "q50": 7,
+          "q55": 7,
+          "q60": 12,
+          "q65": 14,
+          "q70": 17,
+          "q75": 21,
+          "q80": 27,
+          "q85": 33,
+          "q90": 40,
+          "q95": 57,
+          "q99": 82,
+          "max": 255
+        }
+      },
+      "decision": {
+        "label": "transform",
+        "reasons": [
+          "low_preserve_ratio",
+          "high_compression_factor",
+          "low_entropy_norm_high_unique"
+        ],
+        "thresholds": {
+          "preserve_threshold": 0.95,
+          "compression_threshold": 8.0,
+          "entropy_threshold": 0.75,
+          "entropy_trigger_requires_raw_unique_gt_K": true
+        }
+      }
+    },
+    {
+      "feature": "psxview.not_in_pspcid_list_false_avg",
+      "n": 46876,
+      "K": 256,
+      "effective_num_bins": 256,
+      "raw": {
+        "train_min": 0.0,
+        "train_max": 1.0,
+        "train_range": 1.0,
+        "num_unique": 7783,
+        "zero_ratio": 0.44543049748272034,
+        "is_constant": false
+      },
+      "token": {
+        "num_tokens_used": 120,
+        "bins_used": 120,
+        "possible_unique": 256,
+        "preserve_ratio": 0.46875,
+        "unique_preserve_ratio": 0.46875,
+        "compression_factor": 64.85833333333333,
+        "entropy_norm": 0.5456777930624351,
+        "quantiles": {
+          "min": 0,
+          "q1": 0,
+          "q5": 0,
+          "q10": 0,
+          "q15": 0,
+          "q20": 0,
+          "q25": 0,
+          "q30": 0,
+          "q35": 0,
+          "q40": 0,
+          "q45": 0,
+          "q50": 5,
+          "q55": 5,
+          "q60": 6,
+          "q65": 11,
+          "q70": 12,
+          "q75": 17,
+          "q80": 21,
+          "q85": 24,
+          "q90": 30,
+          "q95": 41,
+          "q99": 59,
+          "max": 255
+        }
+      },
+      "decision": {
+        "label": "transform",
+        "reasons": [
+          "low_preserve_ratio",
+          "high_compression_factor",
+          "low_entropy_norm_high_unique"
+        ],
+        "thresholds": {
+          "preserve_threshold": 0.95,
+          "compression_threshold": 8.0,
+          "entropy_threshold": 0.75,
+          "entropy_trigger_requires_raw_unique_gt_K": true
+        }
+      }
+    },
+    {
+      "feature": "psxview.not_in_csrss_handles_false_avg",
+      "n": 46876,
+      "K": 256,
+      "effective_num_bins": 256,
+      "raw": {
+        "train_min": 0.025806452,
+        "train_max": 0.854166667,
+        "train_range": 0.828360215,
+        "num_unique": 9458,
+        "zero_ratio": 0.0,
+        "is_constant": false
+      },
+      "token": {
+        "num_tokens_used": 186,
+        "bins_used": 186,
+        "possible_unique": 256,
+        "preserve_ratio": 0.7265625,
+        "unique_preserve_ratio": 0.7265625,
+        "compression_factor": 50.8494623655914,
+        "entropy_norm": 0.712671545984137,
+        "quantiles": {
+          "min": 0,
+          "q1": 17,
+          "q5": 20,
+          "q10": 20,
+          "q15": 21,
+          "q20": 22,
+          "q25": 22,
+          "q30": 23,
+          "q35": 25,
+          "q40": 26,
+          "q45": 27,
+          "q50": 28,
+          "q55": 30,
+          "q60": 33,
+          "q65": 35,
+          "q70": 39,
+          "q75": 43,
+          "q80": 48,
+          "q85": 52,
+          "q90": 60,
+          "q95": 75,
+          "q99": 97,
+          "max": 255
+        }
+      },
+      "decision": {
+        "label": "transform",
+        "reasons": [
+          "low_preserve_ratio",
+          "high_compression_factor",
+          "low_entropy_norm_high_unique"
+        ],
+        "thresholds": {
+          "preserve_threshold": 0.95,
+          "compression_threshold": 8.0,
+          "entropy_threshold": 0.75,
+          "entropy_trigger_requires_raw_unique_gt_K": true
+        }
+      }
+    },
+    {
+      "feature": "psxview.not_in_session_false_avg",
+      "n": 46876,
+      "K": 256,
+      "effective_num_bins": 256,
+      "raw": {
+        "train_min": 0.008333333,
+        "train_max": 0.576923077,
+        "train_range": 0.568589744,
+        "num_unique": 9559,
+        "zero_ratio": 0.0,
+        "is_constant": false
+      },
+      "token": {
+        "num_tokens_used": 202,
+        "bins_used": 202,
+        "possible_unique": 256,
+        "preserve_ratio": 0.7890625,
+        "unique_preserve_ratio": 0.7890625,
+        "compression_factor": 47.32178217821782,
+        "entropy_norm": 0.7124408016971219,
+        "quantiles": {
+          "min": 0,
+          "q1": 14,
+          "q5": 16,
+          "q10": 16,
+          "q15": 17,
+          "q20": 17,
+          "q25": 18,
+          "q30": 18,
+          "q35": 19,
+          "q40": 20,
+          "q45": 21,
+          "q50": 26,
+          "q55": 27,
+          "q60": 30,
+          "q65": 37,
+          "q70": 39,
+          "q75": 47,
+          "q80": 52,
+          "q85": 59,
+          "q90": 69,
+          "q95": 88,
+          "q99": 117,
+          "max": 255
+        }
+      },
+      "decision": {
+        "label": "transform",
+        "reasons": [
+          "low_preserve_ratio",
+          "high_compression_factor",
+          "low_entropy_norm_high_unique"
+        ],
+        "thresholds": {
+          "preserve_threshold": 0.95,
+          "compression_threshold": 8.0,
+          "entropy_threshold": 0.75,
+          "entropy_trigger_requires_raw_unique_gt_K": true
+        }
+      }
+    },
+    {
+      "feature": "psxview.not_in_deskthrd_false_avg",
+      "n": 46876,
+      "K": 256,
+      "effective_num_bins": 256,
+      "raw": {
+        "train_min": 0.04375,
+        "train_max": 0.8625,
+        "train_range": 0.8187500000000001,
+        "num_unique": 9655,
+        "zero_ratio": 0.0,
+        "is_constant": false
+      },
+      "token": {
+        "num_tokens_used": 197,
+        "bins_used": 197,
+        "possible_unique": 256,
+        "preserve_ratio": 0.76953125,
+        "unique_preserve_ratio": 0.76953125,
+        "compression_factor": 49.01015228426396,
+        "entropy_norm": 0.7262810769427833,
+        "quantiles": {
+          "min": 0,
+          "q1": 22,
+          "q5": 28,
+          "q10": 28,
+          "q15": 30,
+          "q20": 31,
+          "q25": 32,
+          "q30": 33,
+          "q35": 34,
+          "q40": 35,
+          "q45": 37,
+          "q50": 38,
+          "q55": 39,
+          "q60": 43,
+          "q65": 44,
+          "q70": 48,
+          "q75": 52,
+          "q80": 57,
+          "q85": 62,
+          "q90": 69,
+          "q95": 84,
+          "q99": 106,
+          "max": 255
+        }
+      },
+      "decision": {
+        "label": "transform",
+        "reasons": [
+          "low_preserve_ratio",
+          "high_compression_factor",
+          "low_entropy_norm_high_unique"
+        ],
+        "thresholds": {
+          "preserve_threshold": 0.95,
+          "compression_threshold": 8.0,
+          "entropy_threshold": 0.75,
+          "entropy_trigger_requires_raw_unique_gt_K": true
+        }
+      }
+    },
+    {
+      "feature": "modules.nmodules",
+      "n": 46876,
+      "K": 256,
+      "effective_num_bins": 256,
+      "raw": {
+        "train_min": 126.0,
+        "train_max": 138.0,
+        "train_range": 12.0,
+        "num_unique": 3,
+        "zero_ratio": 0.0,
+        "is_constant": false
+      },
+      "token": {
+        "num_tokens_used": 3,
+        "bins_used": 3,
+        "possible_unique": 3,
+        "preserve_ratio": 1.0,
+        "unique_preserve_ratio": 1.0,
+        "compression_factor": 1.0,
+        "entropy_norm": 0.14893518717453902,
+        "quantiles": {
+          "min": 0,
+          "q1": 234,
+          "q5": 255,
+          "q10": 255,
+          "q15": 255,
+          "q20": 255,
+          "q25": 255,
+          "q30": 255,
+          "q35": 255,
+          "q40": 255,
+          "q45": 255,
+          "q50": 255,
+          "q55": 255,
+          "q60": 255,
+          "q65": 255,
+          "q70": 255,
+          "q75": 255,
+          "q80": 255,
+          "q85": 255,
+          "q90": 255,
+          "q95": 255,
+          "q99": 255,
+          "max": 255
+        }
+      },
+      "decision": {
+        "label": "keep",
+        "reasons": [
+          "metrics_within_thresholds"
+        ],
+        "thresholds": {
+          "preserve_threshold": 0.95,
+          "compression_threshold": 8.0,
+          "entropy_threshold": 0.75,
+          "entropy_trigger_requires_raw_unique_gt_K": true
+        }
+      }
+    },
+    {
+      "feature": "svcscan.nservices",
+      "n": 46876,
+      "K": 256,
+      "effective_num_bins": 256,
+      "raw": {
+        "train_min": 94.0,
+        "train_max": 395.0,
+        "train_range": 301.0,
+        "num_unique": 30,
+        "zero_ratio": 0.0,
+        "is_constant": false
+      },
+      "token": {
+        "num_tokens_used": 28,
+        "bins_used": 28,
+        "possible_unique": 30,
+        "preserve_ratio": 0.9333333333333333,
+        "unique_preserve_ratio": 0.9333333333333333,
+        "compression_factor": 1.0714285714285714,
+        "entropy_norm": 0.34653669724676084,
+        "quantiles": {
+          "min": 0,
+          "q1": 247,
+          "q5": 250,
+          "q10": 250,
+          "q15": 250,
+          "q20": 250,
+          "q25": 250,
+          "q30": 250,
+          "q35": 250,
+          "q40": 250,
+          "q45": 250,
+          "q50": 250,
+          "q55": 253,
+          "q60": 253,
+          "q65": 255,
+          "q70": 255,
+          "q75": 255,
+          "q80": 255,
+          "q85": 255,
+          "q90": 255,
+          "q95": 255,
+          "q99": 255,
+          "max": 255
+        }
+      },
+      "decision": {
+        "label": "transform",
+        "reasons": [
+          "low_preserve_ratio"
+        ],
+        "thresholds": {
+          "preserve_threshold": 0.95,
+          "compression_threshold": 8.0,
+          "entropy_threshold": 0.75,
+          "entropy_trigger_requires_raw_unique_gt_K": true
+        }
+      }
+    },
+    {
+      "feature": "svcscan.kernel_drivers",
+      "n": 46876,
+      "K": 256,
+      "effective_num_bins": 256,
+      "raw": {
+        "train_min": 55.0,
+        "train_max": 222.0,
+        "train_range": 167.0,
+        "num_unique": 19,
+        "zero_ratio": 0.0,
+        "is_constant": false
+      },
+      "token": {
+        "num_tokens_used": 19,
+        "bins_used": 19,
+        "possible_unique": 19,
+        "preserve_ratio": 1.0,
+        "unique_preserve_ratio": 1.0,
+        "compression_factor": 1.0,
+        "entropy_norm": 0.28582173063131466,
+        "quantiles": {
+          "min": 0,
+          "q1": 252,
+          "q5": 254,
+          "q10": 254,
+          "q15": 254,
+          "q20": 254,
+          "q25": 254,
+          "q30": 254,
+          "q35": 254,
+          "q40": 254,
+          "q45": 254,
+          "q50": 254,
+          "q55": 255,
+          "q60": 255,
+          "q65": 255,
+          "q70": 255,
+          "q75": 255,
+          "q80": 255,
+          "q85": 255,
+          "q90": 255,
+          "q95": 255,
+          "q99": 255,
+          "max": 255
+        }
+      },
+      "decision": {
+        "label": "keep",
+        "reasons": [
+          "metrics_within_thresholds"
+        ],
+        "thresholds": {
+          "preserve_threshold": 0.95,
+          "compression_threshold": 8.0,
+          "entropy_threshold": 0.75,
+          "entropy_trigger_requires_raw_unique_gt_K": true
+        }
+      }
+    },
+    {
+      "feature": "svcscan.fs_drivers",
+      "n": 46876,
+      "K": 256,
+      "effective_num_bins": 256,
+      "raw": {
+        "train_min": 6.0,
+        "train_max": 26.0,
+        "train_range": 20.0,
+        "num_unique": 10,
+        "zero_ratio": 0.0,
+        "is_constant": false
+      },
+      "token": {
+        "num_tokens_used": 10,
+        "bins_used": 10,
+        "possible_unique": 10,
+        "preserve_ratio": 1.0,
+        "unique_preserve_ratio": 1.0,
+        "compression_factor": 1.0,
+        "entropy_norm": 0.0038660702174345973,
+        "quantiles": {
+          "min": 0,
+          "q1": 255,
+          "q5": 255,
+          "q10": 255,
+          "q15": 255,
+          "q20": 255,
+          "q25": 255,
+          "q30": 255,
+          "q35": 255,
+          "q40": 255,
+          "q45": 255,
+          "q50": 255,
+          "q55": 255,
+          "q60": 255,
+          "q65": 255,
+          "q70": 255,
+          "q75": 255,
+          "q80": 255,
+          "q85": 255,
+          "q90": 255,
+          "q95": 255,
+          "q99": 255,
+          "max": 255
+        }
+      },
+      "decision": {
+        "label": "keep",
+        "reasons": [
+          "metrics_within_thresholds"
+        ],
+        "thresholds": {
+          "preserve_threshold": 0.95,
+          "compression_threshold": 8.0,
+          "entropy_threshold": 0.75,
+          "entropy_trigger_requires_raw_unique_gt_K": true
+        }
+      }
+    },
+    {
+      "feature": "svcscan.process_services",
+      "n": 46876,
+      "K": 256,
+      "effective_num_bins": 256,
+      "raw": {
+        "train_min": 7.0,
+        "train_max": 27.0,
+        "train_range": 20.0,
+        "num_unique": 14,
+        "zero_ratio": 0.0,
+        "is_constant": false
+      },
+      "token": {
+        "num_tokens_used": 14,
+        "bins_used": 14,
+        "possible_unique": 14,
+        "preserve_ratio": 1.0,
+        "unique_preserve_ratio": 1.0,
+        "compression_factor": 1.0,
+        "entropy_norm": 0.32624826091756054,
+        "quantiles": {
+          "min": 0,
+          "q1": 204,
+          "q5": 217,
+          "q10": 217,
+          "q15": 217,
+          "q20": 217,
+          "q25": 217,
+          "q30": 217,
+          "q35": 217,
+          "q40": 217,
+          "q45": 217,
+          "q50": 217,
+          "q55": 217,
+          "q60": 217,
+          "q65": 255,
+          "q70": 255,
+          "q75": 255,
+          "q80": 255,
+          "q85": 255,
+          "q90": 255,
+          "q95": 255,
+          "q99": 255,
+          "max": 255
+        }
+      },
+      "decision": {
+        "label": "keep",
+        "reasons": [
+          "metrics_within_thresholds"
+        ],
+        "thresholds": {
+          "preserve_threshold": 0.95,
+          "compression_threshold": 8.0,
+          "entropy_threshold": 0.75,
+          "entropy_trigger_requires_raw_unique_gt_K": true
+        }
+      }
+    },
+    {
+      "feature": "svcscan.shared_process_services",
+      "n": 46876,
+      "K": 256,
+      "effective_num_bins": 256,
+      "raw": {
+        "train_min": 26.0,
+        "train_max": 118.0,
+        "train_range": 92.0,
+        "num_unique": 22,
+        "zero_ratio": 0.0,
+        "is_constant": false
+      },
+      "token": {
+        "num_tokens_used": 22,
+        "bins_used": 22,
+        "possible_unique": 22,
+        "preserve_ratio": 1.0,
+        "unique_preserve_ratio": 1.0,
+        "compression_factor": 1.0,
+        "entropy_norm": 0.276266672668019,
+        "quantiles": {
+          "min": 0,
+          "q1": 244,
+          "q5": 250,
+          "q10": 250,
+          "q15": 250,
+          "q20": 250,
+          "q25": 250,
+          "q30": 250,
+          "q35": 250,
+          "q40": 250,
+          "q45": 250,
+          "q50": 250,
+          "q55": 255,
+          "q60": 255,
+          "q65": 255,
+          "q70": 255,
+          "q75": 255,
+          "q80": 255,
+          "q85": 255,
+          "q90": 255,
+          "q95": 255,
+          "q99": 255,
+          "max": 255
+        }
+      },
+      "decision": {
+        "label": "keep",
+        "reasons": [
+          "metrics_within_thresholds"
+        ],
+        "thresholds": {
+          "preserve_threshold": 0.95,
+          "compression_threshold": 8.0,
+          "entropy_threshold": 0.75,
+          "entropy_trigger_requires_raw_unique_gt_K": true
+        }
+      }
+    },
+    {
+      "feature": "svcscan.interactive_process_services",
+      "n": 46876,
+      "K": 256,
+      "effective_num_bins": 256,
+      "raw": {
+        "train_min": 0.0,
+        "train_max": 0.0,
+        "train_range": 0.0,
+        "num_unique": 1,
+        "zero_ratio": 1.0,
+        "is_constant": true
+      },
+      "token": {
+        "num_tokens_used": 1,
+        "bins_used": 1,
+        "possible_unique": 1,
+        "preserve_ratio": 1.0,
+        "unique_preserve_ratio": 1.0,
+        "compression_factor": 1.0,
+        "entropy_norm": 1.0,
+        "quantiles": {
+          "min": 0,
+          "q1": 0,
+          "q5": 0,
+          "q10": 0,
+          "q15": 0,
+          "q20": 0,
+          "q25": 0,
+          "q30": 0,
+          "q35": 0,
+          "q40": 0,
+          "q45": 0,
+          "q50": 0,
+          "q55": 0,
+          "q60": 0,
+          "q65": 0,
+          "q70": 0,
+          "q75": 0,
+          "q80": 0,
+          "q85": 0,
+          "q90": 0,
+          "q95": 0,
+          "q99": 0,
+          "max": 0
+        }
+      },
+      "decision": {
+        "label": "drop",
+        "reasons": [
+          "constant_feature"
+        ],
+        "thresholds": {
+          "preserve_threshold": 0.95,
+          "compression_threshold": 8.0,
+          "entropy_threshold": 0.75,
+          "entropy_trigger_requires_raw_unique_gt_K": true
+        }
+      }
+    },
+    {
+      "feature": "svcscan.nactive",
+      "n": 46876,
+      "K": 256,
+      "effective_num_bins": 256,
+      "raw": {
+        "train_min": 30.0,
+        "train_max": 129.0,
+        "train_range": 99.0,
+        "num_unique": 34,
+        "zero_ratio": 0.0,
+        "is_constant": false
+      },
+      "token": {
+        "num_tokens_used": 34,
+        "bins_used": 34,
+        "possible_unique": 34,
+        "preserve_ratio": 1.0,
+        "unique_preserve_ratio": 1.0,
+        "compression_factor": 1.0,
+        "entropy_norm": 0.6257817858666852,
+        "quantiles": {
+          "min": 0,
+          "q1": 217,
+          "q5": 227,
+          "q10": 230,
+          "q15": 230,
+          "q20": 230,
+          "q25": 232,
+          "q30": 235,
+          "q35": 237,
+          "q40": 237,
+          "q45": 237,
+          "q50": 237,
+          "q55": 240,
+          "q60": 240,
+          "q65": 240,
+          "q70": 240,
+          "q75": 240,
+          "q80": 243,
+          "q85": 243,
+          "q90": 245,
+          "q95": 248,
+          "q99": 250,
+          "max": 255
+        }
+      },
+      "decision": {
+        "label": "keep",
+        "reasons": [
+          "metrics_within_thresholds"
+        ],
+        "thresholds": {
+          "preserve_threshold": 0.95,
+          "compression_threshold": 8.0,
+          "entropy_threshold": 0.75,
+          "entropy_trigger_requires_raw_unique_gt_K": true
+        }
+      }
+    },
+    {
+      "feature": "callbacks.ncallbacks",
+      "n": 46876,
+      "K": 256,
+      "effective_num_bins": 256,
+      "raw": {
+        "train_min": 50.0,
+        "train_max": 89.0,
+        "train_range": 39.0,
+        "num_unique": 13,
+        "zero_ratio": 0.0,
+        "is_constant": false
+      },
+      "token": {
+        "num_tokens_used": 13,
+        "bins_used": 13,
+        "possible_unique": 13,
+        "preserve_ratio": 1.0,
+        "unique_preserve_ratio": 1.0,
+        "compression_factor": 1.0,
+        "entropy_norm": 0.44011199341681984,
+        "quantiles": {
+          "min": 0,
+          "q1": 236,
+          "q5": 236,
+          "q10": 236,
+          "q15": 236,
+          "q20": 236,
+          "q25": 242,
+          "q30": 242,
+          "q35": 242,
+          "q40": 242,
+          "q45": 242,
+          "q50": 242,
+          "q55": 242,
+          "q60": 249,
+          "q65": 249,
+          "q70": 249,
+          "q75": 249,
+          "q80": 249,
+          "q85": 249,
+          "q90": 249,
+          "q95": 249,
+          "q99": 249,
+          "max": 255
+        }
+      },
+      "decision": {
+        "label": "keep",
+        "reasons": [
+          "metrics_within_thresholds"
+        ],
+        "thresholds": {
+          "preserve_threshold": 0.95,
+          "compression_threshold": 8.0,
+          "entropy_threshold": 0.75,
+          "entropy_trigger_requires_raw_unique_gt_K": true
+        }
+      }
+    },
+    {
+      "feature": "callbacks.nanonymous",
+      "n": 46876,
+      "K": 256,
+      "effective_num_bins": 256,
+      "raw": {
+        "train_min": 0.0,
+        "train_max": 1.0,
+        "train_range": 1.0,
+        "num_unique": 2,
+        "zero_ratio": 0.9991466848707228,
+        "is_constant": false
+      },
+      "token": {
+        "num_tokens_used": 2,
+        "bins_used": 2,
+        "possible_unique": 2,
+        "preserve_ratio": 1.0,
+        "unique_preserve_ratio": 1.0,
+        "compression_factor": 1.0,
+        "entropy_norm": 0.009929783327334362,
+        "quantiles": {
+          "min": 0,
+          "q1": 0,
+          "q5": 0,
+          "q10": 0,
+          "q15": 0,
+          "q20": 0,
+          "q25": 0,
+          "q30": 0,
+          "q35": 0,
+          "q40": 0,
+          "q45": 0,
+          "q50": 0,
+          "q55": 0,
+          "q60": 0,
+          "q65": 0,
+          "q70": 0,
+          "q75": 0,
+          "q80": 0,
+          "q85": 0,
+          "q90": 0,
+          "q95": 0,
+          "q99": 0,
+          "max": 255
+        }
+      },
+      "decision": {
+        "label": "keep",
+        "reasons": [
+          "metrics_within_thresholds"
+        ],
+        "thresholds": {
+          "preserve_threshold": 0.95,
+          "compression_threshold": 8.0,
+          "entropy_threshold": 0.75,
+          "entropy_trigger_requires_raw_unique_gt_K": true
+        }
+      }
+    },
+    {
+      "feature": "callbacks.ngeneric",
+      "n": 46876,
+      "K": 256,
+      "effective_num_bins": 256,
+      "raw": {
+        "train_min": 7.0,
+        "train_max": 8.0,
+        "train_range": 1.0,
+        "num_unique": 2,
+        "zero_ratio": 0.0,
+        "is_constant": false
+      },
+      "token": {
+        "num_tokens_used": 2,
+        "bins_used": 2,
+        "possible_unique": 2,
+        "preserve_ratio": 1.0,
+        "unique_preserve_ratio": 1.0,
+        "compression_factor": 1.0,
+        "entropy_norm": 0.0018398586124575684,
+        "quantiles": {
+          "min": 0,
+          "q1": 255,
+          "q5": 255,
+          "q10": 255,
+          "q15": 255,
+          "q20": 255,
+          "q25": 255,
+          "q30": 255,
+          "q35": 255,
+          "q40": 255,
+          "q45": 255,
+          "q50": 255,
+          "q55": 255,
+          "q60": 255,
+          "q65": 255,
+          "q70": 255,
+          "q75": 255,
+          "q80": 255,
+          "q85": 255,
+          "q90": 255,
+          "q95": 255,
+          "q99": 255,
+          "max": 255
+        }
+      },
+      "decision": {
+        "label": "keep",
+        "reasons": [
+          "metrics_within_thresholds"
+        ],
+        "thresholds": {
+          "preserve_threshold": 0.95,
+          "compression_threshold": 8.0,
+          "entropy_threshold": 0.75,
+          "entropy_trigger_requires_raw_unique_gt_K": true
+        }
+      }
+    }
+  ]
+}
