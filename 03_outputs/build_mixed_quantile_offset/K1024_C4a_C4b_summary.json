@@ -1,0 +1,73 @@
+{
+  "old_K": 512,
+  "new_K": 1024,
+  "source_C2": "03_outputs/build_mixed_quantile_offset/K512_B512_C2_selective_rank_discrete_compact",
+  "C4a": {
+    "description": "C2 baseline, rank_uniform features recomputed at K1024; compact/current/constant kept as C2.",
+    "output_dir": "03_outputs/build_mixed_quantile_offset/K1024_B1024_C4a_rank1024_rest_C2",
+    "changed_features": [
+      "pslist.avg_threads",
+      "pslist.avg_handlers",
+      "dlllist.avg_dlls_per_proc",
+      "handles.nhandles",
+      "handles.avg_handles_per_proc",
+      "ldrmodules.not_in_load_avg",
+      "ldrmodules.not_in_init_avg",
+      "ldrmodules.not_in_mem_avg",
+      "malfind.uniqueInjections",
+      "psxview.not_in_pslist_false_avg",
+      "psxview.not_in_ethread_pool_false_avg",
+      "psxview.not_in_pspcid_list_false_avg",
+      "psxview.not_in_csrss_handles_false_avg",
+      "psxview.not_in_session_false_avg",
+      "psxview.not_in_deskthrd_false_avg"
+    ],
+    "strategy_counts": {
+      "discrete_compact_offset0": 23,
+      "rank_uniform_offset_K1024": 15,
+      "constant": 3,
+      "keep_current": 14
+    }
+  },
+  "C4b": {
+    "description": "C2 baseline, rank_uniform features recomputed at K1024; keep_current rebinned from C2 continuous position to K1024; compact unchanged.",
+    "output_dir": "03_outputs/build_mixed_quantile_offset/K1024_B1024_C4b_rank1024_current_rebin1024",
+    "changed_features": [
+      "pslist.avg_threads",
+      "pslist.avg_handlers",
+      "dlllist.ndlls",
+      "dlllist.avg_dlls_per_proc",
+      "handles.nhandles",
+      "handles.avg_handles_per_proc",
+      "handles.nfile",
+      "handles.nevent",
+      "handles.nkey",
+      "handles.nthread",
+      "handles.nsemaphore",
+      "handles.nsection",
+      "handles.nmutant",
+      "ldrmodules.not_in_load",
+      "ldrmodules.not_in_init",
+      "ldrmodules.not_in_mem",
+      "ldrmodules.not_in_load_avg",
+      "ldrmodules.not_in_init_avg",
+      "ldrmodules.not_in_mem_avg",
+      "malfind.commitCharge",
+      "malfind.protection",
+      "malfind.uniqueInjections",
+      "psxview.not_in_pslist_false_avg",
+      "psxview.not_in_eprocess_pool_false_avg",
+      "psxview.not_in_ethread_pool_false_avg",
+      "psxview.not_in_pspcid_list_false_avg",
+      "psxview.not_in_csrss_handles_false_avg",
+      "psxview.not_in_session_false_avg",
+      "psxview.not_in_deskthrd_false_avg"
+    ],
+    "strategy_counts": {
+      "discrete_compact_offset0": 23,
+      "rank_uniform_offset_K1024": 15,
+      "constant": 3,
+      "keep_current_rebin_K1024": 14
+    }
+  }
+}
