@@ -1,40 +1,44 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-final_pipeline/preprocessing.py
+01_preprocessing.py
 
-Train-fitted preprocessing, applied to train and val.
+Phase-B preprocessing with token-level selection.
 
 Input:
-    - data/01_split/train_raw.csv
-    - data/01_split/val_raw.csv
-    - token_diag_train_K{K}.json from token_diag.py
+  - train_raw.csv
+  - val_raw.csv
+  - token_diag_train_B{K}.json from 00_token_diag.py
 
-Output:
-    - train_preprocessed_K{K}.csv
-    - val_preprocessed_K{K}.csv
-    - preprocess_policy_K{K}.json
-    - preprocess_report_K{K}.json
+Core idea:
+  1. Use token_diag decision directly:
+       drop / keep / transform
 
-Decision is train-only:
-    possible_unique = min(raw_unique, K + 1)
-    unique_preserve_ratio = num_tokens_used / possible_unique
+  2. For keep:
+       train_minmax
 
-If unique_preserve_ratio is below threshold:
-    default action = blended_rank
-        z = (1-alpha) * train_minmax_z + alpha * unique_rank_z
-    Local piecewise and global rank are kept as explicit experimental options.
-Otherwise:
-    action = keep_minmax
+  3. For drop:
+       constant_zero
+       The column is preserved for pipeline compatibility, but its value is 0.
 
-No test split.
+  4. For transform:
+       try candidate transforms on TRAIN only, evaluate each candidate by the
+       same token-level metrics used in Phase A:
+         preserve_ratio
+         compression_factor
+         entropy_norm
+
+       choose the best candidate by token-level score.
+
+No labels. No F1. No model training.
 """
 
 from __future__ import annotations
 
 import argparse
 import json
-from collections import Counter, defaultdict
+import math
+from collections import Counter
 from pathlib import Path
 from typing import Dict, List, Sequence, Tuple
 
@@ -44,42 +48,90 @@ import pandas as pd
 import config as CFG
 
 
+def cfg(name: str, default):
+    return getattr(CFG, name, default)
+
+
 def csv_list(value: str | None) -> List[str]:
     if value is None:
         return []
     return [x.strip() for x in str(value).split(",") if x.strip()]
 
 
+def parse_float_list(s: str) -> List[float]:
+    vals = []
+    for x in str(s).split(","):
+        x = x.strip()
+        if x:
+            vals.append(float(x))
+    return vals
+
+
+def default_token_diag_path(K: int) -> Path:
+    token_dir = Path(cfg("TOKEN_DIAG_DIR", Path("03_outputs") / "token_diag"))
+    candidates = [
+        token_dir / f"token_diag_train_B{K}.json",
+        token_dir / "token_diag_train.json",
+        token_dir / f"token_diag_train_K{K}.json",
+    ]
+    for p in candidates:
+        if p.exists():
+            return p
+    return candidates[0]
+
+
 def parse_args() -> argparse.Namespace:
-    p = argparse.ArgumentParser(description="Train-fitted preprocessing applied to train and val.")
+    default_bins = int(cfg("VALUE_NUM_BINS", cfg("TOKEN_K", 128)))
+
+    p = argparse.ArgumentParser(description="Train-fitted preprocessing selected by token-level metrics.")
     p.add_argument("--train-csv", default=str(CFG.TRAIN_CSV))
     p.add_argument("--val-csv", default=str(CFG.VAL_CSV))
     p.add_argument("--token-diag-json", default="")
-    p.add_argument("--out-dir", default=str(CFG.PREPROCESS_DIR))
-    p.add_argument("--K", type=int, default=int(CFG.TOKEN_K))
+    p.add_argument("--out-dir", default=str(cfg("PREPROCESS_DIR", Path("03_outputs") / "preprocessing")))
+
+    # Kept as --K for compatibility, but semantically it is effective number of bins.
+    p.add_argument("--K", type=int, default=default_bins)
+
     p.add_argument("--target-cols", default=",".join(CFG.TARGET_COLS))
     p.add_argument("--drop-cols", default=",".join(CFG.DROP_COLS))
-    p.add_argument("--unique-preserve-threshold", type=float, default=float(CFG.UNIQUE_PRESERVE_THRESHOLD))
+
+    # Same thresholds as 00_token_diag.py.
+    p.add_argument("--preserve-threshold", type=float, default=float(cfg("UNIQUE_PRESERVE_THRESHOLD", 0.95)))
+    p.add_argument("--compression-threshold", type=float, default=float(cfg("COMPRESSION_FACTOR_THRESHOLD", 8.0)))
+    p.add_argument("--entropy-threshold", type=float, default=float(cfg("TOKEN_ENTROPY_NORM_THRESHOLD", 0.75)))
+
+    # Candidate list for transform features.
     p.add_argument(
-        "--compressed-action",
-        choices=["blended_rank", "local_piecewise", "global_rank", "keep_minmax"],
-        default=str(getattr(CFG, "COMPRESSED_FEATURE_ACTION", "blended_rank")),
-        help="Action for features below unique-preserve threshold.",
+        "--blend-alphas",
+        default=str(cfg("PREPROCESS_BLEND_ALPHAS", "0.25,0.50,0.75")),
+        help="Comma-separated alphas for blended_rank candidates.",
     )
     p.add_argument(
-        "--blend-alpha",
-        type=float,
-        default=float(getattr(CFG, "BLENDED_RANK_ALPHA", 0.25)),
-        help="Alpha for blended_rank: z=(1-alpha)*minmax + alpha*rank.",
+        "--include-minmax-candidate",
+        action=argparse.BooleanOptionalAction,
+        default=True,
+        help="For transform features, include train_minmax as a control candidate.",
     )
+    p.add_argument(
+        "--include-rank-candidate",
+        action=argparse.BooleanOptionalAction,
+        default=True,
+        help="For transform features, include pure piecewise_unique_rank candidate.",
+    )
+
     return p.parse_args()
 
 
-def detect_numeric_features(df: pd.DataFrame, target_cols: Sequence[str], drop_cols: Sequence[str]) -> List[str]:
+def detect_numeric_features(
+    df: pd.DataFrame,
+    target_cols: Sequence[str],
+    drop_cols: Sequence[str],
+) -> List[str]:
     excluded = set(target_cols) | set(drop_cols)
     excluded |= {c for c in df.columns if str(c).startswith("Unnamed:")}
     return [
-        c for c in df.columns
+        c
+        for c in df.columns
         if c not in excluded and pd.api.types.is_numeric_dtype(df[c])
     ]
 
@@ -93,542 +145,487 @@ def assert_split_has_features(split_name: str, df: pd.DataFrame, features: Seque
     nan_count = int(np.isnan(arr).sum())
     inf_count = int(np.isinf(arr).sum())
     if nan_count or inf_count:
-        raise ValueError(f"{split_name} contains non-finite numeric values: nan={nan_count}, inf={inf_count}")
-
-
-def is_special_delay_feature(feature: str) -> bool:
-    f = feature.lower()
-    return any(k.lower() in f for k in CFG.SPECIAL_DELAY_KEYWORDS)
+        raise ValueError(
+            f"{split_name} contains non-finite numeric values: "
+            f"nan={nan_count}, inf={inf_count}"
+        )
 
 
 def load_token_diag(path: Path) -> Dict[str, Dict[str, object]]:
     if not path.exists():
         raise FileNotFoundError(
             f"token_diag json not found: {path}\n"
-            f"Run token_diag first:\n"
-            f"  python -u final_pipeline/token_diag.py --K {CFG.TOKEN_K}"
+            f"Run 00_token_diag.py first, e.g.:\n"
+            f"  python -u 02_src/00_token_diag.py --K 128"
         )
+
     obj = json.loads(path.read_text(encoding="utf-8"))
     rows = obj.get("features", [])
     if not rows:
         raise ValueError(f"No features found in token_diag json: {path}")
+
     return {str(r["feature"]): r for r in rows}
 
 
-def minmax_scale(values: np.ndarray, mn: float, mx: float) -> np.ndarray:
+def minmax_fit(values: np.ndarray) -> Dict[str, object]:
     values = np.asarray(values, dtype=float)
+    return {
+        "method": "train_minmax",
+        "min": float(np.min(values)),
+        "max": float(np.max(values)),
+    }
+
+
+def minmax_scale(values: np.ndarray, transform: Dict[str, object]) -> np.ndarray:
+    values = np.asarray(values, dtype=float)
+    mn = float(transform["min"])
+    mx = float(transform["max"])
     if abs(mx - mn) <= 1e-12:
         return np.zeros_like(values, dtype=np.float32)
     z = (values - mn) / (mx - mn)
     return np.clip(z, 0.0, 1.0).astype(np.float32)
 
 
-def special_delay_scale(values: np.ndarray, mx: float) -> np.ndarray:
-    values = np.asarray(values, dtype=float)
-    denom = float(mx) + float(CFG.SPECIAL_DELAY_EPS)
-    if abs(denom) <= 1e-12:
-        return np.zeros_like(values, dtype=np.float32)
-    z = values / denom
-    return np.clip(z, 0.0, 1.0).astype(np.float32)
-
-
-def piecewise_unique_rank_fit(train_values: np.ndarray) -> Dict[str, object]:
-    unique_vals = np.unique(np.asarray(train_values, dtype=float))
-    m = int(unique_vals.size)
+def unique_rank_fit(values: np.ndarray) -> Dict[str, object]:
+    u = np.unique(np.asarray(values, dtype=float))
     return {
         "method": "piecewise_unique_rank",
-        "num_unique_breakpoints": m,
-        "unique_raw_values": unique_vals.tolist(),
-        "raw_start": float(unique_vals[0]) if m else None,
-        "raw_end": float(unique_vals[-1]) if m else None,
+        "num_unique_breakpoints": int(u.size),
+        "unique_raw_values": u.tolist(),
+        "raw_start": float(u[0]) if u.size else None,
+        "raw_end": float(u[-1]) if u.size else None,
     }
 
 
-def piecewise_unique_rank_scale(values: np.ndarray, unique_raw_values: Sequence[float]) -> np.ndarray:
+def unique_rank_scale(values: np.ndarray, transform: Dict[str, object]) -> np.ndarray:
     values = np.asarray(values, dtype=float)
-    u = np.asarray(unique_raw_values, dtype=float)
+    u = np.asarray(transform["unique_raw_values"], dtype=float)
     m = int(u.size)
     if m <= 1:
         return np.zeros_like(values, dtype=np.float32)
 
     ranks = np.arange(m, dtype=np.float64) / float(m - 1)
-
-    # Train exact values map exactly.
-    # Val unseen values interpolate monotonically between train unique values.
     z = np.interp(values, u, ranks, left=0.0, right=1.0)
     return np.clip(z, 0.0, 1.0).astype(np.float32)
 
 
-
-
-def blended_rank_fit(train_values: np.ndarray, mn: float, mx: float, alpha: float) -> Dict[str, object]:
-    """
-    Fit a soft rank/minmax transform.
-
-    alpha=0.0 -> pure train minmax
-    alpha=1.0 -> pure unique-rank / quantile-like mapping
-
-    This is intentionally softer than local piecewise: it reduces dense-region
-    compression without hard breakpoints and without blindly zooming a collision
-    interval that may be too wide or label-pure.
-    """
-    unique_vals = np.unique(np.asarray(train_values, dtype=float))
+def blended_rank_fit(values: np.ndarray, alpha: float) -> Dict[str, object]:
+    values = np.asarray(values, dtype=float)
+    mm = minmax_fit(values)
+    u = np.unique(values)
     alpha = float(np.clip(alpha, 0.0, 1.0))
     return {
         "method": "blended_rank",
-        "min": float(mn),
-        "max": float(mx),
+        "min": float(mm["min"]),
+        "max": float(mm["max"]),
         "alpha": alpha,
-        "num_unique_breakpoints": int(unique_vals.size),
-        "unique_raw_values": unique_vals.tolist(),
-        "raw_start": float(unique_vals[0]) if unique_vals.size else None,
-        "raw_end": float(unique_vals[-1]) if unique_vals.size else None,
+        "num_unique_breakpoints": int(u.size),
+        "unique_raw_values": u.tolist(),
+        "raw_start": float(u[0]) if u.size else None,
+        "raw_end": float(u[-1]) if u.size else None,
     }
 
 
 def blended_rank_scale(values: np.ndarray, transform: Dict[str, object]) -> np.ndarray:
     values = np.asarray(values, dtype=float)
-    mn = float(transform["min"])
-    mx = float(transform["max"])
     alpha = float(np.clip(float(transform.get("alpha", 0.25)), 0.0, 1.0))
-
-    z_mm = minmax_scale(values, mn, mx).astype(np.float64)
+    z_mm = minmax_scale(values, transform).astype(np.float64)
 
     u = np.asarray(transform["unique_raw_values"], dtype=float)
-    if u.size <= 1:
+    m = int(u.size)
+    if m <= 1:
         return z_mm.astype(np.float32)
 
-    ranks = np.arange(int(u.size), dtype=np.float64) / float(int(u.size) - 1)
+    ranks = np.arange(m, dtype=np.float64) / float(m - 1)
     z_rank = np.interp(values, u, ranks, left=0.0, right=1.0)
+
     z = (1.0 - alpha) * z_mm + alpha * z_rank
     return np.clip(z, 0.0, 1.0).astype(np.float32)
 
 
-def _cfg_float(name: str, default: float) -> float:
-    return float(getattr(CFG, name, default))
+def apply_transform(values: np.ndarray, transform: Dict[str, object]) -> np.ndarray:
+    method = str(transform.get("method", ""))
+
+    if method == "constant_zero":
+        return np.zeros_like(np.asarray(values, dtype=float), dtype=np.float32)
+
+    if method == "train_minmax":
+        return minmax_scale(values, transform)
+
+    if method == "piecewise_unique_rank":
+        return unique_rank_scale(values, transform)
+
+    if method == "blended_rank":
+        return blended_rank_scale(values, transform)
+
+    raise ValueError(f"Unknown transform method: {method}")
 
 
-def _cfg_int(name: str, default: int) -> int:
-    return int(getattr(CFG, name, default))
+def tokens_from_z(z: np.ndarray, K: int) -> np.ndarray:
+    z = np.asarray(z, dtype=float)
+    z = np.clip(z, 0.0, 1.0)
+    tokens = np.floor(float(K) * z).astype(np.int64)
+    return np.clip(tokens, 0, int(K) - 1)
 
 
-def _safe_width(start: float, end: float) -> float:
-    return float(max(float(end) - float(start), 0.0))
+def normalized_entropy_from_counts(counts: np.ndarray) -> float:
+    counts = np.asarray(counts, dtype=float)
+    total = float(counts.sum())
+
+    if total <= 0.0:
+        return 0.0
+
+    used = int(np.sum(counts > 0.0))
+    if used <= 1:
+        return 1.0
+
+    p = counts[counts > 0.0] / total
+    entropy = float(-np.sum(p * np.log(p)))
+    denom = float(math.log(used))
+    if denom <= 0.0:
+        return 1.0
+
+    return float(entropy / denom)
 
 
-def local_piecewise_fit(
-    train_values: np.ndarray,
-    mn: float,
-    mx: float,
-    K: int,
-    collision: Dict[str, object],
-) -> Dict[str, object]:
-    """
-    Fit a local piecewise transform around the raw interval where minmax
-    tokenization collapses multiple raw unique values into the same tokens.
+def token_metrics_from_z(z: np.ndarray, raw_unique: int, K: int) -> Dict[str, float | int]:
+    tokens = tokens_from_z(z, K)
+    unique_tokens, counts = np.unique(tokens, return_counts=True)
 
-    This is token-budget reallocation, not global rank transform:
-        [mn, a] -> linear [0, new_z_start]
-        [a, b]  -> local unique-rank [new_z_start, new_z_end]
-        [b, mx] -> linear [new_z_end, 1]
-
-    If a stable local interval cannot be built, fall back to the old global
-    unique-rank policy for backward-safe behavior.
-    """
-    values = np.asarray(train_values, dtype=float)
-    unique_vals = np.unique(values)
-    raw_range = float(mx - mn)
-
-    if unique_vals.size <= 1 or raw_range <= 1e-12:
-        return {
-            "method": "constant_zero",
-            "fallback_reason": "feature has <=1 unique value or zero raw range",
-        }
-
-    interval = collision.get("collision_raw_interval", {}) if isinstance(collision, dict) else {}
-    a = interval.get("raw_start")
-    b = interval.get("raw_end")
-
-    if a is None or b is None:
-        fit = piecewise_unique_rank_fit(values)
-        fit["fallback_reason"] = "collision interval is missing"
-        return fit
-
-    a = float(a)
-    b = float(b)
-    if not np.isfinite(a) or not np.isfinite(b):
-        fit = piecewise_unique_rank_fit(values)
-        fit["fallback_reason"] = "collision interval is not finite"
-        return fit
-
-    a = float(np.clip(a, mn, mx))
-    b = float(np.clip(b, mn, mx))
-    if b < a:
-        a, b = b, a
-
-    local_unique = unique_vals[(unique_vals >= a) & (unique_vals <= b)]
-    min_local_unique = _cfg_int("LOCAL_PIECEWISE_MIN_UNIQUE", 3)
-    if int(local_unique.size) < min_local_unique or abs(b - a) <= 1e-12:
-        fit = piecewise_unique_rank_fit(values)
-        fit["fallback_reason"] = (
-            f"local interval has too few unique values: {int(local_unique.size)} < {min_local_unique}"
-        )
-        fit["collision_raw_interval"] = {"raw_start": a, "raw_end": b}
-        return fit
-
-    old_z_start = float((a - mn) / raw_range)
-    old_z_end = float((b - mn) / raw_range)
-    old_width = _safe_width(old_z_start, old_z_end)
-
-    margin = _cfg_float("LOCAL_PIECEWISE_MARGIN", 1.10)
-    min_width = _cfg_float("LOCAL_PIECEWISE_MIN_WIDTH", 0.03)
-    max_width = _cfg_float("LOCAL_PIECEWISE_MAX_WIDTH", 0.50)
-    max_width = float(min(max(max_width, min_width), 1.0))
-
-    # To give m unique values a chance to occupy distinct rounded tokens, the
-    # local interval needs roughly (m-1)/K of z-space. Margin adds slack for
-    # rounding/interpolation. Cap prevents one feature region from eating the
-    # entire token axis.
-    m = int(local_unique.size)
-    required_width = float(max(m - 1, 1) / max(int(K), 1))
-    new_width = max(old_width, min_width, required_width * margin)
-    new_width = float(min(new_width, max_width, 1.0))
-
-    center = float((old_z_start + old_z_end) / 2.0)
-    new_z_start = center - new_width / 2.0
-    new_z_end = center + new_width / 2.0
-
-    if new_z_start < 0.0:
-        new_z_end -= new_z_start
-        new_z_start = 0.0
-    if new_z_end > 1.0:
-        shift = new_z_end - 1.0
-        new_z_start -= shift
-        new_z_end = 1.0
-
-    new_z_start = float(np.clip(new_z_start, 0.0, 1.0))
-    new_z_end = float(np.clip(new_z_end, 0.0, 1.0))
-    if new_z_end <= new_z_start:
-        fit = piecewise_unique_rank_fit(values)
-        fit["fallback_reason"] = "computed local z interval is degenerate"
-        return fit
+    bins_used = int(unique_tokens.size)
+    possible_unique = int(min(int(raw_unique), int(K)))
+    preserve_ratio = float(bins_used / max(possible_unique, 1))
+    compression_factor = float(int(raw_unique) / max(bins_used, 1))
+    entropy_norm = normalized_entropy_from_counts(counts)
 
     return {
-        "method": "local_piecewise_unique_rank",
-        "raw_min": float(mn),
-        "raw_max": float(mx),
-        "local_raw_start": float(a),
-        "local_raw_end": float(b),
-        "old_z_start": float(old_z_start),
-        "old_z_end": float(old_z_end),
-        "old_width": float(old_width),
-        "new_z_start": float(new_z_start),
-        "new_z_end": float(new_z_end),
-        "new_width": float(new_z_end - new_z_start),
-        "required_width_estimate": float(required_width),
-        "local_unique_count": int(m),
-        "unique_raw_values_in_interval": local_unique.tolist(),
-        "margin": float(margin),
-        "min_width": float(min_width),
-        "max_width": float(max_width),
-        "note": "Only the collision interval is unique-rank mapped; outside intervals remain linear.",
-    }
-
-
-def _linear_map_segment(
-    values: np.ndarray,
-    src_start: float,
-    src_end: float,
-    dst_start: float,
-    dst_end: float,
-) -> np.ndarray:
-    values = np.asarray(values, dtype=float)
-    if abs(float(src_end) - float(src_start)) <= 1e-12:
-        return np.full_like(values, fill_value=float(dst_start), dtype=np.float64)
-    t = (values - float(src_start)) / (float(src_end) - float(src_start))
-    return float(dst_start) + t * (float(dst_end) - float(dst_start))
-
-
-def local_piecewise_scale(values: np.ndarray, transform: Dict[str, object]) -> np.ndarray:
-    values = np.asarray(values, dtype=float)
-    mn = float(transform["raw_min"])
-    mx = float(transform["raw_max"])
-    a = float(transform["local_raw_start"])
-    b = float(transform["local_raw_end"])
-    za = float(transform["new_z_start"])
-    zb = float(transform["new_z_end"])
-    local_u = np.asarray(transform["unique_raw_values_in_interval"], dtype=float)
-
-    if local_u.size <= 1 or abs(mx - mn) <= 1e-12:
-        return np.zeros_like(values, dtype=np.float32)
-
-    z = np.empty_like(values, dtype=np.float64)
-
-    left_mask = values < a
-    mid_mask = (values >= a) & (values <= b)
-    right_mask = values > b
-
-    if np.any(left_mask):
-        z[left_mask] = _linear_map_segment(values[left_mask], mn, a, 0.0, za)
-    if np.any(mid_mask):
-        local_ranks = np.linspace(za, zb, num=int(local_u.size), dtype=np.float64)
-        z[mid_mask] = np.interp(values[mid_mask], local_u, local_ranks, left=za, right=zb)
-    if np.any(right_mask):
-        z[right_mask] = _linear_map_segment(values[right_mask], b, mx, zb, 1.0)
-
-    return np.clip(z, 0.0, 1.0).astype(np.float32)
-
-
-def tokens_from_minmax(values: np.ndarray, mn: float, mx: float, K: int) -> np.ndarray:
-    z = minmax_scale(values, mn, mx)
-    return np.clip(np.rint(float(K) * z), 0, int(K)).astype(np.int64)
-
-
-def collision_analysis(values: np.ndarray, mn: float, mx: float, K: int, diag_row: Dict[str, object]) -> Dict[str, object]:
-    values = np.asarray(values, dtype=float)
-    unique_vals = np.unique(values)
-    unique_tokens = tokens_from_minmax(unique_vals, mn, mx, K)
-
-    token_to_values: Dict[int, List[float]] = defaultdict(list)
-    for raw_v, tok in zip(unique_vals, unique_tokens):
-        token_to_values[int(tok)].append(float(raw_v))
-
-    collision_tokens = {tok: vals for tok, vals in token_to_values.items() if len(vals) > 1}
-    total_collision_loss = int(sum(len(vals) - 1 for vals in collision_tokens.values()))
-
-    q = diag_row["token"]["quantiles"]
-    q10 = int(q["q10"])
-    q90 = int(q["q90"])
-
-    region_loss = Counter({"left": 0, "body": 0, "right": 0})
-    region_values: Dict[str, List[float]] = {"left": [], "body": [], "right": []}
-
-    for tok, vals in collision_tokens.items():
-        loss = len(vals) - 1
-        if tok <= q10:
-            region = "left"
-        elif tok >= q90:
-            region = "right"
-        else:
-            region = "body"
-        region_loss[region] += int(loss)
-        region_values[region].extend(vals)
-
-    if total_collision_loss <= 0:
-        side = "none"
-        dominant_fraction = 0.0
-        all_vals: List[float] = []
-    else:
-        side0, loss0 = region_loss.most_common(1)[0]
-        dominant_fraction = float(loss0 / total_collision_loss)
-        if dominant_fraction < float(CFG.PIECEWISE_SIDE_DOMINANCE_RATIO):
-            side = "mixed"
-            all_vals = [v for vals in region_values.values() for v in vals]
-        else:
-            side = side0
-            all_vals = region_values[side0]
-
-    return {
-        "total_collision_tokens": int(len(collision_tokens)),
-        "total_collision_loss": int(total_collision_loss),
-        "region_collision_loss": dict(region_loss),
-        "piecewise_side": side,
-        "piecewise_side_dominant_fraction": dominant_fraction,
-        "collision_raw_interval": {
-            "raw_start": float(min(all_vals)) if all_vals else None,
-            "raw_end": float(max(all_vals)) if all_vals else None,
-        },
-        "example_collision_tokens": [
-            {
-                "token": int(tok),
-                "num_raw_values": int(len(vals)),
-                "raw_min": float(min(vals)),
-                "raw_max": float(max(vals)),
-            }
-            for tok, vals in sorted(collision_tokens.items(), key=lambda kv: len(kv[1]), reverse=True)[:10]
-        ],
-    }
-
-
-def decide_feature_policy(
-    feature: str,
-    train_values: np.ndarray,
-    diag_row: Dict[str, object],
-    K: int,
-    unique_threshold: float,
-    compressed_action: str,
-    blend_alpha: float,
-) -> Dict[str, object]:
-    raw_info = diag_row["raw"]
-    token_info = diag_row["token"]
-
-    mn = float(raw_info["train_min"])
-    mx = float(raw_info["train_max"])
-    raw_unique = int(raw_info["num_unique"])
-    num_tokens_used = int(token_info["num_tokens_used"])
-    is_constant = bool(raw_info["is_constant"])
-
-    possible_unique = int(min(raw_unique, int(K) + 1))
-    unique_preserve_ratio = float(num_tokens_used / max(possible_unique, 1))
-
-    base = {
-        "feature": feature,
-        "K": int(K),
-        "raw_num_unique": raw_unique,
-        "num_tokens_used": num_tokens_used,
+        "bins_used": bins_used,
         "possible_unique": possible_unique,
-        "unique_preserve_ratio": unique_preserve_ratio,
-        "unique_preserve_threshold": float(unique_threshold),
-        "raw_min": mn,
-        "raw_max": mx,
+        "preserve_ratio": preserve_ratio,
+        "compression_factor": compression_factor,
+        "entropy_norm": entropy_norm,
     }
 
-    if is_constant:
+
+def before_metrics_from_diag(diag_row: Dict[str, object], K: int, train_values: np.ndarray) -> Dict[str, float | int]:
+    token = diag_row.get("token", {})
+    raw = diag_row.get("raw", {})
+    raw_unique = int(raw.get("num_unique", np.unique(train_values).size))
+
+    if all(k in token for k in ["preserve_ratio", "compression_factor", "entropy_norm"]):
         return {
-            **base,
-            "action": "constant_zero",
-            "reason": "raw feature is constant",
-            "transform": {"method": "constant_zero"},
+            "bins_used": int(token.get("bins_used", token.get("num_tokens_used", 0))),
+            "possible_unique": int(token.get("possible_unique", min(raw_unique, K))),
+            "preserve_ratio": float(token["preserve_ratio"]),
+            "compression_factor": float(token["compression_factor"]),
+            "entropy_norm": float(token["entropy_norm"]),
         }
 
-    if is_special_delay_feature(feature):
-        return {
-            **base,
-            "action": "special_delay_scale",
-            "reason": f"feature name matches special delay keywords {CFG.SPECIAL_DELAY_KEYWORDS}",
-            "transform": {
-                "method": "x_over_max_plus_eps",
-                "max": mx,
-                "eps": float(CFG.SPECIAL_DELAY_EPS),
-                "discretization_multiplier": float(K / (mx + CFG.SPECIAL_DELAY_EPS)) if abs(mx + CFG.SPECIAL_DELAY_EPS) > 1e-12 else 0.0,
-            },
-        }
-
-    if unique_preserve_ratio >= unique_threshold:
-        return {
-            **base,
-            "action": "keep_minmax",
-            "reason": "unique_preserve_ratio is high; tokenization preserves raw unique values well enough",
-            "transform": {
-                "method": "train_minmax",
-                "min": mn,
-                "max": mx,
-            },
-        }
-
-    collision = collision_analysis(train_values, mn, mx, K, diag_row)
-    compressed_action = str(compressed_action)
-
-    if compressed_action == "keep_minmax":
-        return {
-            **base,
-            "action": "keep_minmax",
-            "reason": "feature is compressed, but compressed_action=keep_minmax",
-            "collision_analysis": collision,
-            "transform": {
-                "method": "train_minmax",
-                "min": mn,
-                "max": mx,
-            },
-        }
-
-    if compressed_action == "global_rank":
-        rank_fit = piecewise_unique_rank_fit(train_values)
-        return {
-            **base,
-            "action": "piecewise",
-            "reason": "unique_preserve_ratio is below threshold; compressed_action=global_rank",
-            "collision_analysis": collision,
-            "transform": {
-                **rank_fit,
-                "piecewise_side": collision["piecewise_side"],
-                "collision_raw_interval": collision["collision_raw_interval"],
-            },
-        }
-
-    if compressed_action == "local_piecewise":
-        piecewise_fit = local_piecewise_fit(train_values, mn, mx, K, collision)
-        return {
-            **base,
-            "action": "piecewise",
-            "reason": "unique_preserve_ratio is below threshold; compressed_action=local_piecewise",
-            "collision_analysis": collision,
-            "transform": {
-                **piecewise_fit,
-                "piecewise_side": collision["piecewise_side"],
-                "collision_raw_interval": collision["collision_raw_interval"],
-            },
-        }
-
-    if compressed_action == "blended_rank":
-        blend_fit = blended_rank_fit(train_values, mn, mx, alpha=blend_alpha)
-        return {
-            **base,
-            "action": "blended_rank",
-            "reason": "unique_preserve_ratio is below threshold; soft blend of minmax and unique-rank reduces dense-region compression without hard local zoom",
-            "collision_analysis": collision,
-            "transform": {
-                **blend_fit,
-                "collision_raw_interval": collision["collision_raw_interval"],
-                "piecewise_side": collision["piecewise_side"],
-            },
-        }
-
-    raise ValueError(f"Unknown compressed_action: {compressed_action}")
+    # Fallback for older diag format.
+    z = minmax_scale(train_values, minmax_fit(train_values))
+    return token_metrics_from_z(z, raw_unique=raw_unique, K=K)
 
 
-def apply_policy_to_df(df: pd.DataFrame, features: Sequence[str], policies_by_feature: Dict[str, Dict[str, object]]) -> pd.DataFrame:
-    out = df.copy()
+def candidate_score(
+    metrics: Dict[str, float | int],
+    *,
+    preserve_threshold: float,
+    compression_threshold: float,
+    entropy_threshold: float,
+) -> Tuple[float, float, float, float]:
+    """
+    Higher is better.
 
-    for f in features:
-        p = policies_by_feature[f]
-        action = str(p["action"])
-        transform = p["transform"]
-        values = df[f].to_numpy(dtype=float)
+    The score is intentionally token-level only:
+      - preserve_ratio high
+      - entropy_norm high
+      - compression_factor low
 
-        if action == "constant_zero":
-            z = np.zeros_like(values, dtype=np.float32)
+    compression_score is capped relative to threshold, because when raw_unique >> K,
+    compression_factor cannot be fully fixed at a fixed K. It should not dominate
+    the ranking once the candidate already uses all bins.
+    """
+    preserve = float(metrics["preserve_ratio"])
+    entropy = float(metrics["entropy_norm"])
+    compression = float(metrics["compression_factor"])
 
-        elif action == "keep_minmax":
-            z = minmax_scale(values, float(transform["min"]), float(transform["max"]))
+    compression_score = min(1.0, float(compression_threshold) / max(compression, 1e-12))
 
-        elif action == "special_delay_scale":
-            z = special_delay_scale(values, float(transform["max"]))
+    pass_count = 0
+    if preserve >= float(preserve_threshold):
+        pass_count += 1
+    if compression <= float(compression_threshold):
+        pass_count += 1
+    if entropy >= float(entropy_threshold):
+        pass_count += 1
 
-        elif action == "blended_rank":
-            z = blended_rank_scale(values, transform)
+    # Lexicographic tuple; pass_count first, then actual quality.
+    return (
+        float(pass_count),
+        preserve,
+        entropy,
+        compression_score,
+    )
 
-        elif action == "piecewise":
-            method = str(transform.get("method", "piecewise_unique_rank"))
-            if method == "local_piecewise_unique_rank":
-                z = local_piecewise_scale(values, transform)
-            elif method == "piecewise_unique_rank":
-                # Backward-compatible fallback for old policy files.
-                z = piecewise_unique_rank_scale(values, transform["unique_raw_values"])
-            elif method == "constant_zero":
-                z = np.zeros_like(values, dtype=np.float32)
-            else:
-                raise ValueError(f"Unknown piecewise transform method for {f}: {method}")
 
-        else:
-            raise ValueError(f"Unknown action for {f}: {action}")
+def candidate_priority(name: str) -> int:
+    """
+    Tie-breaker: prefer less aggressive transforms if token metrics are equal.
+    """
+    order = {
+        "train_minmax": 0,
+        "blended_rank_alpha_0.25": 1,
+        "blended_rank_alpha_0.50": 2,
+        "blended_rank_alpha_0.5": 2,
+        "blended_rank_alpha_0.75": 3,
+        "piecewise_unique_rank": 4,
+    }
+    return order.get(name, 99)
 
-        out[f] = z
+
+def build_candidates(
+    train_values: np.ndarray,
+    *,
+    include_minmax: bool,
+    blend_alphas: Sequence[float],
+    include_rank: bool,
+) -> List[Dict[str, object]]:
+    candidates: List[Dict[str, object]] = []
+
+    if include_minmax:
+        candidates.append({
+            "candidate": "train_minmax",
+            "transform": minmax_fit(train_values),
+        })
+
+    for alpha in blend_alphas:
+        alpha = float(np.clip(alpha, 0.0, 1.0))
+        candidates.append({
+            "candidate": f"blended_rank_alpha_{alpha:.2f}",
+            "transform": blended_rank_fit(train_values, alpha=alpha),
+        })
+
+    if include_rank:
+        candidates.append({
+            "candidate": "piecewise_unique_rank",
+            "transform": unique_rank_fit(train_values),
+        })
+
+    # Remove duplicate alpha candidate names if user passes duplicates.
+    seen = set()
+    out = []
+    for c in candidates:
+        name = str(c["candidate"])
+        if name in seen:
+            continue
+        seen.add(name)
+        out.append(c)
 
     return out
 
 
+def select_transform_for_feature(
+    feature: str,
+    train_values: np.ndarray,
+    diag_row: Dict[str, object],
+    K: int,
+    *,
+    preserve_threshold: float,
+    compression_threshold: float,
+    entropy_threshold: float,
+    include_minmax_candidate: bool,
+    blend_alphas: Sequence[float],
+    include_rank_candidate: bool,
+) -> Tuple[Dict[str, object], List[Dict[str, object]], Dict[str, float | int]]:
+    raw = diag_row.get("raw", {})
+    decision_obj = diag_row.get("decision", {})
+    diag_decision = str(decision_obj.get("label", "transform"))
+    diag_reasons = list(decision_obj.get("reasons", []))
+
+    raw_unique = int(raw.get("num_unique", np.unique(train_values).size))
+    before = before_metrics_from_diag(diag_row, K, train_values)
+
+    base = {
+        "feature": feature,
+        "K": int(K),
+        "diag_decision": diag_decision,
+        "diag_reasons": diag_reasons,
+        "raw_num_unique": raw_unique,
+        "raw_min": float(np.min(train_values)),
+        "raw_max": float(np.max(train_values)),
+        "before_metrics": before,
+    }
+
+    if diag_decision == "drop" or raw_unique <= 1:
+        transform = {"method": "constant_zero"}
+        z = apply_transform(train_values, transform)
+        after = token_metrics_from_z(z, raw_unique=raw_unique, K=K)
+
+        policy = {
+            **base,
+            "action": "constant_zero",
+            "selected_candidate": "constant_zero",
+            "reason": "diag decision is drop / raw feature is constant",
+            "transform": transform,
+            "after_metrics": after,
+        }
+        return policy, [], before
+
+    if diag_decision == "keep":
+        transform = minmax_fit(train_values)
+        z = apply_transform(train_values, transform)
+        after = token_metrics_from_z(z, raw_unique=raw_unique, K=K)
+
+        policy = {
+            **base,
+            "action": "keep_minmax",
+            "selected_candidate": "train_minmax",
+            "reason": "diag decision is keep",
+            "transform": transform,
+            "after_metrics": after,
+        }
+        return policy, [], before
+
+    # diag_decision == transform
+    candidates = build_candidates(
+        train_values,
+        include_minmax=include_minmax_candidate,
+        blend_alphas=blend_alphas,
+        include_rank=include_rank_candidate,
+    )
+
+    candidate_rows: List[Dict[str, object]] = []
+    best = None
+
+    for c in candidates:
+        name = str(c["candidate"])
+        transform = c["transform"]
+
+        z = apply_transform(train_values, transform)
+        metrics = token_metrics_from_z(z, raw_unique=raw_unique, K=K)
+        score = candidate_score(
+            metrics,
+            preserve_threshold=preserve_threshold,
+            compression_threshold=compression_threshold,
+            entropy_threshold=entropy_threshold,
+        )
+
+        row = {
+            "feature": feature,
+            "candidate": name,
+            "raw_unique": raw_unique,
+            "before_preserve_ratio": float(before["preserve_ratio"]),
+            "before_compression_factor": float(before["compression_factor"]),
+            "before_entropy_norm": float(before["entropy_norm"]),
+            "after_bins_used": int(metrics["bins_used"]),
+            "after_possible_unique": int(metrics["possible_unique"]),
+            "after_preserve_ratio": float(metrics["preserve_ratio"]),
+            "after_compression_factor": float(metrics["compression_factor"]),
+            "after_entropy_norm": float(metrics["entropy_norm"]),
+            "score_pass_count": float(score[0]),
+            "score_preserve": float(score[1]),
+            "score_entropy": float(score[2]),
+            "score_compression": float(score[3]),
+            "candidate_priority": int(candidate_priority(name)),
+        }
+        candidate_rows.append(row)
+
+        # Higher score better; if tied, lower priority value better.
+        sort_key = (score, -candidate_priority(name))
+        if best is None or sort_key > best["sort_key"]:
+            best = {
+                "name": name,
+                "transform": transform,
+                "metrics": metrics,
+                "score": score,
+                "sort_key": sort_key,
+            }
+
+    assert best is not None
+
+    policy = {
+        **base,
+        "action": str(best["transform"]["method"]),
+        "selected_candidate": str(best["name"]),
+        "reason": "diag decision is transform; selected by train token-level metrics",
+        "candidate_selection_rule": {
+            "metrics": ["preserve_ratio", "compression_factor", "entropy_norm"],
+            "score_order": [
+                "number of passed thresholds",
+                "higher preserve_ratio",
+                "higher entropy_norm",
+                "lower compression_factor via capped compression score",
+                "less aggressive transform tie-breaker",
+            ],
+            "thresholds": {
+                "preserve_threshold": float(preserve_threshold),
+                "compression_threshold": float(compression_threshold),
+                "entropy_threshold": float(entropy_threshold),
+            },
+        },
+        "transform": best["transform"],
+        "after_metrics": best["metrics"],
+    }
+    return policy, candidate_rows, before
+
+
+def apply_policy_to_df(
+    df: pd.DataFrame,
+    features: Sequence[str],
+    policies_by_feature: Dict[str, Dict[str, object]],
+) -> pd.DataFrame:
+    out = df.copy()
+
+    for f in features:
+        p = policies_by_feature[f]
+        transform = p["transform"]
+        values = df[f].to_numpy(dtype=float)
+        out[f] = apply_transform(values, transform)
+
+    return out
+
+
+def flatten_policy_summary(policy: Dict[str, object]) -> Dict[str, object]:
+    before = policy["before_metrics"]
+    after = policy["after_metrics"]
+
+    return {
+        "feature": policy["feature"],
+        "diag_decision": policy["diag_decision"],
+        "diag_reasons": "|".join(policy.get("diag_reasons", [])),
+        "selected_candidate": policy["selected_candidate"],
+        "action": policy["action"],
+        "raw_unique": int(policy["raw_num_unique"]),
+
+        "before_preserve_ratio": float(before["preserve_ratio"]),
+        "before_compression_factor": float(before["compression_factor"]),
+        "before_entropy_norm": float(before["entropy_norm"]),
+
+        "after_bins_used": int(after["bins_used"]),
+        "after_possible_unique": int(after["possible_unique"]),
+        "after_preserve_ratio": float(after["preserve_ratio"]),
+        "after_compression_factor": float(after["compression_factor"]),
+        "after_entropy_norm": float(after["entropy_norm"]),
+
+        "delta_preserve_ratio": float(after["preserve_ratio"]) - float(before["preserve_ratio"]),
+        "delta_compression_factor": float(after["compression_factor"]) - float(before["compression_factor"]),
+        "delta_entropy_norm": float(after["entropy_norm"]) - float(before["entropy_norm"]),
+    }
+
+
 def main() -> None:
     args = parse_args()
+
     K = int(args.K)
+    if K <= 1:
+        raise ValueError("K/effective_num_bins must be > 1.")
 
     train_csv = Path(args.train_csv)
     val_csv = Path(args.val_csv)
     out_dir = Path(args.out_dir)
-    token_diag_json = Path(args.token_diag_json) if args.token_diag_json else CFG.token_diag_json_path(K)
 
-    if K <= 0:
-        raise ValueError("K must be positive.")
+    token_diag_json = Path(args.token_diag_json) if args.token_diag_json else default_token_diag_path(K)
+
     if not train_csv.exists():
         raise FileNotFoundError(f"train csv not found: {train_csv}")
     if not val_csv.exists():
@@ -636,6 +633,7 @@ def main() -> None:
 
     target_cols = csv_list(args.target_cols)
     drop_cols = csv_list(args.drop_cols)
+    blend_alphas = parse_float_list(args.blend_alphas)
 
     train = pd.read_csv(train_csv)
     val = pd.read_csv(val_csv)
@@ -653,17 +651,23 @@ def main() -> None:
         raise ValueError(f"token_diag missing {len(missing_diag)} features, first: {missing_diag[:10]}")
 
     policies: List[Dict[str, object]] = []
+    candidate_eval_rows: List[Dict[str, object]] = []
+
     for f in features:
-        policy = decide_feature_policy(
+        policy, rows, _before = select_transform_for_feature(
             feature=f,
             train_values=train[f].to_numpy(dtype=float),
             diag_row=diag_by_feature[f],
             K=K,
-            unique_threshold=float(args.unique_preserve_threshold),
-            compressed_action=str(args.compressed_action),
-            blend_alpha=float(args.blend_alpha),
+            preserve_threshold=float(args.preserve_threshold),
+            compression_threshold=float(args.compression_threshold),
+            entropy_threshold=float(args.entropy_threshold),
+            include_minmax_candidate=bool(args.include_minmax_candidate),
+            blend_alphas=blend_alphas,
+            include_rank_candidate=bool(args.include_rank_candidate),
         )
         policies.append(policy)
+        candidate_eval_rows.extend(rows)
 
     policies_by_feature = {str(p["feature"]): p for p in policies}
 
@@ -676,24 +680,45 @@ def main() -> None:
     out_val = out_dir / f"val_preprocessed_K{K}.csv"
     out_policy = out_dir / f"preprocess_policy_K{K}.json"
     out_report = out_dir / f"preprocess_report_K{K}.json"
+    out_summary = out_dir / f"preprocess_token_eval_summary_K{K}.csv"
+    out_candidates = out_dir / f"preprocess_candidate_eval_K{K}.csv"
 
     train_pre.to_csv(out_train, index=False)
     val_pre.to_csv(out_val, index=False)
 
-    action_counts = Counter(p["action"] for p in policies)
+    summary_rows = [flatten_policy_summary(p) for p in policies]
+    summary_df = pd.DataFrame(summary_rows)
+    summary_df.to_csv(out_summary, index=False)
+
+    candidate_df = pd.DataFrame(candidate_eval_rows)
+    candidate_df.to_csv(out_candidates, index=False)
+
+    action_counts = Counter(str(p["action"]) for p in policies)
+    diag_counts = Counter(str(p["diag_decision"]) for p in policies)
+    selected_counts = Counter(str(p["selected_candidate"]) for p in policies)
 
     policy_obj = {
         "metadata": {
             "stage": "preprocessing",
+            "phase": "Phase-B token-level preprocessing selection",
             "fit_split": "train_only",
             "applied_splits": ["train", "val"],
             "train_csv": str(train_csv),
             "val_csv": str(val_csv),
             "token_diag_json": str(token_diag_json),
             "K": int(K),
-            "unique_preserve_threshold": float(args.unique_preserve_threshold),
-            "compressed_action": str(args.compressed_action),
-            "blend_alpha": float(args.blend_alpha),
+            "effective_num_bins": int(K),
+            "token_rule": "z in [0,1]; token=floor(K*z); clipped [0,K-1]",
+            "thresholds": {
+                "preserve_threshold": float(args.preserve_threshold),
+                "compression_threshold": float(args.compression_threshold),
+                "entropy_threshold": float(args.entropy_threshold),
+            },
+            "candidate_transforms_for_diag_transform": {
+                "include_minmax_candidate": bool(args.include_minmax_candidate),
+                "blend_alphas": [float(x) for x in blend_alphas],
+                "include_rank_candidate": bool(args.include_rank_candidate),
+            },
             "n_train_rows": int(len(train)),
             "n_val_rows": int(len(val)),
             "n_numeric_features": int(len(features)),
@@ -706,60 +731,39 @@ def main() -> None:
 
     report = {
         "metadata": policy_obj["metadata"],
-        "action_counts": dict(action_counts),
-        "piecewise_features": [
-            {
-                "feature": p["feature"],
-                "unique_preserve_ratio": p["unique_preserve_ratio"],
-                "possible_unique": p["possible_unique"],
-                "raw_num_unique": p["raw_num_unique"],
-                "num_tokens_used": p["num_tokens_used"],
-                "piecewise_side": p.get("collision_analysis", {}).get("piecewise_side"),
-                "collision_raw_interval": p.get("collision_analysis", {}).get("collision_raw_interval"),
-                "transform_method": p.get("transform", {}).get("method"),
-                "old_z_start": p.get("transform", {}).get("old_z_start"),
-                "old_z_end": p.get("transform", {}).get("old_z_end"),
-                "old_width": p.get("transform", {}).get("old_width"),
-                "new_z_start": p.get("transform", {}).get("new_z_start"),
-                "new_z_end": p.get("transform", {}).get("new_z_end"),
-                "new_width": p.get("transform", {}).get("new_width"),
-                "local_unique_count": p.get("transform", {}).get("local_unique_count"),
-                "fallback_reason": p.get("transform", {}).get("fallback_reason"),
-            }
-            for p in policies if p["action"] == "piecewise"
-        ],
-        "blended_rank_features": [
-            {
-                "feature": p["feature"],
-                "unique_preserve_ratio": p["unique_preserve_ratio"],
-                "possible_unique": p["possible_unique"],
-                "raw_num_unique": p["raw_num_unique"],
-                "num_tokens_used": p["num_tokens_used"],
-                "alpha": p.get("transform", {}).get("alpha"),
-                "piecewise_side": p.get("collision_analysis", {}).get("piecewise_side"),
-                "collision_raw_interval": p.get("collision_analysis", {}).get("collision_raw_interval"),
-            }
-            for p in policies if p["action"] == "blended_rank"
-        ],
+        "diag_decision_counts": dict(diag_counts),
+        "selected_action_counts": dict(action_counts),
+        "selected_candidate_counts": dict(selected_counts),
+        "token_eval_summary_csv": str(out_summary),
+        "candidate_eval_csv": str(out_candidates),
         "outputs": {
             "train_preprocessed_csv": str(out_train),
             "val_preprocessed_csv": str(out_val),
             "preprocess_policy_json": str(out_policy),
             "preprocess_report_json": str(out_report),
         },
+        "transform_features": [
+            flatten_policy_summary(p)
+            for p in policies
+            if str(p["diag_decision"]) == "transform"
+        ],
     }
 
     out_policy.write_text(json.dumps(policy_obj, ensure_ascii=False, indent=2), encoding="utf-8")
     out_report.write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8")
 
     print("===== preprocessing done =====")
-    print(f"K: {K}")
+    print(f"K/effective_num_bins: {K}")
     print(f"features: {len(features)}")
-    print(f"action_counts: {dict(action_counts)}")
+    print(f"diag_decision_counts: {dict(diag_counts)}")
+    print(f"selected_action_counts: {dict(action_counts)}")
+    print(f"selected_candidate_counts: {dict(selected_counts)}")
     print(f"train_preprocessed: {out_train}")
-    print(f"val_preprocessed:   {out_val}")
-    print(f"policy:             {out_policy}")
-    print(f"report:             {out_report}")
+    print(f"val_preprocessed: {out_val}")
+    print(f"policy: {out_policy}")
+    print(f"report: {out_report}")
+    print(f"summary_csv: {out_summary}")
+    print(f"candidate_eval_csv: {out_candidates}")
 
 
 if __name__ == "__main__":
