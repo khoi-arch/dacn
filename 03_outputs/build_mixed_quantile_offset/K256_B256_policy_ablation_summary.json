@@ -1,0 +1,14 @@
+{
+  "K": 256,
+  "num_bins": 256,
+  "base_artifact": "03_outputs/build_mixed_quantile_offset/K256_B256",
+  "uniform_only_artifact": "03_outputs/build_mixed_quantile_offset/K256_B256_uniform_only",
+  "quantile_no_offset_artifact": "03_outputs/build_mixed_quantile_offset/K256_B256_quantile_no_offset",
+  "uniform_only_strategy_counts": {
+    "uniform_offset": 52,
+    "quantile_offset": 0,
+    "constant": 3
+  },
+  "quantile_no_offset_disabled_features": [],
+  "quantile_offset_fill_value": 0.5
+}
