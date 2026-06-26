@@ -14925,6 +14925,15 @@
   "policy_name": "quantile_no_offset",
   "source_template_npz": "03_outputs/build_mixed_quantile_offset/K256_B256/mixed_quantile_offset_dataset.npz",
   "quantile_offset_fill_value": 0.5,
-  "quantile_features_offset_disabled": [],
-  "n_quantile_features_offset_disabled": 0
+  "quantile_features_offset_disabled": [
+    "pslist.avg_threads",
+    "dlllist.avg_dlls_per_proc",
+    "handles.nhandles",
+    "handles.nfile",
+    "handles.nevent",
+    "handles.nkey",
+    "handles.nsection",
+    "malfind.commitCharge"
+  ],
+  "n_quantile_features_offset_disabled": 8
 }

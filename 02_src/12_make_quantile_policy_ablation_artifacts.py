@@ -157,28 +157,60 @@ def build_uniform_only(
 
 
 def infer_quantile_features(meta):
+    """
+    Robustly infer quantile features from metadata.
+
+    Expected current metadata structure may contain:
+      - meta["quantile_features"]
+      - meta["selected_quantile_features"]
+      - meta["feature_strategies"]
+      - meta["feature_meta"] list with {"feature": ..., "strategy": "quantile_offset"}
+    """
+    # Direct list keys
     for key in ["quantile_features", "selected_quantile_features"]:
         if key in meta and isinstance(meta[key], list):
-            return [str(x) for x in meta[key]]
+            vals = [str(x) for x in meta[key]]
+            if vals:
+                return vals
 
-    out = []
+    # Dict feature -> strategy
     fs = meta.get("feature_strategies", None)
     if isinstance(fs, dict):
+        out = []
         for feat, strat in fs.items():
             if "quantile" in str(strat):
                 out.append(str(feat))
+        if out:
+            return out
 
-    if not out:
-        feats = meta.get("features", [])
-        if isinstance(feats, list):
-            for row in feats:
-                if isinstance(row, dict):
-                    feat = row.get("feature") or row.get("name")
-                    strat = row.get("strategy") or row.get("selected_strategy")
-                    if feat and strat and "quantile" in str(strat):
-                        out.append(str(feat))
+    # Current build metadata often stores this as feature_meta
+    feature_meta = meta.get("feature_meta", None)
+    if isinstance(feature_meta, list):
+        out = []
+        for row in feature_meta:
+            if not isinstance(row, dict):
+                continue
+            feat = row.get("feature") or row.get("name") or row.get("column")
+            strat = row.get("strategy") or row.get("selected_strategy") or row.get("bin_strategy")
+            if feat is not None and strat is not None and "quantile" in str(strat):
+                out.append(str(feat))
+        if out:
+            return out
 
-    return out
+    # Fallback: generic features list
+    feats = meta.get("features", [])
+    if isinstance(feats, list):
+        out = []
+        for row in feats:
+            if isinstance(row, dict):
+                feat = row.get("feature") or row.get("name") or row.get("column")
+                strat = row.get("strategy") or row.get("selected_strategy") or row.get("bin_strategy")
+                if feat is not None and strat is not None and "quantile" in str(strat):
+                    out.append(str(feat))
+        if out:
+            return out
+
+    return []
 
 
 def build_quantile_no_offset(

@@ -9,6 +9,15 @@
     "quantile_offset": 0,
     "constant": 3
   },
-  "quantile_no_offset_disabled_features": [],
+  "quantile_no_offset_disabled_features": [
+    "pslist.avg_threads",
+    "dlllist.avg_dlls_per_proc",
+    "handles.nhandles",
+    "handles.nfile",
+    "handles.nevent",
+    "handles.nkey",
+    "handles.nsection",
+    "malfind.commitCharge"
+  ],
   "quantile_offset_fill_value": 0.5
 }
