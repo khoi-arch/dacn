@@ -1,0 +1,14 @@
+{
+  "shared_bin_embedding_num_embeddings": 513,
+  "shared_bin_embedding_dim": 32,
+  "bin_embedding_norm_mean": 0.46095719933509827,
+  "bin_embedding_norm_std": 0.08225132524967194,
+  "bin_step_norm_mean": 0.5913729667663574,
+  "bin_step_norm_std": 0.10516534000635147,
+  "cont_gate_min": 0.38421425223350525,
+  "cont_gate_max": 0.5134873986244202,
+  "cont_gate_mean": 0.45215266942977905,
+  "cont_gate_std": 0.02945566549897194,
+  "feature_embedding_norm_mean": 0.43944090604782104,
+  "feature_embedding_norm_std": 0.1128695160150528
+}

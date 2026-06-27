@@ -1,0 +1,83 @@
+{
+  "variant": "rank_safe",
+  "K": 1024,
+  "dataset_path": "03_outputs/build_mixed_quantile_offset/K1024_B1024_C2policy_rank_safe_native/mixed_quantile_offset_dataset.npz",
+  "metadata_path": "03_outputs/build_mixed_quantile_offset/K1024_B1024_C2policy_rank_safe_native/mixed_quantile_offset_metadata.json",
+  "source_c2_dataset": "03_outputs/build_mixed_quantile_offset/K512_B512_C2_selective_rank_discrete_compact/mixed_quantile_offset_dataset.npz",
+  "source_c2_metadata": "03_outputs/build_mixed_quantile_offset/K512_B512_C2_selective_rank_discrete_compact/mixed_quantile_offset_metadata.json",
+  "n_train": 46876,
+  "n_val": 11720,
+  "n_features": 55,
+  "strategy_counts": {
+    "discrete_compact_offset0": 23,
+    "rank_uniform_offset": 15,
+    "keep_current": 14,
+    "constant": 3
+  },
+  "original_c2_strategy_counts": {
+    "discrete_compact_offset0": 23,
+    "rank_uniform_offset": 15,
+    "keep_current": 14,
+    "constant": 3
+  },
+  "group_summary_train": [
+    {
+      "effective_strategy": "constant",
+      "bins_used": 1.0,
+      "dead_bins_ratio": 0.9990234375,
+      "preserve_ratio": 1.0,
+      "compression_factor": 1.0,
+      "entropy_norm": 0.0,
+      "dominant_bin_ratio": 1.0,
+      "rare_used_bin_ratio_le5": 0.0,
+      "offset_nonzero_ratio": 0.0,
+      "used_odd_bin_ratio": 0.0
+    },
+    {
+      "effective_strategy": "discrete_compact_offset0",
+      "bins_used": 46.08695652173913,
+      "dead_bins_ratio": 0.9549932065217391,
+      "preserve_ratio": 1.0,
+      "compression_factor": 1.0,
+      "entropy_norm": 0.387298793641368,
+      "dominant_bin_ratio": 0.5071418766254725,
+      "rare_used_bin_ratio_le5": 0.3625817387680505,
+      "offset_nonzero_ratio": 0.0,
+      "used_odd_bin_ratio": 0.48935758936875196
+    },
+    {
+      "effective_strategy": "keep_current",
+      "bins_used": 341.7857142857143,
+      "dead_bins_ratio": 0.6662248883928571,
+      "preserve_ratio": 0.6882624080213191,
+      "compression_factor": 2.94940964077686,
+      "entropy_norm": 0.6491159867196072,
+      "dominant_bin_ratio": 0.22989071471237185,
+      "rare_used_bin_ratio_le5": 0.3822409935652317,
+      "offset_nonzero_ratio": 0.9112277985688687,
+      "used_odd_bin_ratio": 0.4962740666602238
+    },
+    {
+      "effective_strategy": "rank_uniform_offset",
+      "bins_used": 1024.0,
+      "dead_bins_ratio": 0.0,
+      "preserve_ratio": 1.0,
+      "compression_factor": 13.435611979166667,
+      "entropy_norm": 0.7683645504572764,
+      "dominant_bin_ratio": 0.13484227892027192,
+      "rare_used_bin_ratio_le5": 0.06341145833333334,
+      "offset_nonzero_ratio": 0.8852447592229143,
+      "used_odd_bin_ratio": 0.5
+    }
+  ],
+  "global_mean_bins_used": 385.6,
+  "global_mean_entropy_norm": 0.5367448059033656,
+  "global_mean_rare_used_bin_ratio_le5": 0.26621683230142557,
+  "global_mean_offset_nonzero_ratio": 0.4733792830601432,
+  "rank_alias_risk_features_old_formula": 0,
+  "notes": [
+    "All features regenerated natively at K=1024; no K512 keep_current leftovers.",
+    "rank_safe uses rank/(n_unique-1)*(K-1), not rank/(n_unique-1)*K.",
+    "dead_bins_ratio can remain high when raw_unique < K; that is intrinsic, not necessarily an alias bug."
+  ]
+}

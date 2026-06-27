@@ -1,0 +1,34 @@
+{
+  "train": {
+    "split": "train",
+    "n_rows": 46876,
+    "n_features": 55,
+    "num_bins": 512,
+    "mean_bins_used": 251.23636363636365,
+    "mean_rare_used_bin_ratio_le5": 0.22124805807051096,
+    "mean_rare_cell_ratio_trainref_le5": 0.0014118486684405278,
+    "mean_unseen_cell_ratio_trainref": 0.0,
+    "mean_entropy_norm": 0.4896269568753839,
+    "mean_dominant_bin_ratio": 0.3440706234630631
+  },
+  "val": {
+    "split": "val",
+    "n_rows": 11720,
+    "n_features": 55,
+    "num_bins": 512,
+    "mean_bins_used": 229.07272727272726,
+    "mean_rare_used_bin_ratio_le5": 0.3420249867091436,
+    "mean_rare_cell_ratio_trainref_le5": 0.0017778467266521872,
+    "mean_unseen_cell_ratio_trainref": 9.30809804529941e-05,
+    "mean_entropy_norm": 0.48804786155319285,
+    "mean_dominant_bin_ratio": 0.34247595408004966
+  },
+  "raw_cont_info": {
+    "available": true,
+    "constant_features": [
+      "pslist.nprocs64bit",
+      "handles.nport",
+      "svcscan.interactive_process_services"
+    ]
+  }
+}

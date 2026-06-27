@@ -1,0 +1,450 @@
+{
+  "phase": "Fusion ablation D0-D7 fixed K_effective",
+  "run_id": "D3",
+  "best_epoch": 41,
+  "representation": "D3_offset interpolation + raw FiLM/multiply fusion",
+  "local": "offset_interpolation",
+  "continuous_source": "raw_scaled",
+  "fusion": "raw_film",
+  "train": {
+    "loss": 0.20597630939352216,
+    "accuracy": 0.9405666012458401,
+    "macro_f1": 0.910003459734893,
+    "weighted_f1": 0.9402258996712681,
+    "malware_only_avg_f1": 0.8800046129798572
+  },
+  "val": {
+    "loss": 0.580453592111633,
+    "accuracy": 0.8784982935153584,
+    "macro_f1": 0.8171466447478825,
+    "weighted_f1": 0.8781681430624284,
+    "malware_only_avg_f1": 0.7563947011775721
+  },
+  "generalization_gap_macro_f1": 0.0928568149870106,
+  "worst_val_classes_by_f1": [
+    {
+      "label": "Trojan",
+      "f1": 0.7321921590281613,
+      "precision": 0.768695652173913,
+      "recall": 0.6989984185556142,
+      "support": 1897
+    },
+    {
+      "label": "Ransomware",
+      "f1": 0.7437389324563624,
+      "precision": 0.7372116349047142,
+      "recall": 0.7503828483920367,
+      "support": 1959
+    },
+    {
+      "label": "Spyware",
+      "f1": 0.7932530120481928,
+      "precision": 0.7670083876980429,
+      "recall": 0.8213572854291418,
+      "support": 2004
+    },
+    {
+      "label": "Benign",
+      "f1": 0.9994024754588136,
+      "precision": 0.9998292058070025,
+      "recall": 0.9989761092150171,
+      "support": 5860
+    }
+  ],
+  "model_config": {
+    "value_dim": 32,
+    "feature_dim": 32,
+    "cell_dim": 64,
+    "num_bins": 512,
+    "effective_token_budget": 512,
+    "hidden_dim": 128,
+    "num_layers": 3,
+    "num_heads": 4,
+    "dropout": 0.1,
+    "classifier_hidden_dim": 128,
+    "classifier_dropout": 0.1,
+    "norm_first": true,
+    "use_class_weights": true,
+    "scheduler": "warmup_cosine",
+    "gate_init": 0.0
+  },
+  "continuous_info": {
+    "source": "raw_scaled",
+    "train_path": "/kaggle/working/dacn/01_split/train_raw.csv",
+    "val_path": "/kaggle/working/dacn/01_split/val_raw.csv",
+    "scale": "train_only_minmax_linear_clip_val",
+    "n_constant_features": 3,
+    "constant_features": [
+      "pslist.nprocs64bit",
+      "handles.nport",
+      "svcscan.interactive_process_services"
+    ],
+    "train_min": 0.0,
+    "train_max": 1.0,
+    "val_min": 0.0,
+    "val_max": 1.0
+  },
+  "selective_info": {
+    "type": "none"
+  },
+  "boundary_data_diagnostics": {
+    "train": {
+      "split": "train",
+      "num_bins": 512,
+      "last_bin_id": 511,
+      "n_rows": 46876,
+      "n_features": 55,
+      "total_cells": 2578180,
+      "last_bin_cells": 840,
+      "last_bin_cell_ratio": 0.00032581123117858334,
+      "features_with_last_bin": 29,
+      "max_feature_last_bin_ratio": 0.0037332536905879342,
+      "mean_feature_last_bin_ratio": 0.0003258112311785834,
+      "top_features_by_last_bin_ratio": [
+        {
+          "feature": "pslist.avg_threads",
+          "last_bin_count": 175,
+          "last_bin_ratio": 0.0037332536905879342,
+          "last_bin_offset_min": 0.0027887211181223392,
+          "last_bin_offset_max": 1.0,
+          "last_bin_offset_mean": 0.6565448641777039,
+          "last_bin_offset_std": 0.25581005215644836
+        },
+        {
+          "feature": "handles.nfile",
+          "last_bin_count": 92,
+          "last_bin_ratio": 0.001962624797337657,
+          "last_bin_offset_min": 0.006313498131930828,
+          "last_bin_offset_max": 1.0,
+          "last_bin_offset_mean": 0.4890035092830658,
+          "last_bin_offset_std": 0.2958534061908722
+        },
+        {
+          "feature": "handles.nevent",
+          "last_bin_count": 92,
+          "last_bin_ratio": 0.001962624797337657,
+          "last_bin_offset_min": 0.006461083423346281,
+          "last_bin_offset_max": 1.0,
+          "last_bin_offset_mean": 0.48480814695358276,
+          "last_bin_offset_std": 0.29011204838752747
+        },
+        {
+          "feature": "pslist.avg_handlers",
+          "last_bin_count": 59,
+          "last_bin_ratio": 0.001258639815683932,
+          "last_bin_offset_min": 0.010397227481007576,
+          "last_bin_offset_max": 1.0,
+          "last_bin_offset_mean": 0.50519859790802,
+          "last_bin_offset_std": 0.2905573844909668
+        },
+        {
+          "feature": "handles.avg_handles_per_proc",
+          "last_bin_count": 59,
+          "last_bin_ratio": 0.001258639815683932,
+          "last_bin_offset_min": 0.0018486774060875177,
+          "last_bin_offset_max": 1.0,
+          "last_bin_offset_mean": 0.5009243488311768,
+          "last_bin_offset_std": 0.2930673062801361
+        },
+        {
+          "feature": "dlllist.avg_dlls_per_proc",
+          "last_bin_count": 48,
+          "last_bin_ratio": 0.0010239781551326906,
+          "last_bin_offset_min": 0.001275414484553039,
+          "last_bin_offset_max": 1.0,
+          "last_bin_offset_mean": 0.551054060459137,
+          "last_bin_offset_std": 0.23156020045280457
+        },
+        {
+          "feature": "malfind.uniqueInjections",
+          "last_bin_count": 39,
+          "last_bin_ratio": 0.000831982251045311,
+          "last_bin_offset_min": 0.07975735515356064,
+          "last_bin_offset_max": 1.0,
+          "last_bin_offset_mean": 0.6195151209831238,
+          "last_bin_offset_std": 0.21818296611309052
+        },
+        {
+          "feature": "ldrmodules.not_in_load_avg",
+          "last_bin_count": 33,
+          "last_bin_ratio": 0.0007039849816537247,
+          "last_bin_offset_min": 0.005374603439122438,
+          "last_bin_offset_max": 1.0,
+          "last_bin_offset_mean": 0.4956545829772949,
+          "last_bin_offset_std": 0.3036171495914459
+        },
+        {
+          "feature": "ldrmodules.not_in_mem_avg",
+          "last_bin_count": 33,
+          "last_bin_ratio": 0.0007039849816537247,
+          "last_bin_offset_min": 0.005374603439122438,
+          "last_bin_offset_max": 1.0,
+          "last_bin_offset_mean": 0.4956545829772949,
+          "last_bin_offset_std": 0.3036171495914459
+        },
+        {
+          "feature": "ldrmodules.not_in_init_avg",
+          "last_bin_count": 32,
+          "last_bin_ratio": 0.0006826521034217937,
+          "last_bin_offset_min": 0.013867488130927086,
+          "last_bin_offset_max": 1.0,
+          "last_bin_offset_mean": 0.5130970478057861,
+          "last_bin_offset_std": 0.29140517115592957
+        },
+        {
+          "feature": "psxview.not_in_session_false_avg",
+          "last_bin_count": 27,
+          "last_bin_ratio": 0.0005759877122621384,
+          "last_bin_offset_min": 0.03578154370188713,
+          "last_bin_offset_max": 1.0,
+          "last_bin_offset_mean": 0.5099548697471619,
+          "last_bin_offset_std": 0.2683156430721283
+        },
+        {
+          "feature": "psxview.not_in_pslist_false_avg",
+          "last_bin_count": 24,
+          "last_bin_ratio": 0.0005119890775663453,
+          "last_bin_offset_min": 0.012853470630943775,
+          "last_bin_offset_max": 1.0,
+          "last_bin_offset_mean": 0.46255359053611755,
+          "last_bin_offset_std": 0.29040104150772095
+        },
+        {
+          "feature": "psxview.not_in_pspcid_list_false_avg",
+          "last_bin_count": 21,
+          "last_bin_ratio": 0.0004479904428705521,
+          "last_bin_offset_min": 0.013107170350849628,
+          "last_bin_offset_max": 1.0,
+          "last_bin_offset_mean": 0.46425819396972656,
+          "last_bin_offset_std": 0.2880650460720062
+        },
+        {
+          "feature": "psxview.not_in_csrss_handles_false_avg",
+          "last_bin_count": 21,
+          "last_bin_ratio": 0.0004479904428705521,
+          "last_bin_offset_min": 0.025483768433332443,
+          "last_bin_offset_max": 1.0,
+          "last_bin_offset_mean": 0.5024294853210449,
+          "last_bin_offset_std": 0.28384706377983093
+        },
+        {
+          "feature": "psxview.not_in_deskthrd_false_avg",
+          "last_bin_count": 21,
+          "last_bin_ratio": 0.0004479904428705521,
+          "last_bin_offset_min": 0.045369796454906464,
+          "last_bin_offset_max": 1.0,
+          "last_bin_offset_mean": 0.5125829577445984,
+          "last_bin_offset_std": 0.2780548632144928
+        }
+      ]
+    },
+    "val": {
+      "split": "val",
+      "num_bins": 512,
+      "last_bin_id": 511,
+      "n_rows": 11720,
+      "n_features": 55,
+      "total_cells": 644600,
+      "last_bin_cells": 201,
+      "last_bin_cell_ratio": 0.00031182128451753024,
+      "features_with_last_bin": 23,
+      "max_feature_last_bin_ratio": 0.0028156996587030718,
+      "mean_feature_last_bin_ratio": 0.00031182128451753024,
+      "top_features_by_last_bin_ratio": [
+        {
+          "feature": "pslist.avg_threads",
+          "last_bin_count": 33,
+          "last_bin_ratio": 0.0028156996587030718,
+          "last_bin_offset_min": 0.26367107033729553,
+          "last_bin_offset_max": 0.9546722173690796,
+          "last_bin_offset_mean": 0.7435007095336914,
+          "last_bin_offset_std": 0.17674630880355835
+        },
+        {
+          "feature": "handles.nfile",
+          "last_bin_count": 23,
+          "last_bin_ratio": 0.001962457337883959,
+          "last_bin_offset_min": 0.017734551802277565,
+          "last_bin_offset_max": 1.0,
+          "last_bin_offset_mean": 0.58269864320755,
+          "last_bin_offset_std": 0.28728291392326355
+        },
+        {
+          "feature": "handles.nevent",
+          "last_bin_count": 20,
+          "last_bin_ratio": 0.0017064846416382253,
+          "last_bin_offset_min": 0.0035380765330046415,
+          "last_bin_offset_max": 0.9845852851867676,
+          "last_bin_offset_mean": 0.4692527651786804,
+          "last_bin_offset_std": 0.33805808424949646
+        },
+        {
+          "feature": "pslist.avg_handlers",
+          "last_bin_count": 16,
+          "last_bin_ratio": 0.0013651877133105802,
+          "last_bin_offset_min": 0.07659824192523956,
+          "last_bin_offset_max": 1.0,
+          "last_bin_offset_mean": 0.6153738498687744,
+          "last_bin_offset_std": 0.29538559913635254
+        },
+        {
+          "feature": "handles.avg_handles_per_proc",
+          "last_bin_count": 16,
+          "last_bin_ratio": 0.0013651877133105802,
+          "last_bin_offset_min": 0.03420254588127136,
+          "last_bin_offset_max": 1.0,
+          "last_bin_offset_mean": 0.6044141054153442,
+          "last_bin_offset_std": 0.3094395399093628
+        },
+        {
+          "feature": "dlllist.avg_dlls_per_proc",
+          "last_bin_count": 15,
+          "last_bin_ratio": 0.001279863481228669,
+          "last_bin_offset_min": 0.3197144865989685,
+          "last_bin_offset_max": 0.9341676235198975,
+          "last_bin_offset_mean": 0.5816245675086975,
+          "last_bin_offset_std": 0.14885401725769043
+        },
+        {
+          "feature": "ldrmodules.not_in_init_avg",
+          "last_bin_count": 11,
+          "last_bin_ratio": 0.0009385665529010238,
+          "last_bin_offset_min": 0.19126661121845245,
+          "last_bin_offset_max": 0.8814722895622253,
+          "last_bin_offset_mean": 0.6026698350906372,
+          "last_bin_offset_std": 0.24877354502677917
+        },
+        {
+          "feature": "ldrmodules.not_in_load_avg",
+          "last_bin_count": 10,
+          "last_bin_ratio": 0.0008532423208191126,
+          "last_bin_offset_min": 0.00462283194065094,
+          "last_bin_offset_max": 0.8909436464309692,
+          "last_bin_offset_mean": 0.5557071566581726,
+          "last_bin_offset_std": 0.3290248215198517
+        },
+        {
+          "feature": "ldrmodules.not_in_mem_avg",
+          "last_bin_count": 10,
+          "last_bin_ratio": 0.0008532423208191126,
+          "last_bin_offset_min": 0.00462283194065094,
+          "last_bin_offset_max": 0.8909436464309692,
+          "last_bin_offset_mean": 0.5496901273727417,
+          "last_bin_offset_std": 0.3363358974456787
+        },
+        {
+          "feature": "handles.nhandles",
+          "last_bin_count": 8,
+          "last_bin_ratio": 0.0006825938566552901,
+          "last_bin_offset_min": 0.16209767758846283,
+          "last_bin_offset_max": 1.0,
+          "last_bin_offset_mean": 0.43107175827026367,
+          "last_bin_offset_std": 0.3003484904766083
+        },
+        {
+          "feature": "malfind.uniqueInjections",
+          "last_bin_count": 5,
+          "last_bin_ratio": 0.0004266211604095563,
+          "last_bin_offset_min": 0.1155923530459404,
+          "last_bin_offset_max": 0.8849696516990662,
+          "last_bin_offset_mean": 0.5930578112602234,
+          "last_bin_offset_std": 0.28427252173423767
+        },
+        {
+          "feature": "psxview.not_in_pspcid_list_false_avg",
+          "last_bin_count": 5,
+          "last_bin_ratio": 0.0004266211604095563,
+          "last_bin_offset_min": 0.11266214400529861,
+          "last_bin_offset_max": 0.9663385152816772,
+          "last_bin_offset_mean": 0.6142085194587708,
+          "last_bin_offset_std": 0.4096411466598511
+        },
+        {
+          "feature": "psxview.not_in_session_false_avg",
+          "last_bin_count": 4,
+          "last_bin_ratio": 0.00034129692832764505,
+          "last_bin_offset_min": 0.08934923261404037,
+          "last_bin_offset_max": 0.4382440745830536,
+          "last_bin_offset_mean": 0.28484418988227844,
+          "last_bin_offset_std": 0.15626107156276703
+        },
+        {
+          "feature": "ldrmodules.not_in_load",
+          "last_bin_count": 3,
+          "last_bin_ratio": 0.0002559726962457338,
+          "last_bin_offset_min": 1.0,
+          "last_bin_offset_max": 1.0,
+          "last_bin_offset_mean": 1.0,
+          "last_bin_offset_std": 0.0
+        },
+        {
+          "feature": "ldrmodules.not_in_init",
+          "last_bin_count": 3,
+          "last_bin_ratio": 0.0002559726962457338,
+          "last_bin_offset_min": 1.0,
+          "last_bin_offset_max": 1.0,
+          "last_bin_offset_mean": 1.0,
+          "last_bin_offset_std": 0.0
+        }
+      ]
+    }
+  },
+  "embedding_runtime_diagnostics": {
+    "n_rows_checked": 2048,
+    "has_local_interp": true,
+    "embedding_class": "D3InterpRawFiLMEmbedding",
+    "offset_mean": 0.24145227670669556,
+    "offset_std": 0.3092198371887207,
+    "continuous_mean": 0.312488853931427,
+    "continuous_std": 0.3499418795108795,
+    "continuous_mask_mean": 0.9999999403953552,
+    "bin_embedding_num_embeddings": 513,
+    "bin_embedding_dim": 32,
+    "bin_embedding_weight_std": 0.02021166682243347,
+    "local_abs_mean": 0.014445975422859192,
+    "local_std": 0.018298998475074768,
+    "local_l2_mean_per_cell": 0.101909339427948,
+    "last_bin_offset_sensitivity_l2": 0.1304578334093094,
+    "last_bin_boundary_collapse_fixed": true,
+    "continuous_abs_mean_over_local_abs_mean": 21.631550988031396,
+    "film_gamma_abs_mean": 0.025239907205104828,
+    "film_beta_abs_mean": 0.023858489468693733,
+    "film_gate_mean": 0.4999999701976776,
+    "film_delta_l2_mean_per_cell": 0.08564576506614685,
+    "film_delta_over_local_l2_mean": 0.8404113454851718
+  },
+  "embedding_extra_summary": {
+    "cont_gate_min": 0.38341015577316284,
+    "cont_gate_max": 0.5153481364250183,
+    "cont_gate_mean": 0.45113369822502136,
+    "cont_gate_std": 0.03011937439441681
+  },
+  "strategy_counts": {
+    "discrete_compact_offset0": 23,
+    "rank_uniform_offset": 15,
+    "constant": 3,
+    "keep_current": 14
+  },
+  "baseline_to_compare": {
+    "C0_mixed_bin_scalar_offset_no_continuous": {
+      "train_macro_f1": 0.9321426589148848,
+      "val_macro_f1": 0.8133554660345561,
+      "gap": 0.11878719288032868
+    },
+    "C2_scalar_offset_raw_scalar_concat": {
+      "train_macro_f1": 0.9265573540092596,
+      "val_macro_f1": 0.809009713024029,
+      "gap": 0.11754764098523063
+    },
+    "C3_scalar_offset_z_project_gate_add": {
+      "train_macro_f1": 0.890405910135817,
+      "val_macro_f1": 0.8087819336025909,
+      "gap": 0.08162397653322617
+    },
+    "C4_scalar_offset_raw_project_gate_add": {
+      "train_macro_f1": 0.9110189147125328,
+      "val_macro_f1": 0.807190454742599,
+      "gap": 0.10382845996993384
+    }
+  }
+}

@@ -1,0 +1,5 @@
+,pred_Benign,pred_Ransomware,pred_Spyware,pred_Trojan
+true_Benign,5854,1,4,1
+true_Ransomware,0,1470,287,202
+true_Spyware,1,161,1646,196
+true_Trojan,0,361,209,1327

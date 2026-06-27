@@ -1,0 +1,16 @@
+feature,variant,K,rank_n_unique,rank_old_alias_risk_K_mod_nminus1_eq0,rank_new_uses_K_minus_1,original_c2_strategy,effective_strategy,feature_index,train_bins_used,train_offset_nonzero_ratio,train_dead_bins_ratio,train_used_odd_bin_ratio,train_integer_position_ratio_inferred
+pslist.avg_threads,rank_safe,1024,22592,False,True,rank_uniform_offset,rank_uniform_offset,2,1024,0.9999573342435362,0.0,0.5,4.26657564638621e-05
+pslist.avg_handlers,rank_safe,1024,30009,False,True,rank_uniform_offset,rank_uniform_offset,4,1024,0.9869869442785221,0.0,0.5,0.013013055721477942
+dlllist.avg_dlls_per_proc,rank_safe,1024,13330,False,True,rank_uniform_offset,rank_uniform_offset,6,1024,0.9999146684870722,0.0,0.5,8.53315129277242e-05
+handles.nhandles,rank_safe,1024,7189,False,True,rank_uniform_offset,rank_uniform_offset,7,1024,0.9990826862360269,0.0,0.5,0.0009173137639730352
+handles.avg_handles_per_proc,rank_safe,1024,29752,False,True,rank_uniform_offset,rank_uniform_offset,8,1024,0.9999146684870722,0.0,0.5,8.53315129277242e-05
+ldrmodules.not_in_load_avg,rank_safe,1024,15444,False,True,rank_uniform_offset,rank_uniform_offset,23,1024,0.9999573342435362,0.0,0.5,4.26657564638621e-05
+ldrmodules.not_in_init_avg,rank_safe,1024,15577,False,True,rank_uniform_offset,rank_uniform_offset,24,1024,0.9989546889666354,0.0,0.5,0.0010453110333646216
+ldrmodules.not_in_mem_avg,rank_safe,1024,15444,False,True,rank_uniform_offset,rank_uniform_offset,25,1024,0.9999573342435362,0.0,0.5,4.26657564638621e-05
+malfind.uniqueInjections,rank_safe,1024,4452,False,True,rank_uniform_offset,rank_uniform_offset,29,1024,0.572702449014421,0.0,0.5,0.427297550985579
+psxview.not_in_pslist_false_avg,rank_safe,1024,7781,False,True,rank_uniform_offset,rank_uniform_offset,37,1024,0.5544841710043519,0.0,0.5,0.44551582899564807
+psxview.not_in_ethread_pool_false_avg,rank_safe,1024,8346,False,True,rank_uniform_offset,rank_uniform_offset,39,1024,0.6124669340387405,0.0,0.5,0.38753306596125947
+psxview.not_in_pspcid_list_false_avg,rank_safe,1024,7783,False,True,rank_uniform_offset,rank_uniform_offset,40,1024,0.5545055038825838,0.0,0.5,0.44549449611741615
+psxview.not_in_csrss_handles_false_avg,rank_safe,1024,9458,False,True,rank_uniform_offset,rank_uniform_offset,41,1024,0.9999573342435362,0.0,0.5,4.26657564638621e-05
+psxview.not_in_session_false_avg,rank_safe,1024,9559,False,True,rank_uniform_offset,rank_uniform_offset,42,1024,0.9999146684870722,0.0,0.5,8.53315129277242e-05
+psxview.not_in_deskthrd_false_avg,rank_safe,1024,9655,False,True,rank_uniform_offset,rank_uniform_offset,43,1024,0.9999146684870722,0.0,0.5,8.53315129277242e-05

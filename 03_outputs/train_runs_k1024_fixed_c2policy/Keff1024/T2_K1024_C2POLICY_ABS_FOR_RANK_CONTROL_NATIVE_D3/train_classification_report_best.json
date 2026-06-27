@@ -1,0 +1,74 @@
+{
+  "loss": 0.16981807994701642,
+  "accuracy": 0.9515530335352845,
+  "macro_f1": 0.9267914141812026,
+  "weighted_f1": 0.9513573373670211,
+  "per_class": {
+    "Benign                                                                                      ": {
+      "class_id": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "support": 23438
+    },
+    "Ransomware": {
+      "class_id": 1,
+      "precision": 0.9064579256360078,
+      "recall": 0.8871297242083759,
+      "f1": 0.8966896818739111,
+      "support": 7832
+    },
+    "Spyware": {
+      "class_id": 2,
+      "precision": 0.8941712416773742,
+      "recall": 0.9549650698602794,
+      "f1": 0.9235688001447788,
+      "support": 8016
+    },
+    "Trojan": {
+      "class_id": 3,
+      "precision": 0.9101497504159733,
+      "recall": 0.8648221343873518,
+      "f1": 0.8869071747061208,
+      "support": 7590
+    }
+  },
+  "true_counts": {
+    "Benign                                                                                      ": 23438,
+    "Ransomware": 7832,
+    "Spyware": 8016,
+    "Trojan": 7590
+  },
+  "pred_counts": {
+    "Benign                                                                                      ": 23438,
+    "Ransomware": 7665,
+    "Spyware": 8561,
+    "Trojan": 7212
+  },
+  "confusion_matrix": [
+    [
+      23438,
+      0,
+      0,
+      0
+    ],
+    [
+      0,
+      6948,
+      493,
+      391
+    ],
+    [
+      0,
+      104,
+      7655,
+      257
+    ],
+    [
+      0,
+      613,
+      413,
+      6564
+    ]
+  ]
+}

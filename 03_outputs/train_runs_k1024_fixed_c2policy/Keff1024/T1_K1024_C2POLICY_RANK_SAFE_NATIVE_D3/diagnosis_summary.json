@@ -1,0 +1,450 @@
+{
+  "phase": "Fusion ablation D0-D7 fixed K_effective",
+  "run_id": "D3",
+  "best_epoch": 34,
+  "representation": "D3_offset interpolation + raw FiLM/multiply fusion",
+  "local": "offset_interpolation",
+  "continuous_source": "raw_scaled",
+  "fusion": "raw_film",
+  "train": {
+    "loss": 0.22498216120870623,
+    "accuracy": 0.9369186790681798,
+    "macro_f1": 0.9049273533091671,
+    "weighted_f1": 0.936727248677432,
+    "malware_only_avg_f1": 0.8733502852772106
+  },
+  "val": {
+    "loss": 0.6750027545483039,
+    "accuracy": 0.8609215017064846,
+    "macro_f1": 0.791325682625267,
+    "weighted_f1": 0.8608077877650394,
+    "malware_only_avg_f1": 0.7221376625227603
+  },
+  "generalization_gap_macro_f1": 0.11360167068390004,
+  "worst_val_classes_by_f1": [
+    {
+      "label": "Trojan",
+      "f1": 0.6956287101996762,
+      "precision": 0.7125483692647872,
+      "recall": 0.6794939377965208,
+      "support": 1897
+    },
+    {
+      "label": "Ransomware",
+      "f1": 0.7085772461186052,
+      "precision": 0.7065989847715736,
+      "recall": 0.7105666156202144,
+      "support": 1959
+    },
+    {
+      "label": "Spyware",
+      "f1": 0.7622070312499999,
+      "precision": 0.7461759082217974,
+      "recall": 0.7789421157684631,
+      "support": 2004
+    },
+    {
+      "label": "Benign",
+      "f1": 0.9988897429327868,
+      "precision": 0.999829030603522,
+      "recall": 0.9979522184300341,
+      "support": 5860
+    }
+  ],
+  "model_config": {
+    "value_dim": 32,
+    "feature_dim": 32,
+    "cell_dim": 64,
+    "num_bins": 1024,
+    "effective_token_budget": 1024,
+    "hidden_dim": 128,
+    "num_layers": 3,
+    "num_heads": 4,
+    "dropout": 0.1,
+    "classifier_hidden_dim": 128,
+    "classifier_dropout": 0.1,
+    "norm_first": true,
+    "use_class_weights": true,
+    "scheduler": "warmup_cosine",
+    "gate_init": 0.0
+  },
+  "continuous_info": {
+    "source": "raw_scaled",
+    "train_path": "/kaggle/working/dacn/01_split/train_raw.csv",
+    "val_path": "/kaggle/working/dacn/01_split/val_raw.csv",
+    "scale": "train_only_minmax_linear_clip_val",
+    "n_constant_features": 3,
+    "constant_features": [
+      "pslist.nprocs64bit",
+      "handles.nport",
+      "svcscan.interactive_process_services"
+    ],
+    "train_min": 0.0,
+    "train_max": 1.0,
+    "val_min": 0.0,
+    "val_max": 1.0
+  },
+  "selective_info": {
+    "type": "none"
+  },
+  "boundary_data_diagnostics": {
+    "train": {
+      "split": "train",
+      "num_bins": 1024,
+      "last_bin_id": 1023,
+      "n_rows": 46876,
+      "n_features": 55,
+      "total_cells": 2578180,
+      "last_bin_cells": 33,
+      "last_bin_cell_ratio": 1.279972693915863e-05,
+      "features_with_last_bin": 29,
+      "max_feature_last_bin_ratio": 4.26657564638621e-05,
+      "mean_feature_last_bin_ratio": 1.279972693915863e-05,
+      "top_features_by_last_bin_ratio": [
+        {
+          "feature": "ldrmodules.not_in_load",
+          "last_bin_count": 2,
+          "last_bin_ratio": 4.26657564638621e-05,
+          "last_bin_offset_min": 0.0,
+          "last_bin_offset_max": 0.0,
+          "last_bin_offset_mean": 0.0,
+          "last_bin_offset_std": 0.0
+        },
+        {
+          "feature": "ldrmodules.not_in_init",
+          "last_bin_count": 2,
+          "last_bin_ratio": 4.26657564638621e-05,
+          "last_bin_offset_min": 0.0,
+          "last_bin_offset_max": 0.0,
+          "last_bin_offset_mean": 0.0,
+          "last_bin_offset_std": 0.0
+        },
+        {
+          "feature": "ldrmodules.not_in_mem",
+          "last_bin_count": 2,
+          "last_bin_ratio": 4.26657564638621e-05,
+          "last_bin_offset_min": 0.0,
+          "last_bin_offset_max": 0.0,
+          "last_bin_offset_mean": 0.0,
+          "last_bin_offset_std": 0.0
+        },
+        {
+          "feature": "psxview.not_in_eprocess_pool_false_avg",
+          "last_bin_count": 2,
+          "last_bin_ratio": 4.26657564638621e-05,
+          "last_bin_offset_min": 0.0,
+          "last_bin_offset_max": 0.0,
+          "last_bin_offset_mean": 0.0,
+          "last_bin_offset_std": 0.0
+        },
+        {
+          "feature": "pslist.avg_threads",
+          "last_bin_count": 1,
+          "last_bin_ratio": 2.133287823193105e-05,
+          "last_bin_offset_min": 0.0,
+          "last_bin_offset_max": 0.0,
+          "last_bin_offset_mean": 0.0,
+          "last_bin_offset_std": 0.0
+        },
+        {
+          "feature": "pslist.avg_handlers",
+          "last_bin_count": 1,
+          "last_bin_ratio": 2.133287823193105e-05,
+          "last_bin_offset_min": 0.0,
+          "last_bin_offset_max": 0.0,
+          "last_bin_offset_mean": 0.0,
+          "last_bin_offset_std": 0.0
+        },
+        {
+          "feature": "dlllist.ndlls",
+          "last_bin_count": 1,
+          "last_bin_ratio": 2.133287823193105e-05,
+          "last_bin_offset_min": 0.0,
+          "last_bin_offset_max": 0.0,
+          "last_bin_offset_mean": 0.0,
+          "last_bin_offset_std": 0.0
+        },
+        {
+          "feature": "dlllist.avg_dlls_per_proc",
+          "last_bin_count": 1,
+          "last_bin_ratio": 2.133287823193105e-05,
+          "last_bin_offset_min": 0.0,
+          "last_bin_offset_max": 0.0,
+          "last_bin_offset_mean": 0.0,
+          "last_bin_offset_std": 0.0
+        },
+        {
+          "feature": "handles.nhandles",
+          "last_bin_count": 1,
+          "last_bin_ratio": 2.133287823193105e-05,
+          "last_bin_offset_min": 0.0,
+          "last_bin_offset_max": 0.0,
+          "last_bin_offset_mean": 0.0,
+          "last_bin_offset_std": 0.0
+        },
+        {
+          "feature": "handles.avg_handles_per_proc",
+          "last_bin_count": 1,
+          "last_bin_ratio": 2.133287823193105e-05,
+          "last_bin_offset_min": 0.0,
+          "last_bin_offset_max": 0.0,
+          "last_bin_offset_mean": 0.0,
+          "last_bin_offset_std": 0.0
+        },
+        {
+          "feature": "handles.nfile",
+          "last_bin_count": 1,
+          "last_bin_ratio": 2.133287823193105e-05,
+          "last_bin_offset_min": 0.0,
+          "last_bin_offset_max": 0.0,
+          "last_bin_offset_mean": 0.0,
+          "last_bin_offset_std": 0.0
+        },
+        {
+          "feature": "handles.nevent",
+          "last_bin_count": 1,
+          "last_bin_ratio": 2.133287823193105e-05,
+          "last_bin_offset_min": 0.0,
+          "last_bin_offset_max": 0.0,
+          "last_bin_offset_mean": 0.0,
+          "last_bin_offset_std": 0.0
+        },
+        {
+          "feature": "handles.nkey",
+          "last_bin_count": 1,
+          "last_bin_ratio": 2.133287823193105e-05,
+          "last_bin_offset_min": 0.0,
+          "last_bin_offset_max": 0.0,
+          "last_bin_offset_mean": 0.0,
+          "last_bin_offset_std": 0.0
+        },
+        {
+          "feature": "handles.nthread",
+          "last_bin_count": 1,
+          "last_bin_ratio": 2.133287823193105e-05,
+          "last_bin_offset_min": 0.0,
+          "last_bin_offset_max": 0.0,
+          "last_bin_offset_mean": 0.0,
+          "last_bin_offset_std": 0.0
+        },
+        {
+          "feature": "handles.nsemaphore",
+          "last_bin_count": 1,
+          "last_bin_ratio": 2.133287823193105e-05,
+          "last_bin_offset_min": 0.0,
+          "last_bin_offset_max": 0.0,
+          "last_bin_offset_mean": 0.0,
+          "last_bin_offset_std": 0.0
+        }
+      ]
+    },
+    "val": {
+      "split": "val",
+      "num_bins": 1024,
+      "last_bin_id": 1023,
+      "n_rows": 11720,
+      "n_features": 55,
+      "total_cells": 644600,
+      "last_bin_cells": 16,
+      "last_bin_cell_ratio": 2.4821594787465094e-05,
+      "features_with_last_bin": 10,
+      "max_feature_last_bin_ratio": 0.0002559726962457338,
+      "mean_feature_last_bin_ratio": 2.4821594787465094e-05,
+      "top_features_by_last_bin_ratio": [
+        {
+          "feature": "ldrmodules.not_in_load",
+          "last_bin_count": 3,
+          "last_bin_ratio": 0.0002559726962457338,
+          "last_bin_offset_min": 0.0,
+          "last_bin_offset_max": 0.0,
+          "last_bin_offset_mean": 0.0,
+          "last_bin_offset_std": 0.0
+        },
+        {
+          "feature": "ldrmodules.not_in_init",
+          "last_bin_count": 3,
+          "last_bin_ratio": 0.0002559726962457338,
+          "last_bin_offset_min": 0.0,
+          "last_bin_offset_max": 0.0,
+          "last_bin_offset_mean": 0.0,
+          "last_bin_offset_std": 0.0
+        },
+        {
+          "feature": "ldrmodules.not_in_mem",
+          "last_bin_count": 3,
+          "last_bin_ratio": 0.0002559726962457338,
+          "last_bin_offset_min": 0.0,
+          "last_bin_offset_max": 0.0,
+          "last_bin_offset_mean": 0.0,
+          "last_bin_offset_std": 0.0
+        },
+        {
+          "feature": "pslist.avg_handlers",
+          "last_bin_count": 1,
+          "last_bin_ratio": 8.532423208191126e-05,
+          "last_bin_offset_min": 0.0,
+          "last_bin_offset_max": 0.0,
+          "last_bin_offset_mean": 0.0,
+          "last_bin_offset_std": 0.0
+        },
+        {
+          "feature": "dlllist.ndlls",
+          "last_bin_count": 1,
+          "last_bin_ratio": 8.532423208191126e-05,
+          "last_bin_offset_min": 0.0,
+          "last_bin_offset_max": 0.0,
+          "last_bin_offset_mean": 0.0,
+          "last_bin_offset_std": 0.0
+        },
+        {
+          "feature": "handles.nhandles",
+          "last_bin_count": 1,
+          "last_bin_ratio": 8.532423208191126e-05,
+          "last_bin_offset_min": 0.0,
+          "last_bin_offset_max": 0.0,
+          "last_bin_offset_mean": 0.0,
+          "last_bin_offset_std": 0.0
+        },
+        {
+          "feature": "handles.avg_handles_per_proc",
+          "last_bin_count": 1,
+          "last_bin_ratio": 8.532423208191126e-05,
+          "last_bin_offset_min": 0.0,
+          "last_bin_offset_max": 0.0,
+          "last_bin_offset_mean": 0.0,
+          "last_bin_offset_std": 0.0
+        },
+        {
+          "feature": "handles.nfile",
+          "last_bin_count": 1,
+          "last_bin_ratio": 8.532423208191126e-05,
+          "last_bin_offset_min": 0.0,
+          "last_bin_offset_max": 0.0,
+          "last_bin_offset_mean": 0.0,
+          "last_bin_offset_std": 0.0
+        },
+        {
+          "feature": "handles.nthread",
+          "last_bin_count": 1,
+          "last_bin_ratio": 8.532423208191126e-05,
+          "last_bin_offset_min": 0.0,
+          "last_bin_offset_max": 0.0,
+          "last_bin_offset_mean": 0.0,
+          "last_bin_offset_std": 0.0
+        },
+        {
+          "feature": "handles.nsemaphore",
+          "last_bin_count": 1,
+          "last_bin_ratio": 8.532423208191126e-05,
+          "last_bin_offset_min": 0.0,
+          "last_bin_offset_max": 0.0,
+          "last_bin_offset_mean": 0.0,
+          "last_bin_offset_std": 0.0
+        },
+        {
+          "feature": "pslist.nproc",
+          "last_bin_count": 0,
+          "last_bin_ratio": 0.0,
+          "last_bin_offset_min": null,
+          "last_bin_offset_max": null,
+          "last_bin_offset_mean": null,
+          "last_bin_offset_std": null
+        },
+        {
+          "feature": "pslist.nppid",
+          "last_bin_count": 0,
+          "last_bin_ratio": 0.0,
+          "last_bin_offset_min": null,
+          "last_bin_offset_max": null,
+          "last_bin_offset_mean": null,
+          "last_bin_offset_std": null
+        },
+        {
+          "feature": "pslist.avg_threads",
+          "last_bin_count": 0,
+          "last_bin_ratio": 0.0,
+          "last_bin_offset_min": null,
+          "last_bin_offset_max": null,
+          "last_bin_offset_mean": null,
+          "last_bin_offset_std": null
+        },
+        {
+          "feature": "pslist.nprocs64bit",
+          "last_bin_count": 0,
+          "last_bin_ratio": 0.0,
+          "last_bin_offset_min": null,
+          "last_bin_offset_max": null,
+          "last_bin_offset_mean": null,
+          "last_bin_offset_std": null
+        },
+        {
+          "feature": "dlllist.avg_dlls_per_proc",
+          "last_bin_count": 0,
+          "last_bin_ratio": 0.0,
+          "last_bin_offset_min": null,
+          "last_bin_offset_max": null,
+          "last_bin_offset_mean": null,
+          "last_bin_offset_std": null
+        }
+      ]
+    }
+  },
+  "embedding_runtime_diagnostics": {
+    "n_rows_checked": 2048,
+    "has_local_interp": true,
+    "embedding_class": "D3InterpRawFiLMEmbedding",
+    "offset_mean": 0.2299393117427826,
+    "offset_std": 0.3146813213825226,
+    "continuous_mean": 0.312488853931427,
+    "continuous_std": 0.3499418795108795,
+    "continuous_mask_mean": 0.9999999403953552,
+    "bin_embedding_num_embeddings": 1025,
+    "bin_embedding_dim": 32,
+    "bin_embedding_weight_std": 0.020092185586690903,
+    "local_abs_mean": 0.014485866762697697,
+    "local_std": 0.018267426639795303,
+    "local_l2_mean_per_cell": 0.10210558772087097,
+    "last_bin_offset_sensitivity_l2": 0.16219046711921692,
+    "last_bin_boundary_collapse_fixed": true,
+    "continuous_abs_mean_over_local_abs_mean": 21.57198178407326,
+    "film_gamma_abs_mean": 0.029417390003800392,
+    "film_beta_abs_mean": 0.027209607884287834,
+    "film_gate_mean": 0.4999999701976776,
+    "film_delta_l2_mean_per_cell": 0.09175057709217072,
+    "film_delta_over_local_l2_mean": 0.8985852698188462
+  },
+  "embedding_extra_summary": {
+    "cont_gate_min": 0.3675892651081085,
+    "cont_gate_max": 0.5205623507499695,
+    "cont_gate_mean": 0.4464750587940216,
+    "cont_gate_std": 0.03430122509598732
+  },
+  "strategy_counts": {
+    "discrete_compact_offset0": 23,
+    "rank_uniform_offset": 15,
+    "keep_current": 14,
+    "constant": 3
+  },
+  "baseline_to_compare": {
+    "C0_mixed_bin_scalar_offset_no_continuous": {
+      "train_macro_f1": 0.9321426589148848,
+      "val_macro_f1": 0.8133554660345561,
+      "gap": 0.11878719288032868
+    },
+    "C2_scalar_offset_raw_scalar_concat": {
+      "train_macro_f1": 0.9265573540092596,
+      "val_macro_f1": 0.809009713024029,
+      "gap": 0.11754764098523063
+    },
+    "C3_scalar_offset_z_project_gate_add": {
+      "train_macro_f1": 0.890405910135817,
+      "val_macro_f1": 0.8087819336025909,
+      "gap": 0.08162397653322617
+    },
+    "C4_scalar_offset_raw_project_gate_add": {
+      "train_macro_f1": 0.9110189147125328,
+      "val_macro_f1": 0.807190454742599,
+      "gap": 0.10382845996993384
+    }
+  }
+}

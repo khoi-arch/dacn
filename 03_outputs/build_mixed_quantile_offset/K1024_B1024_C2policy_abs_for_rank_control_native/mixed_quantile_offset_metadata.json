@@ -1,0 +1,450 @@
+{
+  "stage": "build_k1024_fixed_c2_policy",
+  "variant": "abs_for_rank_control",
+  "K": 1024,
+  "num_bins": 1024,
+  "n_features": 55,
+  "feature_names": [
+    "pslist.nproc",
+    "pslist.nppid",
+    "pslist.avg_threads",
+    "pslist.nprocs64bit",
+    "pslist.avg_handlers",
+    "dlllist.ndlls",
+    "dlllist.avg_dlls_per_proc",
+    "handles.nhandles",
+    "handles.avg_handles_per_proc",
+    "handles.nport",
+    "handles.nfile",
+    "handles.nevent",
+    "handles.ndesktop",
+    "handles.nkey",
+    "handles.nthread",
+    "handles.ndirectory",
+    "handles.nsemaphore",
+    "handles.ntimer",
+    "handles.nsection",
+    "handles.nmutant",
+    "ldrmodules.not_in_load",
+    "ldrmodules.not_in_init",
+    "ldrmodules.not_in_mem",
+    "ldrmodules.not_in_load_avg",
+    "ldrmodules.not_in_init_avg",
+    "ldrmodules.not_in_mem_avg",
+    "malfind.ninjections",
+    "malfind.commitCharge",
+    "malfind.protection",
+    "malfind.uniqueInjections",
+    "psxview.not_in_pslist",
+    "psxview.not_in_eprocess_pool",
+    "psxview.not_in_ethread_pool",
+    "psxview.not_in_pspcid_list",
+    "psxview.not_in_csrss_handles",
+    "psxview.not_in_session",
+    "psxview.not_in_deskthrd",
+    "psxview.not_in_pslist_false_avg",
+    "psxview.not_in_eprocess_pool_false_avg",
+    "psxview.not_in_ethread_pool_false_avg",
+    "psxview.not_in_pspcid_list_false_avg",
+    "psxview.not_in_csrss_handles_false_avg",
+    "psxview.not_in_session_false_avg",
+    "psxview.not_in_deskthrd_false_avg",
+    "modules.nmodules",
+    "svcscan.nservices",
+    "svcscan.kernel_drivers",
+    "svcscan.fs_drivers",
+    "svcscan.process_services",
+    "svcscan.shared_process_services",
+    "svcscan.interactive_process_services",
+    "svcscan.nactive",
+    "callbacks.ncallbacks",
+    "callbacks.nanonymous",
+    "callbacks.ngeneric"
+  ],
+  "label_mapping": {
+    "Benign                                                                                      ": 0,
+    "Ransomware": 1,
+    "Spyware": 2,
+    "Trojan": 3
+  },
+  "strategy_counts": {
+    "discrete_compact_offset0": 23,
+    "rank_replaced_by_abs_uniform_control": 15,
+    "keep_current": 14,
+    "constant": 3
+  },
+  "original_c2_strategy_counts": {
+    "discrete_compact_offset0": 23,
+    "rank_uniform_offset": 15,
+    "keep_current": 14,
+    "constant": 3
+  },
+  "feature_policy": {
+    "pslist.nproc": {
+      "original_c2_strategy": "discrete_compact_offset0",
+      "effective_strategy": "discrete_compact_offset0",
+      "strategy": "discrete_compact_offset0"
+    },
+    "pslist.nppid": {
+      "original_c2_strategy": "discrete_compact_offset0",
+      "effective_strategy": "discrete_compact_offset0",
+      "strategy": "discrete_compact_offset0"
+    },
+    "pslist.avg_threads": {
+      "original_c2_strategy": "rank_uniform_offset",
+      "effective_strategy": "rank_replaced_by_abs_uniform_control",
+      "strategy": "rank_replaced_by_abs_uniform_control"
+    },
+    "pslist.nprocs64bit": {
+      "original_c2_strategy": "constant",
+      "effective_strategy": "constant",
+      "strategy": "constant"
+    },
+    "pslist.avg_handlers": {
+      "original_c2_strategy": "rank_uniform_offset",
+      "effective_strategy": "rank_replaced_by_abs_uniform_control",
+      "strategy": "rank_replaced_by_abs_uniform_control"
+    },
+    "dlllist.ndlls": {
+      "original_c2_strategy": "keep_current",
+      "effective_strategy": "keep_current",
+      "strategy": "keep_current"
+    },
+    "dlllist.avg_dlls_per_proc": {
+      "original_c2_strategy": "rank_uniform_offset",
+      "effective_strategy": "rank_replaced_by_abs_uniform_control",
+      "strategy": "rank_replaced_by_abs_uniform_control"
+    },
+    "handles.nhandles": {
+      "original_c2_strategy": "rank_uniform_offset",
+      "effective_strategy": "rank_replaced_by_abs_uniform_control",
+      "strategy": "rank_replaced_by_abs_uniform_control"
+    },
+    "handles.avg_handles_per_proc": {
+      "original_c2_strategy": "rank_uniform_offset",
+      "effective_strategy": "rank_replaced_by_abs_uniform_control",
+      "strategy": "rank_replaced_by_abs_uniform_control"
+    },
+    "handles.nport": {
+      "original_c2_strategy": "constant",
+      "effective_strategy": "constant",
+      "strategy": "constant"
+    },
+    "handles.nfile": {
+      "original_c2_strategy": "keep_current",
+      "effective_strategy": "keep_current",
+      "strategy": "keep_current"
+    },
+    "handles.nevent": {
+      "original_c2_strategy": "keep_current",
+      "effective_strategy": "keep_current",
+      "strategy": "keep_current"
+    },
+    "handles.ndesktop": {
+      "original_c2_strategy": "discrete_compact_offset0",
+      "effective_strategy": "discrete_compact_offset0",
+      "strategy": "discrete_compact_offset0"
+    },
+    "handles.nkey": {
+      "original_c2_strategy": "keep_current",
+      "effective_strategy": "keep_current",
+      "strategy": "keep_current"
+    },
+    "handles.nthread": {
+      "original_c2_strategy": "keep_current",
+      "effective_strategy": "keep_current",
+      "strategy": "keep_current"
+    },
+    "handles.ndirectory": {
+      "original_c2_strategy": "discrete_compact_offset0",
+      "effective_strategy": "discrete_compact_offset0",
+      "strategy": "discrete_compact_offset0"
+    },
+    "handles.nsemaphore": {
+      "original_c2_strategy": "keep_current",
+      "effective_strategy": "keep_current",
+      "strategy": "keep_current"
+    },
+    "handles.ntimer": {
+      "original_c2_strategy": "discrete_compact_offset0",
+      "effective_strategy": "discrete_compact_offset0",
+      "strategy": "discrete_compact_offset0"
+    },
+    "handles.nsection": {
+      "original_c2_strategy": "keep_current",
+      "effective_strategy": "keep_current",
+      "strategy": "keep_current"
+    },
+    "handles.nmutant": {
+      "original_c2_strategy": "keep_current",
+      "effective_strategy": "keep_current",
+      "strategy": "keep_current"
+    },
+    "ldrmodules.not_in_load": {
+      "original_c2_strategy": "keep_current",
+      "effective_strategy": "keep_current",
+      "strategy": "keep_current"
+    },
+    "ldrmodules.not_in_init": {
+      "original_c2_strategy": "keep_current",
+      "effective_strategy": "keep_current",
+      "strategy": "keep_current"
+    },
+    "ldrmodules.not_in_mem": {
+      "original_c2_strategy": "keep_current",
+      "effective_strategy": "keep_current",
+      "strategy": "keep_current"
+    },
+    "ldrmodules.not_in_load_avg": {
+      "original_c2_strategy": "rank_uniform_offset",
+      "effective_strategy": "rank_replaced_by_abs_uniform_control",
+      "strategy": "rank_replaced_by_abs_uniform_control"
+    },
+    "ldrmodules.not_in_init_avg": {
+      "original_c2_strategy": "rank_uniform_offset",
+      "effective_strategy": "rank_replaced_by_abs_uniform_control",
+      "strategy": "rank_replaced_by_abs_uniform_control"
+    },
+    "ldrmodules.not_in_mem_avg": {
+      "original_c2_strategy": "rank_uniform_offset",
+      "effective_strategy": "rank_replaced_by_abs_uniform_control",
+      "strategy": "rank_replaced_by_abs_uniform_control"
+    },
+    "malfind.ninjections": {
+      "original_c2_strategy": "discrete_compact_offset0",
+      "effective_strategy": "discrete_compact_offset0",
+      "strategy": "discrete_compact_offset0"
+    },
+    "malfind.commitCharge": {
+      "original_c2_strategy": "keep_current",
+      "effective_strategy": "keep_current",
+      "strategy": "keep_current"
+    },
+    "malfind.protection": {
+      "original_c2_strategy": "keep_current",
+      "effective_strategy": "keep_current",
+      "strategy": "keep_current"
+    },
+    "malfind.uniqueInjections": {
+      "original_c2_strategy": "rank_uniform_offset",
+      "effective_strategy": "rank_replaced_by_abs_uniform_control",
+      "strategy": "rank_replaced_by_abs_uniform_control"
+    },
+    "psxview.not_in_pslist": {
+      "original_c2_strategy": "discrete_compact_offset0",
+      "effective_strategy": "discrete_compact_offset0",
+      "strategy": "discrete_compact_offset0"
+    },
+    "psxview.not_in_eprocess_pool": {
+      "original_c2_strategy": "discrete_compact_offset0",
+      "effective_strategy": "discrete_compact_offset0",
+      "strategy": "discrete_compact_offset0"
+    },
+    "psxview.not_in_ethread_pool": {
+      "original_c2_strategy": "discrete_compact_offset0",
+      "effective_strategy": "discrete_compact_offset0",
+      "strategy": "discrete_compact_offset0"
+    },
+    "psxview.not_in_pspcid_list": {
+      "original_c2_strategy": "discrete_compact_offset0",
+      "effective_strategy": "discrete_compact_offset0",
+      "strategy": "discrete_compact_offset0"
+    },
+    "psxview.not_in_csrss_handles": {
+      "original_c2_strategy": "discrete_compact_offset0",
+      "effective_strategy": "discrete_compact_offset0",
+      "strategy": "discrete_compact_offset0"
+    },
+    "psxview.not_in_session": {
+      "original_c2_strategy": "discrete_compact_offset0",
+      "effective_strategy": "discrete_compact_offset0",
+      "strategy": "discrete_compact_offset0"
+    },
+    "psxview.not_in_deskthrd": {
+      "original_c2_strategy": "discrete_compact_offset0",
+      "effective_strategy": "discrete_compact_offset0",
+      "strategy": "discrete_compact_offset0"
+    },
+    "psxview.not_in_pslist_false_avg": {
+      "original_c2_strategy": "rank_uniform_offset",
+      "effective_strategy": "rank_replaced_by_abs_uniform_control",
+      "strategy": "rank_replaced_by_abs_uniform_control"
+    },
+    "psxview.not_in_eprocess_pool_false_avg": {
+      "original_c2_strategy": "keep_current",
+      "effective_strategy": "keep_current",
+      "strategy": "keep_current"
+    },
+    "psxview.not_in_ethread_pool_false_avg": {
+      "original_c2_strategy": "rank_uniform_offset",
+      "effective_strategy": "rank_replaced_by_abs_uniform_control",
+      "strategy": "rank_replaced_by_abs_uniform_control"
+    },
+    "psxview.not_in_pspcid_list_false_avg": {
+      "original_c2_strategy": "rank_uniform_offset",
+      "effective_strategy": "rank_replaced_by_abs_uniform_control",
+      "strategy": "rank_replaced_by_abs_uniform_control"
+    },
+    "psxview.not_in_csrss_handles_false_avg": {
+      "original_c2_strategy": "rank_uniform_offset",
+      "effective_strategy": "rank_replaced_by_abs_uniform_control",
+      "strategy": "rank_replaced_by_abs_uniform_control"
+    },
+    "psxview.not_in_session_false_avg": {
+      "original_c2_strategy": "rank_uniform_offset",
+      "effective_strategy": "rank_replaced_by_abs_uniform_control",
+      "strategy": "rank_replaced_by_abs_uniform_control"
+    },
+    "psxview.not_in_deskthrd_false_avg": {
+      "original_c2_strategy": "rank_uniform_offset",
+      "effective_strategy": "rank_replaced_by_abs_uniform_control",
+      "strategy": "rank_replaced_by_abs_uniform_control"
+    },
+    "modules.nmodules": {
+      "original_c2_strategy": "discrete_compact_offset0",
+      "effective_strategy": "discrete_compact_offset0",
+      "strategy": "discrete_compact_offset0"
+    },
+    "svcscan.nservices": {
+      "original_c2_strategy": "discrete_compact_offset0",
+      "effective_strategy": "discrete_compact_offset0",
+      "strategy": "discrete_compact_offset0"
+    },
+    "svcscan.kernel_drivers": {
+      "original_c2_strategy": "discrete_compact_offset0",
+      "effective_strategy": "discrete_compact_offset0",
+      "strategy": "discrete_compact_offset0"
+    },
+    "svcscan.fs_drivers": {
+      "original_c2_strategy": "discrete_compact_offset0",
+      "effective_strategy": "discrete_compact_offset0",
+      "strategy": "discrete_compact_offset0"
+    },
+    "svcscan.process_services": {
+      "original_c2_strategy": "discrete_compact_offset0",
+      "effective_strategy": "discrete_compact_offset0",
+      "strategy": "discrete_compact_offset0"
+    },
+    "svcscan.shared_process_services": {
+      "original_c2_strategy": "discrete_compact_offset0",
+      "effective_strategy": "discrete_compact_offset0",
+      "strategy": "discrete_compact_offset0"
+    },
+    "svcscan.interactive_process_services": {
+      "original_c2_strategy": "constant",
+      "effective_strategy": "constant",
+      "strategy": "constant"
+    },
+    "svcscan.nactive": {
+      "original_c2_strategy": "discrete_compact_offset0",
+      "effective_strategy": "discrete_compact_offset0",
+      "strategy": "discrete_compact_offset0"
+    },
+    "callbacks.ncallbacks": {
+      "original_c2_strategy": "discrete_compact_offset0",
+      "effective_strategy": "discrete_compact_offset0",
+      "strategy": "discrete_compact_offset0"
+    },
+    "callbacks.nanonymous": {
+      "original_c2_strategy": "discrete_compact_offset0",
+      "effective_strategy": "discrete_compact_offset0",
+      "strategy": "discrete_compact_offset0"
+    },
+    "callbacks.ngeneric": {
+      "original_c2_strategy": "discrete_compact_offset0",
+      "effective_strategy": "discrete_compact_offset0",
+      "strategy": "discrete_compact_offset0"
+    }
+  },
+  "input": {
+    "source_c2_dataset": "03_outputs/build_mixed_quantile_offset/K512_B512_C2_selective_rank_discrete_compact/mixed_quantile_offset_dataset.npz",
+    "source_c2_metadata": "03_outputs/build_mixed_quantile_offset/K512_B512_C2_selective_rank_discrete_compact/mixed_quantile_offset_metadata.json",
+    "train_raw": "01_split/train_raw.csv",
+    "val_raw": "01_split/val_raw.csv",
+    "train_preprocessed": "/home/pak/Documents/dacn/03_outputs/preprocessing/train_preprocessed_K512.csv",
+    "val_preprocessed": "/home/pak/Documents/dacn/03_outputs/preprocessing/val_preprocessed_K512.csv"
+  },
+  "diagnostics": {
+    "variant": "abs_for_rank_control",
+    "K": 1024,
+    "dataset_path": "03_outputs/build_mixed_quantile_offset/K1024_B1024_C2policy_abs_for_rank_control_native/mixed_quantile_offset_dataset.npz",
+    "metadata_path": "03_outputs/build_mixed_quantile_offset/K1024_B1024_C2policy_abs_for_rank_control_native/mixed_quantile_offset_metadata.json",
+    "source_c2_dataset": "03_outputs/build_mixed_quantile_offset/K512_B512_C2_selective_rank_discrete_compact/mixed_quantile_offset_dataset.npz",
+    "source_c2_metadata": "03_outputs/build_mixed_quantile_offset/K512_B512_C2_selective_rank_discrete_compact/mixed_quantile_offset_metadata.json",
+    "n_train": 46876,
+    "n_val": 11720,
+    "n_features": 55,
+    "strategy_counts": {
+      "discrete_compact_offset0": 23,
+      "rank_replaced_by_abs_uniform_control": 15,
+      "keep_current": 14,
+      "constant": 3
+    },
+    "original_c2_strategy_counts": {
+      "discrete_compact_offset0": 23,
+      "rank_uniform_offset": 15,
+      "keep_current": 14,
+      "constant": 3
+    },
+    "group_summary_train": [
+      {
+        "effective_strategy": "constant",
+        "bins_used": 1.0,
+        "dead_bins_ratio": 0.9990234375,
+        "preserve_ratio": 1.0,
+        "compression_factor": 1.0,
+        "entropy_norm": 0.0,
+        "dominant_bin_ratio": 1.0,
+        "rare_used_bin_ratio_le5": 0.0,
+        "offset_nonzero_ratio": 0.0,
+        "used_odd_bin_ratio": 0.0
+      },
+      {
+        "effective_strategy": "discrete_compact_offset0",
+        "bins_used": 46.08695652173913,
+        "dead_bins_ratio": 0.9549932065217391,
+        "preserve_ratio": 1.0,
+        "compression_factor": 1.0,
+        "entropy_norm": 0.387298793641368,
+        "dominant_bin_ratio": 0.5071418766254725,
+        "rare_used_bin_ratio_le5": 0.3625817387680505,
+        "offset_nonzero_ratio": 0.0,
+        "used_odd_bin_ratio": 0.48935758936875196
+      },
+      {
+        "effective_strategy": "keep_current",
+        "bins_used": 341.7857142857143,
+        "dead_bins_ratio": 0.6662248883928571,
+        "preserve_ratio": 0.6882624080213191,
+        "compression_factor": 2.94940964077686,
+        "entropy_norm": 0.6491159867196072,
+        "dominant_bin_ratio": 0.22989071471237185,
+        "rare_used_bin_ratio_le5": 0.3822409935652317,
+        "offset_nonzero_ratio": 0.9112277985688687,
+        "used_odd_bin_ratio": 0.4962740666602238
+      },
+      {
+        "effective_strategy": "rank_replaced_by_abs_uniform_control",
+        "bins_used": 404.3333333333333,
+        "dead_bins_ratio": 0.6051432291666666,
+        "preserve_ratio": 0.3948567708333333,
+        "compression_factor": 45.75536071945794,
+        "entropy_norm": 0.6840092416280981,
+        "dominant_bin_ratio": 0.15785476576499702,
+        "rare_used_bin_ratio_le5": 0.4504832667820619,
+        "offset_nonzero_ratio": 0.8853400460790171,
+        "used_odd_bin_ratio": 0.4970067729341601
+      }
+    ],
+    "global_mean_bins_used": 216.6,
+    "global_mean_entropy_norm": 0.5137388125863169,
+    "global_mean_rare_used_bin_ratio_le5": 0.37178187096926063,
+    "global_mean_offset_nonzero_ratio": 0.47340527038453484,
+    "rank_alias_risk_features_old_formula": 0,
+    "notes": [
+      "All features regenerated natively at K=1024; no K512 keep_current leftovers.",
+      "rank_safe uses rank/(n_unique-1)*(K-1), not rank/(n_unique-1)*K.",
+      "dead_bins_ratio can remain high when raw_unique < K; that is intrinsic, not necessarily an alias bug."
+    ]
+  }
+}

@@ -1,0 +1,20 @@
+[
+  {
+    "run": "T1_K1024_C2POLICY_RANK_SAFE_NATIVE_D3",
+    "path": "03_outputs/train_runs_k1024_fixed_c2policy/Keff1024/T1_K1024_C2POLICY_RANK_SAFE_NATIVE_D3",
+    "best_epoch": 34,
+    "train_macro_f1": 0.9049273533091671,
+    "val_macro_f1": 0.791325682625267,
+    "gap": 0.11360167068390004,
+    "malware_only_f1": 0.7221376625227603
+  },
+  {
+    "run": "T2_K1024_C2POLICY_ABS_FOR_RANK_CONTROL_NATIVE_D3",
+    "path": "03_outputs/train_runs_k1024_fixed_c2policy/Keff1024/T2_K1024_C2POLICY_ABS_FOR_RANK_CONTROL_NATIVE_D3",
+    "best_epoch": 49,
+    "train_macro_f1": 0.9267914141812026,
+    "val_macro_f1": 0.8014599341412245,
+    "gap": 0.12533148003997807,
+    "malware_only_f1": 0.735422179936201
+  }
+]
