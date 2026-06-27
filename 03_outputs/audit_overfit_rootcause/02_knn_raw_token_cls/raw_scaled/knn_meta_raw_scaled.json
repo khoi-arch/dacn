@@ -1,0 +1,8 @@
+{
+  "space": "raw_scaled",
+  "k": 25,
+  "train_fit_n": 46876,
+  "train_full_n": 46876,
+  "train_ref_mean_dist_q95": 1.3982574021816254,
+  "train_ref_mean_dist_q99": 4.4682188336551185
+}

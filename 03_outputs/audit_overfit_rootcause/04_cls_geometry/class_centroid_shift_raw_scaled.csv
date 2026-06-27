@@ -1,0 +1,5 @@
+space,class,train_val_centroid_shift,within_train_mean_dist_to_train_centroid,within_val_mean_dist_to_train_centroid,shift_over_within_train
+raw_scaled,Benign                                                                                      ,0.01864306442439556,3.9911458492279053,3.968618392944336,0.004671105774798339
+raw_scaled,Ransomware,0.18683293461799622,4.76749849319458,4.752171039581299,0.03918888173423732
+raw_scaled,Spyware,0.20140215754508972,5.313198566436768,5.267594814300537,0.03790600991600428
+raw_scaled,Trojan,0.1285376101732254,3.466263771057129,3.2933621406555176,0.037082466500807404

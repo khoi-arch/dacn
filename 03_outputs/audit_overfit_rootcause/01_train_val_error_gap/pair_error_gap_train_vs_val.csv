@@ -1,0 +1,11 @@
+true_class,pred_class,train_n,val_n,train_rate_within_true,val_rate_within_true,val_minus_train_rate,rootcause_hint
+Trojan,Ransomware,950,361,0.1251646903820817,0.19030047443331577,0.06513578405123407,generalization_gap_pair
+Ransomware,Spyware,555,287,0.07086312563840654,0.14650331801939764,0.07564019238099111,generalization_gap_pair
+Trojan,Spyware,483,209,0.06363636363636363,0.11017395888244597,0.046537595246082336,generalization_gap_pair
+Ransomware,Trojan,311,202,0.039708886618998976,0.1031138335885656,0.06340494696956663,generalization_gap_pair
+Spyware,Trojan,296,196,0.036926147704590816,0.09780439121756487,0.06087824351297406,generalization_gap_pair
+Spyware,Ransomware,192,161,0.023952095808383235,0.08033932135728543,0.056387225548902194,generalization_gap_pair
+Benign                                                                                      ,Spyware,0,4,0.0,0.0006825938566552901,0.0006825938566552901,minor_pair
+Spyware,Benign                                                                                      ,0,1,0.0,0.000499001996007984,0.000499001996007984,minor_pair
+Benign                                                                                      ,Ransomware,0,1,0.0,0.00017064846416382253,0.00017064846416382253,minor_pair
+Benign                                                                                      ,Trojan,0,1,0.0,0.00017064846416382253,0.00017064846416382253,minor_pair

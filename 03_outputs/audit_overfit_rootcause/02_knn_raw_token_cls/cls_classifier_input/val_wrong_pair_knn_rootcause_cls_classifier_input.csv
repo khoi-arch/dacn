@@ -1,0 +1,30 @@
+true_class,pred_class,rootcause_category,n,confidence_mean,knn_true_frac_mean,knn_pred_frac_mean,ood95_rate
+Benign                                                                                      ,Ransomware,feature_space_overlap_with_pred_class,1,0.9996199607849121,0.0,1.0,0.0
+Benign                                                                                      ,Spyware,feature_space_overlap_with_pred_class,3,0.989409883817037,0.02666666666666667,0.9733333333333333,0.0
+Benign                                                                                      ,Spyware,OOD_or_distribution_shift,1,0.8953145146369934,0.0,0.92,1.0
+Benign                                                                                      ,Trojan,OOD_or_distribution_shift,1,0.452879935503006,0.08,0.28,1.0
+Ransomware,Spyware,feature_space_overlap_with_pred_class,202,0.8254226415169121,0.10336633663366336,0.8433663366336634,0.0
+Ransomware,Spyware,OOD_or_distribution_shift,54,0.7392198233692734,0.1362962962962963,0.7977777777777777,1.0
+Ransomware,Spyware,mixed_neighbors_ambiguous,21,0.49060241381327313,0.3066666666666667,0.4495238095238095,0.0
+Ransomware,Spyware,model_boundary_failure_knn_true_neighbors,10,0.5290573060512542,0.616,0.376,0.0
+Ransomware,Trojan,feature_space_overlap_with_pred_class,109,0.75690570145572,0.1889908256880734,0.7867889908256881,0.0
+Ransomware,Trojan,OOD_or_distribution_shift,74,0.7851053689782684,0.11891891891891893,0.8048648648648649,1.0
+Ransomware,Trojan,model_boundary_failure_knn_true_neighbors,10,0.5393962144851685,0.568,0.404,0.0
+Ransomware,Trojan,mixed_neighbors_ambiguous,9,0.5192403230402205,0.2711111111111111,0.38222222222222224,0.0
+Spyware,Benign                                                                                      ,OOD_or_distribution_shift,1,0.9998788833618164,0.0,1.0,1.0
+Spyware,Ransomware,feature_space_overlap_with_pred_class,79,0.7851948421212691,0.12253164556962025,0.8081012658227849,0.0
+Spyware,Ransomware,OOD_or_distribution_shift,61,0.7901458422668645,0.13245901639344262,0.7763934426229508,1.0
+Spyware,Ransomware,mixed_neighbors_ambiguous,13,0.49894919532995957,0.28923076923076924,0.40923076923076923,0.0
+Spyware,Ransomware,model_boundary_failure_knn_true_neighbors,8,0.5534293800592422,0.64,0.335,0.0
+Spyware,Trojan,feature_space_overlap_with_pred_class,111,0.8129961152334471,0.14954954954954955,0.8273873873873874,0.0
+Spyware,Trojan,OOD_or_distribution_shift,79,0.7908509309533276,0.1448101265822785,0.7954430379746836,1.0
+Spyware,Trojan,mixed_neighbors_ambiguous,4,0.4514123201370239,0.39,0.43,0.0
+Spyware,Trojan,model_boundary_failure_knn_true_neighbors,2,0.5236000120639801,0.6,0.34,0.0
+Trojan,Ransomware,feature_space_overlap_with_pred_class,234,0.7429044558706447,0.22803418803418804,0.7488888888888889,0.0
+Trojan,Ransomware,OOD_or_distribution_shift,75,0.7800142097473145,0.2064,0.7445333333333334,1.0
+Trojan,Ransomware,model_boundary_failure_knn_true_neighbors,33,0.5774168886921622,0.5696969696969697,0.4193939393939394,0.0
+Trojan,Ransomware,mixed_neighbors_ambiguous,19,0.5167444567931326,0.30736842105263157,0.38947368421052636,0.0
+Trojan,Spyware,feature_space_overlap_with_pred_class,121,0.7439450510769836,0.12363636363636364,0.783801652892562,0.0
+Trojan,Spyware,OOD_or_distribution_shift,53,0.7643649572471403,0.1418867924528302,0.7932075471698113,1.0
+Trojan,Spyware,mixed_neighbors_ambiguous,28,0.4663409558790071,0.2557142857142857,0.43285714285714283,0.0
+Trojan,Spyware,model_boundary_failure_knn_true_neighbors,7,0.5581996781485421,0.6114285714285714,0.36,0.0

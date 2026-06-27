@@ -1,0 +1,18 @@
+{
+  "train": {
+    "available": true,
+    "embedding_name": "classifier_pre_hook_input",
+    "shape": [
+      46876,
+      128
+    ]
+  },
+  "val": {
+    "available": true,
+    "embedding_name": "classifier_pre_hook_input",
+    "shape": [
+      11720,
+      128
+    ]
+  }
+}

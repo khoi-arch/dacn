@@ -1,0 +1,8 @@
+{
+  "available": true,
+  "constant_features": [
+    "pslist.nprocs64bit",
+    "handles.nport",
+    "svcscan.interactive_process_services"
+  ]
+}

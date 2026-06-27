@@ -1,0 +1,25 @@
+split,true_class,pred_class,correct_pair,n,rate_within_true
+train,Benign                                                                                      ,Benign                                                                                      ,True,23438,1.0
+train,Ransomware,Ransomware,True,6966,0.8894279877425945
+train,Ransomware,Spyware,False,555,0.07086312563840654
+train,Ransomware,Trojan,False,311,0.039708886618998976
+train,Spyware,Ransomware,False,192,0.023952095808383235
+train,Spyware,Spyware,True,7528,0.9391217564870259
+train,Spyware,Trojan,False,296,0.036926147704590816
+train,Trojan,Ransomware,False,950,0.1251646903820817
+train,Trojan,Spyware,False,483,0.06363636363636363
+train,Trojan,Trojan,True,6157,0.8111989459815547
+val,Benign                                                                                      ,Benign                                                                                      ,True,5854,0.9989761092150171
+val,Benign                                                                                      ,Ransomware,False,1,0.00017064846416382253
+val,Benign                                                                                      ,Spyware,False,4,0.0006825938566552901
+val,Benign                                                                                      ,Trojan,False,1,0.00017064846416382253
+val,Ransomware,Ransomware,True,1470,0.7503828483920367
+val,Ransomware,Spyware,False,287,0.14650331801939764
+val,Ransomware,Trojan,False,202,0.1031138335885656
+val,Spyware,Benign                                                                                      ,False,1,0.000499001996007984
+val,Spyware,Ransomware,False,161,0.08033932135728543
+val,Spyware,Spyware,True,1646,0.8213572854291418
+val,Spyware,Trojan,False,196,0.09780439121756487
+val,Trojan,Ransomware,False,361,0.19030047443331577
+val,Trojan,Spyware,False,209,0.11017395888244597
+val,Trojan,Trojan,True,1327,0.6995255666842383

@@ -1,0 +1,5 @@
+space,class,train_val_centroid_shift,within_train_mean_dist_to_train_centroid,within_val_mean_dist_to_train_centroid,shift_over_within_train
+token_bin_offset,Benign                                                                                      ,0.09023809432983398,7.354526996612549,7.356235504150391,0.012269734596308483
+token_bin_offset,Ransomware,0.18358288705348969,7.44962739944458,7.387060642242432,0.02464323075636674
+token_bin_offset,Spyware,0.2176751345396042,7.792835235595703,7.791663646697998,0.027932726403003007
+token_bin_offset,Trojan,0.16459129750728607,6.544998645782471,6.453458786010742,0.025147644241809253

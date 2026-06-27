@@ -1,0 +1,8 @@
+{
+  "space": "cls_classifier_input",
+  "k": 25,
+  "train_fit_n": 46876,
+  "train_full_n": 46876,
+  "train_ref_mean_dist_q95": 7.831106204986572,
+  "train_ref_mean_dist_q99": 9.521511106491088
+}

@@ -1,0 +1,3 @@
+group,n,rare_count_mean,rare_count_median,rare_count_p95,unseen_count_mean
+correct,10297,0.09546469845586093,0.0,1.0,0.004467320578809362
+wrong,1423,0.11454673225579762,0.0,1.0,0.009838369641602248

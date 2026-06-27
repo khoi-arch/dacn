@@ -1,0 +1,40 @@
+{
+  "paths": {
+    "dataset": "/home/pak/Documents/dacn/03_outputs/build_mixed_quantile_offset/K512_B512_C2_selective_rank_discrete_compact/mixed_quantile_offset_dataset.npz",
+    "metadata": "/home/pak/Documents/dacn/03_outputs/build_mixed_quantile_offset/K512_B512_C2_selective_rank_discrete_compact/mixed_quantile_offset_metadata.json",
+    "run_dir": "/home/pak/Documents/dacn/03_outputs/train_runs_fusion_ablation_D0_D7/Keff512/D3_P1_K512_B512_C2_selective_rank_discrete_compact",
+    "checkpoint": "/home/pak/Documents/dacn/03_outputs/train_runs_fusion_ablation_D0_D7/Keff512/D3_P1_K512_B512_C2_selective_rank_discrete_compact/best_model.pt",
+    "overfit_dir": "/home/pak/Documents/dacn/03_outputs/audit_overfit_rootcause"
+  },
+  "raw_info": {
+    "train_raw": "/home/pak/Documents/dacn/01_split/train_raw.csv",
+    "val_raw": "/home/pak/Documents/dacn/01_split/val_raw.csv",
+    "scale": "train_minmax_clip_val",
+    "n_constant_features": 3
+  },
+  "device": "cpu",
+  "n_features": 55,
+  "label_names": [
+    "Benign",
+    "Ransomware",
+    "Spyware",
+    "Trojan"
+  ],
+  "selected_samples_total_rows": 1600,
+  "selected_samples_by_subset": {
+    "model_amplification": 320,
+    "feature_space_overlap": 320,
+    "cls_ood_confident": 320,
+    "all_wrong_high_conf": 320,
+    "correct_high_conf_control": 320
+  },
+  "attention_status": {
+    "attention_capture_ok": false,
+    "attention_error": "RuntimeError: Could not capture last-layer attention weights."
+  },
+  "notes": [
+    "Occlusion delta_margin_mean > 0 on wrong samples means the feature supports the wrong predicted class over the true class.",
+    "Gradient x input is local first-order evidence; use with occlusion.",
+    "Attention is routing, not causality; interpret only when it agrees with occlusion/gradient."
+  ]
+}
